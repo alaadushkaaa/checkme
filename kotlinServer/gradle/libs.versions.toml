@@ -1,0 +1,124 @@
+[versions]
+kotlin = "2.0.0"
+http4k = "5.25.0.0"
+result4k = "2.19.0.0"
+jwtJava = "4.4.0"
+jackson = "2.17.1"
+flexmark = "0.64.8"
+kotest = "5.9.1"
+kover = "0.8.2"
+postgres = "42.7.3"
+flyway = "10.15.2"
+jooq = "3.19.10"
+hikariCP = "5.1.0"
+testcontainers = "1.19.8"
+kotestTestcontainers = "2.0.2"
+mockito = "5.4.0"
+logback = "1.5.8"
+ktlint = "1.2.1"
+ktlintPlugin = "12.1.1"
+detekt = "1.23.6"
+shadowJar = "8.3.2"
+apachePoi = "5.3.0"
+slf4j = "2.0.16"
+scribeJava = "8.3.3"
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
+jooq = { id = "org.jooq.jooq-codegen-gradle", version.ref = "jooq" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+shadowJar = { id = "com.gradleup.shadow", version.ref = "shadowJar" }
+
+[bundles]
+http4k = [
+    "http4kCore",
+    "http4kClientOkHttp",
+    "http4kServerNetty",
+    "http4kCloudnative",
+    "http4kTemplatePebble",
+    "http4kMultipart",
+]
+
+jackson = [
+    "jacksonCore",
+    "jacksonYaml",
+    "jacksonKotlin",
+]
+
+kotest = [
+    "kotestRunner",
+    "kotestAssertions",
+]
+
+http4kTesting = [
+    "http4kTestingApproval",
+    "http4kTestingHamkrest",
+    "http4kTestingKotest",
+]
+
+testcontainers = [
+    "testcontainersPostgres",
+    "kotestTestcontainers",
+]
+
+jooq = [
+    "jooq",
+]
+
+codegen = [
+    "postgreSql",
+    "jooqPostgresExtension",
+]
+
+logging = [
+    "logback",
+]
+
+apachePoi = [
+    "apachePoi",
+    "apachePoiOoxml",
+]
+
+scribeJava = [
+    "scribeJavaApis",
+    "scribeJavaCore",
+]
+
+[libraries]
+jwtJava = { module = "com.auth0:java-jwt", version.ref = "jwtJava" }
+jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
+jooqPostgresExtension = { module = "org.jooq:jooq-postgres-extensions", version.ref = "jooq" }
+flywayPostgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+shadowJar = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadowJar" }
+hikariConnectionPool = { module = "com.zaxxer:HikariCP", version.ref = "hikariCP" }
+http4kCore = { module = "org.http4k:http4k-core", version.ref = "http4k" }
+http4kClientOkHttp = { module = "org.http4k:http4k-client-okhttp", version.ref = "http4k" }
+http4kCloudnative = { module = "org.http4k:http4k-cloudnative", version.ref = "http4k" }
+http4kMultipart = { module = "org.http4k:http4k-multipart", version.ref = "http4k" }
+http4kServerNetty = { module = "org.http4k:http4k-server-netty", version.ref = "http4k" }
+http4kTemplatePebble = { module = "org.http4k:http4k-template-pebble", version.ref = "http4k" }
+http4kTestingApproval = { module = "org.http4k:http4k-testing-approval", version.ref = "http4k" }
+http4kTestingHamkrest = { module = "org.http4k:http4k-testing-hamkrest", version.ref = "http4k" }
+http4kTestingKotest = { module = "org.http4k:http4k-testing-kotest", version.ref = "http4k" }
+jacksonCore = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jacksonKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jacksonYaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
+flexmark = {module = "com.vladsch.flexmark:flexmark-all", version.ref = "flexmark"}
+kotestAssertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotestRunner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotestTestcontainers = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version.ref = "kotestTestcontainers" }
+kotlinStdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+mockito = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
+postgreSql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+result4k = { module = "dev.forkhandles:result4k", version.ref = "result4k"}
+result4kKotest = { module = "dev.forkhandles:result4k-kotest", version.ref = "result4k"}
+testcontainersPostgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+apachePoi = { module = "org.apache.poi:poi", version.ref = "apachePoi" }
+apachePoiOoxml = { module = "org.apache.poi:poi-ooxml", version.ref = "apachePoi" }
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+scribeJavaApis = { module = "com.github.scribejava:scribejava-apis", version.ref = "scribeJava" }
+scribeJavaCore = { module = "com.github.scribejava:scribejava-core", version.ref = "scribeJava" }
