@@ -44,7 +44,7 @@ tasks.named<JavaExec>("run") {
 }
 
 application {
-    mainClass ="checkme.ServerKt"
+    mainClass = "checkme.ServerKt"
 }
 
 dependencies {
@@ -100,7 +100,7 @@ val appProperties =
 
 val dbHost: String = appProperties.getProperty("db.host", "localhost")
 val dbPort: String = appProperties.getProperty("db.port", "5432")
-val dbName: String = appProperties.getProperty("db.base", "checkme")
+val dbName: String = appProperties.getProperty("db.base", "checkmedb")
 val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
 val dbUser: String = appProperties.getProperty("db.user", "postgres")
 val dbPassword: String = appProperties.getProperty("db.password", "secretpassword")
@@ -109,7 +109,7 @@ flyway {
     url = jdbcUrl
     user = dbUser
     password = dbPassword
-    locations = arrayOf("classpath:ru/checkme/db/migrations")
+    locations = arrayOf("classpath:checkme/db/migrations")
     cleanDisabled = true
     validateMigrationNaming = true
 }
