@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS users;
+
+CREATE TYPE user_role AS ENUM (
+'ADMIN', 'STUDENT'
+);
+
+CREATE TABLE users (
+	id SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(30) NOT NULL,
+	surname CHARACTER VARYING(30) NOT NULL,
+    password CHARACTER(64) NOT NULL,
+    role user_role NOT NULL
+);

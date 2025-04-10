@@ -1,6 +1,7 @@
 package checkme
 
 import checkme.config.AppConfig
+import checkme.db.DatabaseOperationsHolder
 import checkme.db.utils.createJooqContext
 import checkme.domain.operations.OperationHolder
 import checkme.service.initApplication
@@ -11,11 +12,12 @@ import org.http4k.server.asServer
 fun main() {
     val config = AppConfig.fromEnvironment()
     val jooqContext = createJooqContext(config.databaseConfig)
-    val operations = OperationHolder(config)
+    val database = DatabaseOperationsHolder(jooqContext)
+    val operations = OperationHolder(database, config)
 
-    operations.initApplication(operations, jooqContext, config)
+    operations.initApplication(config)
 
-    val app = createApp(operations, config)
+    val app = createApp()
     val server = app.asServer(Netty(config.webConfig.port)).start()
     println("Running on port http://localhost:${server.port()}/")
 }
