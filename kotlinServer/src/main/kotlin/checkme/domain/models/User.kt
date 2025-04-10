@@ -21,14 +21,15 @@ data class User(
                 !namePattern.matches(name) -> ValidateUserResult.NAME_PATTERN_MISMATCH
                 surname.isBlank() -> ValidateUserResult.SURNAME_IS_BLANK_OR_EMPTY
                 surname.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.SURNAME_IS_TOO_LONG
-                !namePattern.matches(surname) -> ValidateUserResult.SURNAME_PATTERN_MISMATCH
+                !surnamePattern.matches(surname) -> ValidateUserResult.SURNAME_PATTERN_MISMATCH
                 password.isBlank() -> ValidateUserResult.PASSWORD_IS_BLANK_OR_EMPTY
                 else -> ValidateUserResult.ALL_OK
             }
 
-        const val MAX_NAME_AND_SURNAME_LENGTH = 30
+        const val MAX_NAME_AND_SURNAME_LENGTH = 50
 
-        val namePattern = Regex("^[А-Яа-я]+\$")
+        val namePattern = Regex("^[\\w-.]+\$")
+        val surnamePattern = Regex("^[\\w-.]+\$")
     }
 
     fun isStudent() = role == Role.STUDENT

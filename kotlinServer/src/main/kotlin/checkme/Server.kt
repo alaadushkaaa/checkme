@@ -1,6 +1,7 @@
 package checkme
 
 import checkme.config.AppConfig
+import checkme.db.DatabaseOperationsHolder
 import checkme.db.utils.createJooqContext
 import checkme.domain.operations.OperationHolder
 import checkme.service.initApplication

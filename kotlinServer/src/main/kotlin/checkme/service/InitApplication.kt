@@ -6,17 +6,24 @@ import org.flywaydb.core.Flyway
 
 fun OperationHolder.initApplication(config: AppConfig) {
     applyMigrations(config)
-    this.initGeneralUser(config)
+//    operations.initGeneralUser( jooqContext, config)
 }
 
 fun applyMigrations(config: AppConfig) {
     val flyway = Flyway
         .configure()
         .dataSource(config.databaseConfig.jdbc, config.databaseConfig.user, config.databaseConfig.password)
-        .locations("classpath:checkme/db/migrations")
+        .locations("classpath:ru/checkme/db/migrations")
         .cleanDisabled(true)
         .validateMigrationNaming(true)
         .load()
 
     if (flyway.info().pending().isNotEmpty()) flyway.migrate()
 }
+
+// private fun OperationHolder.initGeneralUser(
+//    jooqContext: DSLContext,
+//    config: AppConfig
+// ) {
+//    when()
+// }
