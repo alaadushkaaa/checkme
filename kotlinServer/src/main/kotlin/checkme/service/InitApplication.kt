@@ -6,7 +6,7 @@ import org.flywaydb.core.Flyway
 
 fun OperationHolder.initApplication(config: AppConfig) {
     applyMigrations(config)
-//    operations.initGeneralUser( jooqContext, config)
+    this.initGeneralUser(config)
 }
 
 fun applyMigrations(config: AppConfig) {
@@ -20,10 +20,3 @@ fun applyMigrations(config: AppConfig) {
 
     if (flyway.info().pending().isNotEmpty()) flyway.migrate()
 }
-
-// private fun OperationHolder.initGeneralUser(
-//    jooqContext: DSLContext,
-//    config: AppConfig
-// ) {
-//    when()
-// }
