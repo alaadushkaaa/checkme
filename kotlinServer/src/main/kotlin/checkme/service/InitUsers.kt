@@ -10,18 +10,14 @@ const val GENERAL_NAME = "Admin"
 
 fun OperationHolder.initGeneralUser(config: AppConfig) {
     when (val generalUser = this.userOperations.fetchUsersByRole(Role.ADMIN)) {
-        is Success -> {
-            generalUser.value.ifEmpty {
-                this.userOperations
-                    .createUser(
-                        GENERAL_NAME,
-                        GENERAL_NAME,
-                        config.authConfig.generalPass,
-                        Role.ADMIN
-                    )
-            }
-        }
-
-        is Failure -> generalUser.reason
+        is Success -> generalUser.value
+        is Failure ->
+            this.userOperations
+                .createUser(
+                    GENERAL_NAME,
+                    GENERAL_NAME,
+                    config.authConfig.generalPass,
+                    Role.ADMIN
+                )
     }
 }
