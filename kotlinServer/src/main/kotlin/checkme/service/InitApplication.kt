@@ -13,7 +13,7 @@ fun applyMigrations(config: AppConfig) {
     val flyway = Flyway
         .configure()
         .dataSource(config.databaseConfig.jdbc, config.databaseConfig.user, config.databaseConfig.password)
-        .locations("classpath:ru/checkme/db/migrations")
+        .locations("classpath:checkme/db/migrations")
         .cleanDisabled(true)
         .validateMigrationNaming(true)
         .load()
