@@ -9,10 +9,9 @@ import dev.forkhandles.result4k.Success
 const val GENERAL_NAME = "Admin"
 
 fun OperationHolder.initGeneralUser(config: AppConfig) {
-    println("Я здесь был")
     when (val generalUser = this.userOperations.fetchUsersByRole(Role.ADMIN)) {
         is Success -> {
-            if (generalUser.value.isEmpty()) {
+            generalUser.value.ifEmpty {
                 this.userOperations
                     .createUser(
                         GENERAL_NAME,
@@ -20,12 +19,9 @@ fun OperationHolder.initGeneralUser(config: AppConfig) {
                         config.authConfig.generalPass,
                         Role.ADMIN
                     )
-            } else {
-                generalUser.value
             }
         }
 
         is Failure -> generalUser.reason
-
     }
 }
