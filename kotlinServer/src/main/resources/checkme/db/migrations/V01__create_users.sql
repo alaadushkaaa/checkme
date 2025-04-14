@@ -1,7 +1,8 @@
 DROP TABLE IF EXISTS users;
 
 CREATE TYPE user_role AS ENUM (
-'ADMIN', 'STUDENT'
+    'ADMIN',
+    'STUDENT'
 );
 
 CREATE TABLE users (
