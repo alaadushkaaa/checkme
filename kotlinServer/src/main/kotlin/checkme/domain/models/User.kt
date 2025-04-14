@@ -26,7 +26,7 @@ data class User(
                 else -> ValidateUserResult.ALL_OK
             }
 
-        const val MAX_NAME_AND_SURNAME_LENGTH = 50
+        const val MAX_NAME_AND_SURNAME_LENGTH = 30
 
         val namePattern = Regex("^[А-Яа-я]+\$")
     }
