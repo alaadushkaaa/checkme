@@ -14,7 +14,7 @@ class InsertUserTest : TestcontainerSpec({ context ->
     val userOperations = UserOperations(context)
 
     for (role in Role.entries) {
-        test("Valid user with ${role} can be inserted") {
+        test("Valid user with $role can be inserted") {
             userOperations
                 .insertUser(
                     validName,
