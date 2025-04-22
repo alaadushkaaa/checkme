@@ -41,4 +41,6 @@ class CreateUser(
 
 enum class UserCreationError {
     UNKNOWN_DATABASE_ERROR,
+    LOGIN_ALREADY_EXISTS,
+    INVALID_USER_DATA,
 }

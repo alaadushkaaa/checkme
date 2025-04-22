@@ -110,7 +110,7 @@ flyway {
     user = dbUser
     password = dbPassword
     locations = arrayOf("classpath:checkme/db/migrations")
-    cleanDisabled = true
+    cleanDisabled = false
     validateMigrationNaming = true
 }
 

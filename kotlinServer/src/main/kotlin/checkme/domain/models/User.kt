@@ -11,11 +11,15 @@ data class User(
 ) {
     companion object {
         fun validateUser(
+            login: String,
             name: String,
             surname: String,
             password: String,
         ): ValidateUserResult =
             when {
+                login.isBlank() -> ValidateUserResult.LOGIN_IS_BLANK_OR_EMPTY
+                login.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.LOGIN_IS_TOO_LONG
+                !namePattern.matches(name) -> ValidateUserResult.LOGIN_PATTERN_MISMATCH
                 name.isBlank() -> ValidateUserResult.NAME_IS_BLANK_OR_EMPTY
                 name.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.NAME_IS_TOO_LONG
                 !namePattern.matches(name) -> ValidateUserResult.NAME_PATTERN_MISMATCH
@@ -40,6 +44,9 @@ enum class ValidateUserResult {
     NAME_IS_BLANK_OR_EMPTY,
     NAME_IS_TOO_LONG,
     NAME_PATTERN_MISMATCH,
+    LOGIN_IS_BLANK_OR_EMPTY,
+    LOGIN_IS_TOO_LONG,
+    LOGIN_PATTERN_MISMATCH,
     SURNAME_IS_BLANK_OR_EMPTY,
     SURNAME_IS_TOO_LONG,
     SURNAME_PATTERN_MISMATCH,
