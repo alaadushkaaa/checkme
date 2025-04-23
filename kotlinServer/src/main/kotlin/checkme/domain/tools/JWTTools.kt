@@ -1,3 +1,5 @@
+@file:Suppress("detekt:SwallowedException")
+
 package checkme.domain.tools
 
 import com.auth0.jwt.JWT
@@ -10,7 +12,7 @@ import dev.forkhandles.result4k.Success
 
 class JWTTools(
     private val secret: String,
-    private val issue: String
+    private val issue: String,
 ) {
     private val algorithm: Algorithm = Algorithm.HMAC512(secret)
     private val verifier: JWTVerifier =

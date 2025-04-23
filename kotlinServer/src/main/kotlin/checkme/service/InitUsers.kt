@@ -16,6 +16,7 @@ fun OperationHolder.initGeneralUser(config: AppConfig) {
                     .createUser(
                         GENERAL_NAME,
                         GENERAL_NAME,
+                        GENERAL_NAME,
                         config.authConfig.generalPass,
                         Role.ADMIN
                     )

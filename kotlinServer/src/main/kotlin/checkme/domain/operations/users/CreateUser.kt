@@ -10,16 +10,18 @@ import dev.forkhandles.result4k.Success
 
 class CreateUser(
     private val insertUser: (
+        login: String,
         name: String,
         surname: String,
         password: String,
         role: Role,
     ) -> User?,
     config: AppConfig,
-) : (String, String, String, Role) -> Result4k<User, UserCreationError> {
+) : (String, String, String, String, Role) -> Result4k<User, UserCreationError> {
     private val hasher = PasswordHasher(config.authConfig)
 
     override operator fun invoke(
+        login: String,
         name: String,
         surname: String,
         password: String,
@@ -28,6 +30,7 @@ class CreateUser(
         when (
             val newUser =
                 insertUser(
+                    login,
                     name,
                     surname,
                     hasher.hash(password),

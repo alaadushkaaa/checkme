@@ -7,7 +7,6 @@ import org.http4k.lens.RequestContextKey
 import org.http4k.lens.RequestContextLens
 
 class ContextTools (
-    config: WebConfig,
 ) {
     val appContexts = RequestContexts()
     val userLens: RequestContextLens<User?> =

@@ -10,6 +10,12 @@ val validName = "Иван"
 val validSurname = "Иванов"
 
 @Suppress("MayBeConst")
+val validLogin = "iivanov"
+
+@Suppress("MayBeConst")
+val validAdminLogin = "admin"
+
+@Suppress("MayBeConst")
 val validPass = "password"
 
 val appConfig = AppConfig.fromEnvironment()

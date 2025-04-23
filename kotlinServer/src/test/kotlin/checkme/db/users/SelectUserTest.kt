@@ -1,10 +1,6 @@
 package checkme.db.users
 
-import checkme.db.TestcontainerSpec
-import checkme.db.appConfiguredPasswordHasher
-import checkme.db.validName
-import checkme.db.validPass
-import checkme.db.validSurname
+import checkme.db.*
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import io.kotest.matchers.nulls.shouldBeNull
@@ -20,6 +16,7 @@ class SelectUserTest : TestcontainerSpec({ context ->
         insertedUser =
             userOperations
                 .insertUser(
+                    validLogin,
                     validName,
                     validSurname,
                     appConfiguredPasswordHasher.hash(validPass),
@@ -29,6 +26,7 @@ class SelectUserTest : TestcontainerSpec({ context ->
         insertedAdmin =
             userOperations
                 .insertUser(
+                    validAdminLogin,
                     validName,
                     validSurname,
                     appConfiguredPasswordHasher.hash(validPass),
@@ -40,6 +38,7 @@ class SelectUserTest : TestcontainerSpec({ context ->
 
         userOperations
             .insertUser(
+                validLogin + "1",
                 validName,
                 validSurname,
                 appConfiguredPasswordHasher.hash(validPass + "2"),
@@ -57,6 +56,7 @@ class SelectUserTest : TestcontainerSpec({ context ->
 
         userOperations
             .insertUser(
+                validLogin + "1",
                 validName,
                 validSurname,
                 appConfiguredPasswordHasher.hash(validPass + "2"),
@@ -84,6 +84,22 @@ class SelectUserTest : TestcontainerSpec({ context ->
                 .selectUserById(insertedUser.id)
                 .shouldNotBeNull()
 
+        fetchedUser.login.shouldBe(validLogin)
+        fetchedUser.name.shouldBe(validName)
+        fetchedUser.surname.shouldBe(validSurname)
+        fetchedUser.password
+            .shouldBe(appConfiguredPasswordHasher.hash(validPass))
+        fetchedUser.role.shouldBe(Role.STUDENT)
+        fetchedUser.id.shouldBe(insertedUser.id)
+    }
+
+    test("Fetch user by valid login") {
+        val fetchedUser =
+            userOperations
+                .selectUserByLogin(insertedUser.login)
+                .shouldNotBeNull()
+
+        fetchedUser.login.shouldBe(validLogin)
         fetchedUser.name.shouldBe(validName)
         fetchedUser.surname.shouldBe(validSurname)
         fetchedUser.password
@@ -95,6 +111,12 @@ class SelectUserTest : TestcontainerSpec({ context ->
     test("User cant be fetched by invalid id") {
         userOperations
             .selectUserById(insertedUser.id + 2)
+            .shouldBeNull()
+    }
+
+    test("User cant be fetched by invalid login") {
+        userOperations
+            .selectUserByLogin(insertedUser.login + "1")
             .shouldBeNull()
     }
 })

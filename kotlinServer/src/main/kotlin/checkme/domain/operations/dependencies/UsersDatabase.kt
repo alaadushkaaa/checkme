@@ -9,9 +9,12 @@ interface UsersDatabase {
 
     fun selectUsersByRole(userRole: Role): List<User>
 
+    fun selectUserByLogin(login: String): User?
+
     fun selectAllUsers(): List<User>
 
     fun insertUser(
+        login: String,
         name: String,
         surname: String,
         password: String,

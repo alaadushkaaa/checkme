@@ -4,6 +4,7 @@ import checkme.domain.accounts.Role
 
 data class User(
     val id: Int,
+    val login: String,
     val name: String,
     val surname: String,
     val password: String,
@@ -19,7 +20,7 @@ data class User(
             when {
                 login.isBlank() -> ValidateUserResult.LOGIN_IS_BLANK_OR_EMPTY
                 login.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.LOGIN_IS_TOO_LONG
-                !namePattern.matches(name) -> ValidateUserResult.LOGIN_PATTERN_MISMATCH
+                !loginPattern.matches(login) -> ValidateUserResult.LOGIN_PATTERN_MISMATCH
                 name.isBlank() -> ValidateUserResult.NAME_IS_BLANK_OR_EMPTY
                 name.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.NAME_IS_TOO_LONG
                 !namePattern.matches(name) -> ValidateUserResult.NAME_PATTERN_MISMATCH
@@ -33,6 +34,7 @@ data class User(
         const val MAX_NAME_AND_SURNAME_LENGTH = 30
 
         val namePattern = Regex("^[А-Яа-я]+\$")
+        val loginPattern = Regex("^[A-Za-z]+\$")
     }
 
     fun isStudent() = role == Role.STUDENT

@@ -37,6 +37,21 @@ class FetchUsersByRole(
         }
 }
 
+class FetchUserByLogin(
+    private val fetchUsersByLogin: (String) -> User?,
+) : (String) -> Result4k<User, UserFetchingError> {
+
+    override operator fun invoke(login: String): Result4k<User, UserFetchingError> =
+        try {
+            when (val user = fetchUsersByLogin(login)) {
+                is User -> Success(user)
+                else -> Failure(UserFetchingError.NO_SUCH_USER)
+            }
+        } catch (_: DataAccessException) {
+            Failure(UserFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
 class FetchAllUsers(
     private val fetchAllUsers: () -> List<User>?,
 ) : () -> Result4k<List<User>, UserFetchingError> {
