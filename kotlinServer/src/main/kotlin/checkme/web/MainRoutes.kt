@@ -12,12 +12,11 @@ import org.http4k.routing.*
 
 private fun createMainRouter(
     operations: OperationHolder,
-    jwtTools: JWTTools
-) =
-    routes(
-        "/" bind Method.GET to { _ -> ok("pong") },
-        AUTH_SEGMENT bind authRouter(operations, jwtTools)
-    )
+    jwtTools: JWTTools,
+) = routes(
+    "/" bind Method.GET to { _ -> ok("pong") },
+    AUTH_SEGMENT bind authRouter(operations, jwtTools)
+)
 
 fun createApp(
     operations: OperationHolder,
@@ -32,13 +31,12 @@ fun createApp(
     return app
 }
 
-private fun createFilters(
-    config: AppConfig
-): Filter {
+private fun createFilters(config: AppConfig): Filter {
     val catchAndLogExceptionsFilter = catchAndLogExceptionsFilter()
     val corsFilter = corsFilter(config)
     return catchAndLogExceptionsFilter.then(corsFilter)
 }
 
 val internalServerError: Response = Response(Status.INTERNAL_SERVER_ERROR)
+
 fun ok(body: String): Response = Response(Status.OK).body(body)
