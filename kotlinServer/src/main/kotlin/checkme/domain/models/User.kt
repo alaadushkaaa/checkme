@@ -19,22 +19,22 @@ data class User(
         ): ValidateUserResult =
             when {
                 login.isBlank() -> ValidateUserResult.LOGIN_IS_BLANK_OR_EMPTY
-                login.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.LOGIN_IS_TOO_LONG
+                login.length > MAX_LENGTH -> ValidateUserResult.LOGIN_IS_TOO_LONG
                 !loginPattern.matches(login) -> ValidateUserResult.LOGIN_PATTERN_MISMATCH
                 name.isBlank() -> ValidateUserResult.NAME_IS_BLANK_OR_EMPTY
-                name.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.NAME_IS_TOO_LONG
+                name.length > MAX_LENGTH -> ValidateUserResult.NAME_IS_TOO_LONG
                 !namePattern.matches(name) -> ValidateUserResult.NAME_PATTERN_MISMATCH
                 surname.isBlank() -> ValidateUserResult.SURNAME_IS_BLANK_OR_EMPTY
-                surname.length > MAX_NAME_AND_SURNAME_LENGTH -> ValidateUserResult.SURNAME_IS_TOO_LONG
+                surname.length > MAX_LENGTH -> ValidateUserResult.SURNAME_IS_TOO_LONG
                 !namePattern.matches(surname) -> ValidateUserResult.SURNAME_PATTERN_MISMATCH
                 password.isBlank() -> ValidateUserResult.PASSWORD_IS_BLANK_OR_EMPTY
                 else -> ValidateUserResult.ALL_OK
             }
 
-        const val MAX_NAME_AND_SURNAME_LENGTH = 30
+        const val MAX_LENGTH = 30
 
-        val namePattern = Regex("^[А-Яа-я]+\$")
-        val loginPattern = Regex("^[A-Za-z]+\$")
+        val namePattern = Regex("^[А-Яа-я -]+\$")
+        val loginPattern = Regex("^[\\w-.]+\$")
     }
 
     fun isStudent() = role == Role.STUDENT

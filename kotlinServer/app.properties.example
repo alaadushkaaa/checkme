@@ -1,0 +1,9 @@
+auth.generalPass = pass
+auth.secret = ssecret
+auth.salt = ssalt
+db.host = localhost
+db.port = 5432
+db.base = checkmedb
+db.user = postgres
+db.password = ppassword
+web.hotReloadTemplates = true

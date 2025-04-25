@@ -25,6 +25,7 @@ class UserOperationHolder(
                 usersDatabase
                     .insertUser(login = login, name = name, surname = surname, password = password, role = role)
             },
-            config
+            fetchUserByLogin = usersDatabase::selectUserByLogin,
+            config = config
         )
 }

@@ -50,14 +50,14 @@ class InsertUserTest : TestcontainerSpec({ context ->
             userOperations
                 .insertUser(
                     validLogin,
-                    "а".repeat(User.MAX_NAME_AND_SURNAME_LENGTH),
+                    "а".repeat(User.MAX_LENGTH),
                     validSurname,
                     appConfiguredPasswordHasher.hash(validPass),
                     Role.STUDENT,
                 ).shouldNotBeNull()
 
         insertedUser.login.shouldBe(validLogin)
-        insertedUser.name.shouldBe("а".repeat(User.MAX_NAME_AND_SURNAME_LENGTH))
+        insertedUser.name.shouldBe("а".repeat(User.MAX_LENGTH))
         insertedUser.surname.shouldBe(validSurname)
         insertedUser.password.shouldBe(appConfiguredPasswordHasher.hash(validPass))
         insertedUser.role.shouldBe(Role.STUDENT)
@@ -67,14 +67,14 @@ class InsertUserTest : TestcontainerSpec({ context ->
         val insertedUser =
             userOperations
                 .insertUser(
-                    "а".repeat(User.MAX_NAME_AND_SURNAME_LENGTH),
+                    "а".repeat(User.MAX_LENGTH),
                     validName,
                     validSurname,
                     appConfiguredPasswordHasher.hash(validPass),
                     Role.STUDENT,
                 ).shouldNotBeNull()
 
-        insertedUser.login.shouldBe("а".repeat(User.MAX_NAME_AND_SURNAME_LENGTH))
+        insertedUser.login.shouldBe("а".repeat(User.MAX_LENGTH))
         insertedUser.name.shouldBe(validName)
         insertedUser.surname.shouldBe(validSurname)
         insertedUser.password.shouldBe(appConfiguredPasswordHasher.hash(validPass))
@@ -87,14 +87,14 @@ class InsertUserTest : TestcontainerSpec({ context ->
                 .insertUser(
                     validLogin,
                     validName,
-                    "о".repeat(User.MAX_NAME_AND_SURNAME_LENGTH),
+                    "о".repeat(User.MAX_LENGTH),
                     appConfiguredPasswordHasher.hash(validPass),
                     Role.STUDENT,
                 ).shouldNotBeNull()
 
         insertedUser.login.shouldBe(validLogin)
         insertedUser.name.shouldBe(validName)
-        insertedUser.surname.shouldBe("о".repeat(User.MAX_NAME_AND_SURNAME_LENGTH))
+        insertedUser.surname.shouldBe("о".repeat(User.MAX_LENGTH))
         insertedUser.password.shouldBe(appConfiguredPasswordHasher.hash(validPass))
         insertedUser.role.shouldBe(Role.STUDENT)
     }
