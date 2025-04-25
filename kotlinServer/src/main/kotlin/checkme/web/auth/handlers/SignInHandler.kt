@@ -76,8 +76,6 @@ class SignInHandler(
 }
 
 enum class SignInError(val errorTest: String) {
-    LOGIN_IS_BLANK_OR_EMPTY("Имя пользователя должно быть не пустым"),
-    PASSWORD_IS_BLANK_OR_EMPTY("Пароль должен быть не пустым"),
     INCORRECT_LOGIN_OR_PASS("Неверный логин или пароль"),
     UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
     TOKEN_CREATION_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
