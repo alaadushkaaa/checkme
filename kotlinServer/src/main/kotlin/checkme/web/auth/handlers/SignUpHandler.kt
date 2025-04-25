@@ -6,7 +6,7 @@ import checkme.domain.operations.users.UserCreationError
 import checkme.domain.operations.users.UserOperationHolder
 import checkme.domain.tools.JWTTools
 import checkme.web.auth.forms.SignUpRequest
-import checkme.web.auth.forms.UserSignUpResponse
+import checkme.web.auth.forms.UserAuthResponse
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
@@ -31,7 +31,7 @@ class SignUpHandler(
                         Status.INTERNAL_SERVER_ERROR
                     ).body(objectMapper.writeValueAsString(SignUpError.TOKEN_CREATION_ERROR.errorText))
                     is Success -> {
-                        val signUpUserResponse = UserSignUpResponse(
+                        val signUpUserResponse = UserAuthResponse(
                             signUpRequest.username,
                             signUpRequest.name,
                             signUpRequest.surname
@@ -40,7 +40,6 @@ class SignUpHandler(
                             "user_data" to signUpUserResponse,
                             "token" to tokenResult.value
                         )
-                        println(signUpTokenResponse)
                         Response(Status.CREATED).body(objectMapper.writeValueAsString(signUpTokenResponse))
                     }
                 }

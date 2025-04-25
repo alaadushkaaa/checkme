@@ -12,10 +12,11 @@ import org.http4k.routing.*
 
 private fun createMainRouter(
     operations: OperationHolder,
+    config: AppConfig,
     jwtTools: JWTTools,
 ) = routes(
     "/" bind Method.GET to { _ -> ok("pong") },
-    AUTH_SEGMENT bind authRouter(operations, jwtTools)
+    AUTH_SEGMENT bind authRouter(config = config, operations = operations, jwtTools = jwtTools)
 )
 
 fun createApp(
@@ -26,7 +27,7 @@ fun createApp(
     val app = createFilters(
         config = config
     ).then(
-        createMainRouter(operations, jwtTools)
+        createMainRouter(operations, config, jwtTools)
     )
     return app
 }

@@ -1,6 +1,6 @@
 package checkme.web.auth.forms
 
-data class UserSignUpResponse (
+data class UserAuthResponse (
     val username: String,
     val name: String,
     val surname: String,
