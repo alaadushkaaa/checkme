@@ -16,11 +16,16 @@ class UserOperationHolder(
     val fetchUsersByRole: (Role) -> Result4k<List<User>, UserFetchingError> =
         FetchUsersByRole { role: Role -> usersDatabase.selectUsersByRole(role) }
 
-    val createUser: (String, String, String, Role) -> Result4k<User, UserCreationError> =
+    val fetchUserByLogin: (String) -> Result4k<User, UserFetchingError> =
+        FetchUserByLogin { login: String -> usersDatabase.selectUserByLogin(login) }
+
+    val createUser: (String, String, String, String, Role) -> Result4k<User, UserCreationError> =
         CreateUser(
-            insertUser = { name: String, surname: String, password: String, role: Role ->
-                usersDatabase.insertUser(name = name, surname = surname, password = password, role = role)
+            insertUser = { login: String, name: String, surname: String, password: String, role: Role ->
+                usersDatabase
+                    .insertUser(login = login, name = name, surname = surname, password = password, role = role)
             },
-            config
+            fetchUserByLogin = usersDatabase::selectUserByLogin,
+            config = config
         )
 }

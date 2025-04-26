@@ -13,7 +13,7 @@ function SingIn({ modeToggle }) {
     const [inputValues, addInput] = useForm();
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
-        '/sign_in',
+        '/user/sign_in',
         (authData) => {
             authorization.authorize(
                 authData.username,

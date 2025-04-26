@@ -14,7 +14,7 @@ function SignUp({ modeToggle }) {
     const [inputError, setInputError] = useState(null);
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
-        '/sign_up',
+        '/user/sign_up',
         (authData) => {
             authorization.authorize(
                 authData.username,

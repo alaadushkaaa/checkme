@@ -9,6 +9,8 @@ import checkme.web.createApp
 import org.http4k.server.Netty
 import org.http4k.server.asServer
 
+const val MAIN_CLASS = "checkme.Server"
+
 fun main() {
     val config = AppConfig.fromEnvironment()
     val jooqContext = createJooqContext(config.databaseConfig)
@@ -17,7 +19,7 @@ fun main() {
 
     operations.initApplication(config)
 
-    val app = createApp()
+    val app = createApp(operations, config)
     val server = app.asServer(Netty(config.webConfig.port)).start()
     println("Running on port http://localhost:${server.port()}/")
 }

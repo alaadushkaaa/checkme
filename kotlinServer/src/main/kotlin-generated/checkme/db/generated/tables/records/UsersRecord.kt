@@ -32,21 +32,25 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(Users.USERS) {
         set(value): Unit = set(0, value)
         get(): Int? = get(0) as Int?
 
-    open var name: String?
+    open var login: String?
         set(value): Unit = set(1, value)
         get(): String? = get(1) as String?
 
-    open var surname: String?
+    open var name: String?
         set(value): Unit = set(2, value)
         get(): String? = get(2) as String?
 
-    open var password: String?
+    open var surname: String?
         set(value): Unit = set(3, value)
         get(): String? = get(3) as String?
 
-    open var role: UserRole?
+    open var password: String?
         set(value): Unit = set(4, value)
-        get(): UserRole? = get(4) as UserRole?
+        get(): String? = get(4) as String?
+
+    open var role: UserRole?
+        set(value): Unit = set(5, value)
+        get(): UserRole? = get(5) as UserRole?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -57,8 +61,9 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(Users.USERS) {
     /**
      * Create a detached, initialised UsersRecord
      */
-    constructor(id: Int? = null, name: String? = null, surname: String? = null, password: String? = null, role: UserRole? = null): this() {
+    constructor(id: Int? = null, login: String? = null, name: String? = null, surname: String? = null, password: String? = null, role: UserRole? = null): this() {
         this.id = id
+        this.login = login
         this.name = name
         this.surname = surname
         this.password = password

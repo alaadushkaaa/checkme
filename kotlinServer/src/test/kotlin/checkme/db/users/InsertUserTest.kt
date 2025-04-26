@@ -2,6 +2,7 @@ package checkme.db.users
 
 import checkme.db.TestcontainerSpec
 import checkme.db.appConfiguredPasswordHasher
+import checkme.db.validLogin
 import checkme.db.validName
 import checkme.db.validPass
 import checkme.db.validSurname
@@ -17,6 +18,7 @@ class InsertUserTest : TestcontainerSpec({ context ->
         test("Valid user with $role can be inserted") {
             userOperations
                 .insertUser(
+                    validLogin,
                     validName,
                     validSurname,
                     validPass,
@@ -29,12 +31,14 @@ class InsertUserTest : TestcontainerSpec({ context ->
         val insertedUser =
             userOperations
                 .insertUser(
+                    validLogin,
                     validName,
                     validSurname,
                     appConfiguredPasswordHasher.hash(validPass),
                     Role.STUDENT
                 ).shouldNotBeNull()
 
+        insertedUser.login.shouldBe(validLogin)
         insertedUser.name.shouldBe(validName)
         insertedUser.surname.shouldBe(validSurname)
         insertedUser.password.shouldBe(appConfiguredPasswordHasher.hash(validPass))
@@ -45,13 +49,33 @@ class InsertUserTest : TestcontainerSpec({ context ->
         val insertedUser =
             userOperations
                 .insertUser(
-                    "а".repeat(User.MAX_NAME_AND_SURNAME_LENGTH),
+                    validLogin,
+                    "а".repeat(User.MAX_LENGTH),
                     validSurname,
                     appConfiguredPasswordHasher.hash(validPass),
                     Role.STUDENT,
                 ).shouldNotBeNull()
 
-        insertedUser.name.shouldBe("а".repeat(User.MAX_NAME_AND_SURNAME_LENGTH))
+        insertedUser.login.shouldBe(validLogin)
+        insertedUser.name.shouldBe("а".repeat(User.MAX_LENGTH))
+        insertedUser.surname.shouldBe(validSurname)
+        insertedUser.password.shouldBe(appConfiguredPasswordHasher.hash(validPass))
+        insertedUser.role.shouldBe(Role.STUDENT)
+    }
+
+    test("Valid user with long login can be inserted") {
+        val insertedUser =
+            userOperations
+                .insertUser(
+                    "а".repeat(User.MAX_LENGTH),
+                    validName,
+                    validSurname,
+                    appConfiguredPasswordHasher.hash(validPass),
+                    Role.STUDENT,
+                ).shouldNotBeNull()
+
+        insertedUser.login.shouldBe("а".repeat(User.MAX_LENGTH))
+        insertedUser.name.shouldBe(validName)
         insertedUser.surname.shouldBe(validSurname)
         insertedUser.password.shouldBe(appConfiguredPasswordHasher.hash(validPass))
         insertedUser.role.shouldBe(Role.STUDENT)
@@ -61,14 +85,16 @@ class InsertUserTest : TestcontainerSpec({ context ->
         val insertedUser =
             userOperations
                 .insertUser(
+                    validLogin,
                     validName,
-                    "о".repeat(User.MAX_NAME_AND_SURNAME_LENGTH),
+                    "о".repeat(User.MAX_LENGTH),
                     appConfiguredPasswordHasher.hash(validPass),
                     Role.STUDENT,
                 ).shouldNotBeNull()
 
+        insertedUser.login.shouldBe(validLogin)
         insertedUser.name.shouldBe(validName)
-        insertedUser.surname.shouldBe("о".repeat(User.MAX_NAME_AND_SURNAME_LENGTH))
+        insertedUser.surname.shouldBe("о".repeat(User.MAX_LENGTH))
         insertedUser.password.shouldBe(appConfiguredPasswordHasher.hash(validPass))
         insertedUser.role.shouldBe(Role.STUDENT)
     }

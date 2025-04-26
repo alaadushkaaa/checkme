@@ -87,6 +87,11 @@ open class Users(
     val ID: TableField<UsersRecord, Int?> = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false).identity(true), this, "")
 
     /**
+     * The column <code>public.users.login</code>.
+     */
+    val LOGIN: TableField<UsersRecord, String?> = createField(DSL.name("login"), SQLDataType.VARCHAR(30).nullable(false), this, "")
+
+    /**
      * The column <code>public.users.name</code>.
      */
     val NAME: TableField<UsersRecord, String?> = createField(DSL.name("name"), SQLDataType.VARCHAR(30).nullable(false), this, "")

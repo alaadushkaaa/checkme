@@ -21,7 +21,7 @@ class WebConfig (
 
         private val portLens = EnvironmentKey.int().defaulted(
             "web.port",
-            8000,
+            9999,
             "Port the application will be listen to",
         )
 
