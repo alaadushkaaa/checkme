@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS checks;
+
+CREATE TABLE checks (
+	taskId SERIAL PRIMARY KEY,
+	userId INT NOT NULL,
+	date TIMESTAMP NOT NULL,
+	status TEXT NOT NULL
+);
