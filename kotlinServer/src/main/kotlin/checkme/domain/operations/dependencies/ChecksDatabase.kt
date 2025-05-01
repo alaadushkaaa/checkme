@@ -13,6 +13,9 @@ interface ChecksDatabase {
 
     fun insertCheck(
         userId: Int,
-        date: LocalDateTime
-    )
+        date: LocalDateTime,
+        status: String
+    ) : Check?
+
+    fun updateCheckStatus(status: String) : Check?
 }
