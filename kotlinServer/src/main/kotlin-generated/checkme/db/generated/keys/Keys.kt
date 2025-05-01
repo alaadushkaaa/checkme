@@ -19,6 +19,6 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
-val CHECKS_PKEY: UniqueKey<ChecksRecord> = Internal.createUniqueKey(Checks.CHECKS, DSL.name("checks_pkey"), arrayOf(Checks.CHECKS.TASKID), true)
+val CHECKS_PKEY: UniqueKey<ChecksRecord> = Internal.createUniqueKey(Checks.CHECKS, DSL.name("checks_pkey"), arrayOf(Checks.CHECKS.ID), true)
 val USERS_LOGIN_KEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_login_key"), arrayOf(Users.USERS.LOGIN), true)
 val USERS_PKEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), arrayOf(Users.USERS.ID), true)

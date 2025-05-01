@@ -29,21 +29,25 @@ import org.jooq.impl.UpdatableRecordImpl
 @Suppress("UNCHECKED_CAST")
 open class ChecksRecord() : UpdatableRecordImpl<ChecksRecord>(Checks.CHECKS) {
 
-    open var taskid: Int?
+    open var id: Int?
         set(value): Unit = set(0, value)
         get(): Int? = get(0) as Int?
 
-    open var userid: Int?
+    open var taskid: Int?
         set(value): Unit = set(1, value)
         get(): Int? = get(1) as Int?
 
-    open var date: LocalDateTime?
+    open var userid: Int?
         set(value): Unit = set(2, value)
-        get(): LocalDateTime? = get(2) as LocalDateTime?
+        get(): Int? = get(2) as Int?
+
+    open var date: LocalDateTime?
+        set(value): Unit = set(3, value)
+        get(): LocalDateTime? = get(3) as LocalDateTime?
 
     open var status: String?
-        set(value): Unit = set(3, value)
-        get(): String? = get(3) as String?
+        set(value): Unit = set(4, value)
+        get(): String? = get(4) as String?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -54,7 +58,8 @@ open class ChecksRecord() : UpdatableRecordImpl<ChecksRecord>(Checks.CHECKS) {
     /**
      * Create a detached, initialised ChecksRecord
      */
-    constructor(taskid: Int? = null, userid: Int? = null, date: LocalDateTime? = null, status: String? = null): this() {
+    constructor(id: Int? = null, taskid: Int? = null, userid: Int? = null, date: LocalDateTime? = null, status: String? = null): this() {
+        this.id = id
         this.taskid = taskid
         this.userid = userid
         this.date = date

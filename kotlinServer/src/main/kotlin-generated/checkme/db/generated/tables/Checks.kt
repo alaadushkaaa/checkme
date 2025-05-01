@@ -83,9 +83,14 @@ open class Checks(
     override fun getRecordType(): Class<ChecksRecord> = ChecksRecord::class.java
 
     /**
+     * The column <code>public.checks.id</code>.
+     */
+    val ID: TableField<ChecksRecord, Int?> = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false).identity(true), this, "")
+
+    /**
      * The column <code>public.checks.taskid</code>.
      */
-    val TASKID: TableField<ChecksRecord, Int?> = createField(DSL.name("taskid"), SQLDataType.INTEGER.nullable(false).identity(true), this, "")
+    val TASKID: TableField<ChecksRecord, Int?> = createField(DSL.name("taskid"), SQLDataType.INTEGER.nullable(false), this, "")
 
     /**
      * The column <code>public.checks.userid</code>.
