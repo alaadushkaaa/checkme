@@ -19,6 +19,7 @@ import org.jooq.Field
 import org.jooq.ForeignKey
 import org.jooq.Identity
 import org.jooq.InverseForeignKey
+import org.jooq.JSONB
 import org.jooq.Name
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
@@ -101,6 +102,11 @@ open class Checks(
      * The column <code>public.checks.date</code>.
      */
     val DATE: TableField<ChecksRecord, LocalDateTime?> = createField(DSL.name("date"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
+
+    /**
+     * The column <code>public.checks.result</code>.
+     */
+    val RESULT: TableField<ChecksRecord, JSONB?> = createField(DSL.name("result"), SQLDataType.JSONB, this, "")
 
     /**
      * The column <code>public.checks.status</code>.

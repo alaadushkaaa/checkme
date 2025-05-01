@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 
 import javax.annotation.processing.Generated
 
+import org.jooq.JSONB
 import org.jooq.Record1
 import org.jooq.impl.UpdatableRecordImpl
 
@@ -45,9 +46,13 @@ open class ChecksRecord() : UpdatableRecordImpl<ChecksRecord>(Checks.CHECKS) {
         set(value): Unit = set(3, value)
         get(): LocalDateTime? = get(3) as LocalDateTime?
 
-    open var status: String?
+    open var result: JSONB?
         set(value): Unit = set(4, value)
-        get(): String? = get(4) as String?
+        get(): JSONB? = get(4) as JSONB?
+
+    open var status: String?
+        set(value): Unit = set(5, value)
+        get(): String? = get(5) as String?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -58,11 +63,12 @@ open class ChecksRecord() : UpdatableRecordImpl<ChecksRecord>(Checks.CHECKS) {
     /**
      * Create a detached, initialised ChecksRecord
      */
-    constructor(id: Int? = null, taskid: Int? = null, userid: Int? = null, date: LocalDateTime? = null, status: String? = null): this() {
+    constructor(id: Int? = null, taskid: Int? = null, userid: Int? = null, date: LocalDateTime? = null, result: JSONB? = null, status: String? = null): this() {
         this.id = id
         this.taskid = taskid
         this.userid = userid
         this.date = date
+        this.result = result
         this.status = status
         resetChangedOnNotNull()
     }
