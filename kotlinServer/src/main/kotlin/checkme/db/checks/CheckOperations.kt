@@ -20,7 +20,7 @@ class CheckOperations (
     override fun selectAllChecks(): List<Check> =
         selectFromChecks()
             .fetch()
-            .mapNotNull { record : Record ->
+            .mapNotNull { record: Record ->
                 record.toCheck()
             }
 
@@ -38,7 +38,10 @@ class CheckOperations (
                 record.toCheck()
             }
 
-    override fun updateCheckStatus(checkId: Int, status: String): Check? {
+    override fun updateCheckStatus(
+        checkId: Int,
+        status: String,
+    ): Check? {
         return jooqContext.update(CHECKS)
             .set(CHECKS.STATUS, status)
             .where(CHECKS.ID.eq(checkId))
@@ -47,7 +50,10 @@ class CheckOperations (
             ?.toCheck()
     }
 
-    override fun updateCheckResult(checkId: Int, result: Map<String, CheckResult>): Check? {
+    override fun updateCheckResult(
+        checkId: Int,
+        result: Map<String, CheckResult>,
+    ): Check? {
         return jooqContext.update(CHECKS)
             .set(CHECKS.RESULT, jsonb(objectMapper.writeValueAsString(result)))
             .where(CHECKS.ID.eq(checkId))
@@ -61,7 +67,7 @@ class CheckOperations (
         userId: Int,
         date: LocalDateTime,
         result: Map<String, CheckResult>,
-        status: String
+        status: String,
     ): Check? {
         return jooqContext.insertInto(CHECKS)
             .set(CHECKS.TASKID, taskId)
@@ -87,7 +93,7 @@ class CheckOperations (
             .from(CHECKS)
 }
 
-internal fun Record.toCheck() : Check? =
+internal fun Record.toCheck(): Check? =
     safeLet(
         this[CHECKS.ID],
         this[CHECKS.TASKID],
@@ -96,12 +102,12 @@ internal fun Record.toCheck() : Check? =
         this[CHECKS.RESULT],
         this[CHECKS.STATUS],
     ) {
-        id,
-        taskId,
-        userId,
-        date,
-        result,
-        status
+            id,
+            taskId,
+            userId,
+            date,
+            result,
+            status,
         ->
         Check(
             id = id,

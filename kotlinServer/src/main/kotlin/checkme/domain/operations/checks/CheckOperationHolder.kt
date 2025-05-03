@@ -12,12 +12,13 @@ import java.time.LocalDateTime
 
 class CheckOperationHolder (
     private val checksDatabase: ChecksDatabase,
-    config: AppConfig
+    config: AppConfig,
 ) {
     val fetchCheckById: (Int) -> Result<Check, CheckFetchingError> =
         FetchCheckById {
-            checkId: Int,
-                -> checksDatabase.selectCheckById(checkId)
+                checkId: Int,
+            ->
+            checksDatabase.selectCheckById(checkId)
         }
 
     val fetchAllChecks: () -> Result<List<Check>, CheckFetchingError> =
@@ -26,25 +27,26 @@ class CheckOperationHolder (
         }
 
     val fetchChecksByUserId: (Int) -> Result<List<Check>, CheckFetchingError> =
-    FetchChecksByUserId {
-        userId: Int,
-        -> checksDatabase.selectChecksByUserId(userId)
-    }
+        FetchChecksByUserId {
+                userId: Int,
+            ->
+            checksDatabase.selectChecksByUserId(userId)
+        }
 
     val createCheck: (
         taskId: Int,
         userId: Int,
         date: LocalDateTime,
-        result: Map<String, CheckResult>,
+        result: Map<String, CheckResult>?,
         status: String,
     ) -> Result<Check, CreateCheckError> =
         CreateCheck {
-            taskId: Int,
-            userId: Int,
-            date: LocalDateTime,
-            result: Map<String, CheckResult>,
-            status: String,
-        ->
+                taskId: Int,
+                userId: Int,
+                date: LocalDateTime,
+                result: Map<String, CheckResult>?,
+                status: String,
+            ->
             checksDatabase.insertCheck(
                 taskId = taskId,
                 userId = userId,
@@ -55,22 +57,24 @@ class CheckOperationHolder (
         }
 
     val updateCheckStatus: (
-            checkId: Int,
-            status: String
+        checkId: Int,
+        status: String,
     ) -> Result<Check, ModifyCheckError> =
         ModifyCheckStatus {
-            checkId: Int,
-            status: String,
-                -> checksDatabase.updateCheckStatus(checkId, status)
-    }
+                checkId: Int,
+                status: String,
+            ->
+            checksDatabase.updateCheckStatus(checkId, status)
+        }
 
     val updateCheckResult: (
         checkId: Int,
-        result: Map<String, CheckResult>
+        result: Map<String, CheckResult>,
     ) -> Result<Check, ModifyCheckError> =
         ModifyCheckResult {
                 checkId: Int,
                 result: Map<String, CheckResult>,
-            -> checksDatabase.updateCheckResult(checkId, result)
+            ->
+            checksDatabase.updateCheckResult(checkId, result)
         }
 }
