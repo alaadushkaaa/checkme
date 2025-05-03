@@ -1,11 +1,14 @@
 package checkme.domain.models
 
-import java.util.Date
+import checkme.web.solution.forms.CheckResult
+import java.time.LocalDateTime
 
 data class Check (
+    val id: Int,
     val taskId: Int,
     val userId: Int,
-    val date: Date,
+    val date: LocalDateTime,
+    val result: Map<String, CheckResult>?,
     val status: String,
 )
 

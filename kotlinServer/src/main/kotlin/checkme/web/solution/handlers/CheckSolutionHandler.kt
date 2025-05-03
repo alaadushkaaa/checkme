@@ -2,7 +2,6 @@ package checkme.web.solution.handlers
 
 import checkme.web.auth.forms.SignInRequest
 import checkme.web.solution.forms.CheckSolutionRequest
-import checkme.web.solution.forms.CheckSolutionResponse
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.http4k.core.*
@@ -62,10 +61,8 @@ class CheckSolutionHandler(
         }
 
         //val checkId : Int = createCheck() //todo база решений
-        val checkSolutionResponse = CheckSolutionResponse(taskId.toInt())
-
         //solveTask(taskId, checkId) //todo функция проверки
 
-        return Response(Status.OK).body(objectMapper.writeValueAsString(checkSolutionResponse))
+        return Response(Status.OK).body(objectMapper.writeValueAsString(mapOf("checkId", checkId)))
     }
 }
