@@ -1,14 +1,20 @@
 package checkme.web.solution.handlers
 
-import checkme.web.auth.forms.SignInRequest
+import checkme.domain.models.Check
+import checkme.domain.operations.checks.CheckOperationHolder
+import checkme.domain.operations.checks.CreateCheck
+import checkme.domain.operations.checks.CreateCheckError
 import checkme.web.solution.forms.CheckSolutionRequest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
 import org.http4k.core.*
-import org.http4k.lens.MultipartForm
-import java.io.File
+import java.time.LocalDateTime
 
 class CheckSolutionHandler(
+    private val checkOperations: CheckOperationHolder,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
 //        1. получение id проверки и id задания для проверки
@@ -49,7 +55,7 @@ class CheckSolutionHandler(
                 index++
             } else {
                 if (form.files.containsKey(index.toString())) {
-                    //todo сохранять куда-то файлы загруженные?
+                    // todo сохранять куда-то файлы загруженные?
                     val file = form.files[index.toString()]
 //                    val filePath = "uploads/file-${index}"
 //                    File(filePath).writeBytes(file)
@@ -60,9 +66,37 @@ class CheckSolutionHandler(
             }
         }
 
-        //val checkId : Int = createCheck() //todo база решений
-        //solveTask(taskId, checkId) //todo функция проверки
+         return when (val newCheck = createNewCheck(taskId.toInt(), checkSolutionRequest.auth_user.id)) {
+             is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+                 .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
+             is Success -> {
+                 // solveTask(taskId, checkId) //todo функция проверки
+                 return Response(Status.OK).body(objectMapper.writeValueAsString(mapOf("checkId" to newCheck.value.id)))
+             }
+         }
 
-        return Response(Status.OK).body(objectMapper.writeValueAsString(mapOf("checkId", checkId)))
     }
+
+    private fun createNewCheck(
+        taskId: Int,
+        userId: Int,
+    ) : Result<Check, CreationCheckError> {
+        return when (val newCheck = checkOperations.createCheck(
+            taskId,
+            userId,
+            LocalDateTime.now(),
+            null,
+            "В процессе")
+        ) {
+            is Failure -> when(newCheck.reason) {
+            CreateCheckError.UNKNOWN_DATABASE_ERROR -> Failure(CreationCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+            is Success -> Success(newCheck.value)
+        }
+    }
+}
+
+enum class CreationCheckError(val errorText: String) {
+    UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью")
 }

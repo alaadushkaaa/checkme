@@ -52,7 +52,7 @@ class CheckOperations (
 
     override fun updateCheckResult(
         checkId: Int,
-        result: Map<String, CheckResult>,
+        result: Map<String, CheckResult>?,
     ): Check? {
         return jooqContext.update(CHECKS)
             .set(CHECKS.RESULT, jsonb(objectMapper.writeValueAsString(result)))
@@ -66,7 +66,7 @@ class CheckOperations (
         taskId: Int,
         userId: Int,
         date: LocalDateTime,
-        result: Map<String, CheckResult>,
+        result: Map<String, CheckResult>?,
         status: String,
     ): Check? {
         return jooqContext.insertInto(CHECKS)
