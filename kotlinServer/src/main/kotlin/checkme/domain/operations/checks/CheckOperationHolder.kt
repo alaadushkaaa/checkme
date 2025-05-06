@@ -1,5 +1,6 @@
 package checkme.domain.operations.checks
 
+import checkme.config.AppConfig
 import checkme.domain.models.Check
 import checkme.domain.operations.dependencies.ChecksDatabase
 import checkme.domain.operations.users.ModifyCheckError
@@ -11,6 +12,7 @@ import java.time.LocalDateTime
 
 class CheckOperationHolder (
     private val checksDatabase: ChecksDatabase,
+    config: AppConfig,
 ) {
     val fetchCheckById: (Int) -> Result<Check, CheckFetchingError> =
         FetchCheckById {
