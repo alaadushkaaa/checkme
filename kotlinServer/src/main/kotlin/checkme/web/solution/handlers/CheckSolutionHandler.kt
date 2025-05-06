@@ -2,7 +2,6 @@ package checkme.web.solution.handlers
 
 import checkme.domain.models.Check
 import checkme.domain.operations.checks.CheckOperationHolder
-import checkme.domain.operations.checks.CreateCheck
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.web.solution.forms.CheckSolutionRequest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -43,7 +42,7 @@ class CheckSolutionHandler(
 
         val objectMapper = jacksonObjectMapper()
         val checkSolutionRequest = objectMapper.readValue<CheckSolutionRequest>(request.bodyString())
-        val taskId = checkSolutionRequest.task_id
+        val taskId = checkSolutionRequest.taskId
         val form = checkSolutionRequest.form
 
         val answers = mutableListOf<String>()
@@ -57,8 +56,7 @@ class CheckSolutionHandler(
                 if (form.files.containsKey(index.toString())) {
                     // todo сохранять куда-то файлы загруженные?
                     val file = form.files[index.toString()]
-//                    val filePath = "uploads/file-${index}"
-//                    File(filePath).writeBytes(file)
+//                  val filePath = "uploads/file-${index}"
 
                     answers.add(file.toString())
                     index++
@@ -66,31 +64,32 @@ class CheckSolutionHandler(
             }
         }
 
-         return when (val newCheck = createNewCheck(taskId.toInt(), checkSolutionRequest.auth_user.id)) {
-             is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
-                 .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
-             is Success -> {
-                 // solveTask(taskId, checkId) //todo функция проверки
-                 return Response(Status.OK).body(objectMapper.writeValueAsString(mapOf("checkId" to newCheck.value.id)))
-             }
-         }
-
+        return when (val newCheck = createNewCheck(taskId.toInt(), checkSolutionRequest.authUser.id)) {
+            is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+                .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
+            is Success -> {
+                // solveTask(taskId, checkId) //todo функция проверки
+                return Response(Status.OK).body(objectMapper.writeValueAsString(mapOf("checkId" to newCheck.value.id)))
+            }
+        }
     }
 
     private fun createNewCheck(
         taskId: Int,
         userId: Int,
-    ) : Result<Check, CreationCheckError> {
-        return when (val newCheck = checkOperations.createCheck(
-            taskId,
-            userId,
-            LocalDateTime.now(),
-            null,
-            "В процессе")
+    ): Result<Check, CreationCheckError> {
+        return when (
+            val newCheck = checkOperations.createCheck(
+                taskId,
+                userId,
+                LocalDateTime.now(),
+                null,
+                "В процессе"
+            )
         ) {
-            is Failure -> when(newCheck.reason) {
-            CreateCheckError.UNKNOWN_DATABASE_ERROR -> Failure(CreationCheckError.UNKNOWN_DATABASE_ERROR)
-        }
+            is Failure -> when (newCheck.reason) {
+                CreateCheckError.UNKNOWN_DATABASE_ERROR -> Failure(CreationCheckError.UNKNOWN_DATABASE_ERROR)
+            }
 
             is Success -> Success(newCheck.value)
         }
@@ -98,5 +97,5 @@ class CheckSolutionHandler(
 }
 
 enum class CreationCheckError(val errorText: String) {
-    UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью")
+    UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
 }
