@@ -14,5 +14,5 @@ class OperationHolder (
         config,
     )
 
-    val checkOperations: CheckOperationHolder = CheckOperationHolder(database.checkOperations, config)
+    val checkOperations: CheckOperationHolder = CheckOperationHolder(database.checkOperations)
 }
