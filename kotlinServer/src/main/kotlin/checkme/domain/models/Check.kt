@@ -3,7 +3,7 @@ package checkme.domain.models
 import checkme.web.solution.forms.CheckResult
 import java.time.LocalDateTime
 
-data class Check (
+data class Check(
     val id: Int,
     val taskId: Int,
     val userId: Int,
