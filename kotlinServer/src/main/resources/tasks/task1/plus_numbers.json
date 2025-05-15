@@ -1,5 +1,5 @@
 {
     "type": "console-check",
-    "command": ,
-    "expected": ""
+    "command": "printf \\\"5\\\\n3\\\\n\\\" | python3 sum.pyy",
+    "expected": "8.0"
 }

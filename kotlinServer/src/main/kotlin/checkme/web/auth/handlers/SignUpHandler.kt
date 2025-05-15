@@ -19,6 +19,7 @@ class SignUpHandler(
     private val userOperations: UserOperationHolder,
     private val jwtTools: JWTTools,
 ) : HttpHandler {
+    @Suppress("LongMethod")
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
         val signUpRequest = objectMapper.readValue<SignUpRequest>(request.bodyString())

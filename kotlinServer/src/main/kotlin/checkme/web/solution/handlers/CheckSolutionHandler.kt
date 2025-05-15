@@ -15,39 +15,19 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.asResultOr
 import org.http4k.core.*
 import java.io.File
 import java.time.LocalDateTime
-import kotlin.jvm.Throws
 
 class CheckSolutionHandler(
     private val checkOperations: CheckOperationHolder,
 ) : HttpHandler {
+    @Suppress("LongMethod")
     override fun invoke(request: Request): Response {
-//        1. получение id проверки и id задания для проверки
-//        2. получение пути к файлам задания (откуда будем брать проверки) + создание папки
-//                для проверки и переход в нее
-//        3. получение задания из бд
-//        4. получение критериев проверки задания (от задания)
-//        6. перебор критериев из файла (если есть название теста - берем соотвествующий из папки с проверками)
-//        7. пытаемся по типу проверки записать json проверки в data class по соответствию какой-либо проверке
-//        8. выполнение соответствующих тестов (по каждому заполняем  result[criterion] = {}
-//                result[criterion]['score'] +  result[criterion]['message'))
-//        9. Сохранение результатов проверки в бд (таблица проверок)
-//        database.checks.update_one(
-//            {'_id': ObjectId(check_id)},
-//            {'$set': { 'result': result, 'status': 'Проверено' }}
-//        )
 //        beforeAll.py - выполняется перед всеми тестами.
 //        beforeEach.py - выполняется перед каждым тестом.
 //        afterEach.py - выполняется после каждого теста.
 //        afterAll.py - выполняется после всех тестов.
-//        Если возникает ошибка, статус меняется на "Ошибка выполнения"
-
-//        request.auth_user: авторизированный пользователь
-//        task_id: "*строковый идентификатор задания*"
-//        form: поля формы
 
         val objectMapper = jacksonObjectMapper()
         val checkSolutionRequest = objectMapper.readValue<CheckSolutionRequest>(request.bodyString())
@@ -56,14 +36,13 @@ class CheckSolutionHandler(
 
         val answers = mutableListOf<String>()
         var index = 0
-
+        // придется подменить, пока нет базы заданий
         for (field in form.fields) {
             if (field.key == index.toString()) {
                 answers.add(field.value.toString())
                 index++
             } else {
                 if (form.files.containsKey(index.toString())) {
-                    // todo сохранять куда-то файлы загруженные?
                     val file = form.files[index.toString()]
 //                    val filePath = "uploads/file-${index}"
 //                    File(filePath).writeBytes(file)
@@ -74,56 +53,103 @@ class CheckSolutionHandler(
             }
         }
 
-        //todo получение задания из бд
-        //todo для каждого задания создается папка - внутри нее файлы-проверки, относящиеся к заданию
+        // todo получение задания из бд
+        // todo для каждого задания создается папка - внутри нее файлы-проверки, относящиеся к заданию
         val criterions = mapOf(
             "Сложение положительных чисел" to
-            Criterion("Сложение чисел происходит корреткно", 10,
-                "plus_numbers.json", "Числа складываются неправильно"),
+                Criterion(
+                    "Сложение чисел происходит корреткно",
+                    COMPLETE_TASK,
+                    "plus_numbers.json",
+                    "Числа складываются неправильно"
+                ),
             "Некорректный ввод" to
-                    Criterion("Случай некоректного ввода обрабатывается", 10,
-                        "incorrect_input.json", "Не обработан случай некорректного ввода чисел")
-            )
-        val task = Task(1, "Суммирование чисел", criterions, "Файл", "Вам необходимо написать " +
+                Criterion(
+                    "Случай некоректного ввода обрабатывается",
+                    COMPLETE_TASK,
+                    "incorrect_input.json",
+                    "Не обработан случай некорректного ввода чисел"
+                )
+        )
+        val task = Task(
+            1,
+            "Суммирование чисел",
+            criterions,
+            "Файл",
+            "Вам необходимо написать " +
                 "программу, выполняющую суммирование двух чисел. На вход подаются два числа - a и b, " +
                 "в качестве результата - сумма этих чисел. Некорректный ввод необходимо обрабатыввать и " +
-                "выводить строку \"Incorrect input\" в случае ошибки")
-
+                "выводить строку \"Incorrect input\" в случае ошибки"
+        )
 
         return when (val newCheck = createNewCheck(taskId.toInt(), checkSolutionRequest.authUser.id)) {
             is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
                 .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
+
             is Success -> {
-                val checksResult = checkStudentAnswer(answers, task)
-                if (checksResult==null) {
-                    //todo посмотреть какой ответ уходит при ошибке выполнения!!
-                    when (val updatedCheckStatusError = updateCheckStatus(newCheck.value.id, "Проверено")) {
-                        is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
-                            .body(objectMapper.writeValueAsString(
-                                mapOf("error" to updatedCheckStatusError.reason.errorText)))
-                        is Success -> Response(Status.OK).body(objectMapper.writeValueAsString(
-                            mapOf("checkId" to newCheck.value.id)))
-                    }
+                val checksResult = checkStudentAnswer(task, newCheck.value.id)
+                if (checksResult == null) {
+                    setStatusError(newCheck.value)
                 } else {
                     when (val updatedCheck = updateCheckResult(newCheck.value.id, checksResult)) {
                         is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
-                            .body(objectMapper.writeValueAsString(
-                                mapOf("error" to updatedCheck.reason.errorText)))
-                        is Success -> {
-                            when (val updatedCheckStatus = updateCheckStatus(
-                                updatedCheck.value.id,
-                                "Проверено")
-                            ) {
-                                is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
-                                    .body(objectMapper.writeValueAsString(
-                                        mapOf("error" to updatedCheckStatus.reason.errorText)))
-                                is Success -> Response(Status.OK).body(objectMapper.writeValueAsString(
-                                    mapOf("checkId" to newCheck.value.id)))
-                            }
-                        }
+                            .body(
+                                objectMapper.writeValueAsString(
+                                    mapOf("error" to updatedCheck.reason.errorText)
+                                )
+                            )
+
+                        is Success -> setStatusChecked(updatedCheck.value)
                     }
                 }
             }
+        }
+    }
+
+    private fun setStatusError(check: Check): Response {
+        val objectMapper = jacksonObjectMapper()
+        // todo посмотреть какой ответ уходит при ошибке выполнения!!
+        return when (
+            val updatedCheckStatusError = updateCheckStatus(
+                check.id,
+                "Ошибка выполнения"
+            )
+        ) {
+            is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+                .body(
+                    objectMapper.writeValueAsString(
+                        mapOf("error" to updatedCheckStatusError.reason.errorText)
+                    )
+                )
+
+            is Success -> Response(Status.OK).body(
+                objectMapper.writeValueAsString(
+                    mapOf("checkId" to check.id)
+                )
+            )
+        }
+    }
+
+    private fun setStatusChecked(check: Check): Response {
+        val objectMapper = jacksonObjectMapper()
+        return when (
+            val updatedCheckStatus = updateCheckStatus(
+                check.id,
+                "Проверено"
+            )
+        ) {
+            is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+                .body(
+                    objectMapper.writeValueAsString(
+                        mapOf("error" to updatedCheckStatus.reason.errorText)
+                    )
+                )
+
+            is Success -> Response(Status.OK).body(
+                objectMapper.writeValueAsString(
+                    mapOf("checkId" to check.id)
+                )
+            )
         }
     }
 
@@ -150,7 +176,7 @@ class CheckSolutionHandler(
 
     private fun updateCheckResult(
         checkId: Int,
-        checkResult: Map<String, CheckResult>
+        checkResult: Map<String, CheckResult>,
     ): Result<Check, ModifyingCheckError> {
         return when (
             val updatedCheck = checkOperations.updateCheckResult(
@@ -161,13 +187,14 @@ class CheckSolutionHandler(
             is Failure -> when (updatedCheck.reason) {
                 ModifyCheckError.UNKNOWN_DATABASE_ERROR -> Failure(ModifyingCheckError.UNKNOWN_DATABASE_ERROR)
             }
+
             is Success -> Success(updatedCheck.value)
         }
     }
 
     private fun updateCheckStatus(
         checkId: Int,
-        checkStatus: String
+        checkStatus: String,
     ): Result<Check, ModifyingCheckError> {
         return when (
             val updatedCheck = checkOperations.updateCheckStatus(
@@ -178,29 +205,32 @@ class CheckSolutionHandler(
             is Failure -> when (updatedCheck.reason) {
                 ModifyCheckError.UNKNOWN_DATABASE_ERROR -> Failure(ModifyingCheckError.UNKNOWN_DATABASE_ERROR)
             }
+
             is Success -> Success(updatedCheck.value)
         }
     }
 }
 
 private fun checkStudentAnswer(
-    answer: MutableList<String>,
     task: Task,
-) : Map<String, CheckResult>? {
+    checkId: Int,
+): Map<String, CheckResult>? {
     val results = mutableMapOf<String, CheckResult>()
     val objectMapper = jacksonObjectMapper()
     for (criterion in task.criterions) {
         val checkFile = findCheckFile("/src/main/resources/tasks/task${task.id}", criterion.key)
         val jsonString = checkFile?.readText()
-        if (jsonString==null) return null
-        else {
+        if (jsonString == null) {
+            return null
+        } else {
             val jsonWithCheck = objectMapper.readTree(jsonString)
             val type = jsonWithCheck.get("type")?.asText()
             println("Type: $type")
             when (CheckType.valueOf(type.toString())) {
                 CheckType.CONSOLE_CHECK -> {
                     val check = objectMapper.readValue<CheckDataConsole>(jsonString)
-                    val checkResult = CheckDataConsole.consoleCheck(task, answer, check)
+                    val checkResult =
+                        CheckDataConsole.consoleCheck(task, check, checkId, criterion.value)
                     results[criterion.key] = checkResult
                 }
             }
@@ -209,7 +239,10 @@ private fun checkStudentAnswer(
     return results
 }
 
-private fun findCheckFile(directoryPath: String, fileName: String): File? {
+private fun findCheckFile(
+    directoryPath: String,
+    fileName: String,
+): File? {
     val dir = File(directoryPath)
     if (!dir.isDirectory) return null
     return dir.listFiles()?.firstOrNull { it.name == fileName }
@@ -222,3 +255,6 @@ enum class CreationCheckError(val errorText: String) {
 enum class ModifyingCheckError(val errorText: String) {
     UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
 }
+
+const val COMPLETE_TASK = 10
+const val NOT_COMPLETE_TASK = 0

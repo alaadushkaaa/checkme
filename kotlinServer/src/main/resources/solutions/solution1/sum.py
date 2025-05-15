@@ -1,6 +1,6 @@
 try:
-    a = float(input("Enter number a: "))
-    b = float(input("Enter number b: "))
+    a = float(input())
+    b = float(input())
     print(a + b)
 except ValueError:
     print("Incorrect input")
