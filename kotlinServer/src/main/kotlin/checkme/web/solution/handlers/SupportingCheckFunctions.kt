@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 
 internal fun setStatusError(
     check: Check,
-    checkOperations: CheckOperationHolder
+    checkOperations: CheckOperationHolder,
 ): Response {
     val objectMapper = jacksonObjectMapper()
     // todo посмотреть какой ответ уходит при ошибке выполнения!!
@@ -49,7 +49,7 @@ internal fun setStatusError(
 
 internal fun setStatusChecked(
     check: Check,
-    checkOperations: CheckOperationHolder
+    checkOperations: CheckOperationHolder,
 ): Response {
     val objectMapper = jacksonObjectMapper()
     return when (
@@ -77,7 +77,7 @@ internal fun setStatusChecked(
 internal fun createNewCheck(
     taskId: Int,
     userId: Int,
-    checkOperations: CheckOperationHolder
+    checkOperations: CheckOperationHolder,
 ): Result<Check, CreationCheckError> {
     return when (
         val newCheck = checkOperations.createCheck(
@@ -99,7 +99,7 @@ internal fun createNewCheck(
 internal fun updateCheckResult(
     checkId: Int,
     checkResult: Map<String, CheckResult>,
-    checkOperations: CheckOperationHolder
+    checkOperations: CheckOperationHolder,
 ): Result<Check, ModifyingCheckError> {
     return when (
         val updatedCheck = checkOperations.updateCheckResult(
@@ -118,7 +118,7 @@ internal fun updateCheckResult(
 internal fun updateCheckStatus(
     checkId: Int,
     checkStatus: String,
-    checkOperations: CheckOperationHolder
+    checkOperations: CheckOperationHolder,
 ): Result<Check, ModifyingCheckError> {
     return when (
         val updatedCheck = checkOperations.updateCheckStatus(
@@ -174,11 +174,13 @@ private fun findCheckFile(
 internal fun tryAddFileToUserSolutionDirectory(
     checkId: Int,
     user: User,
-    file: MultipartFormFile
-    ) : String {
-    val solutionDir = File("..$SOLUTIONS_DIR$SOLUTION_DIR${checkId}" +
+    file: MultipartFormFile,
+): String {
+    val solutionDir = File(
+        "..$SOLUTIONS_DIR$SOLUTION_DIR$checkId" +
             "-${user.name}" +
-            "-${user.surname}")
+            "-${user.surname}"
+    )
     if (!solutionDir.exists()) {
         solutionDir.mkdirs()
     }

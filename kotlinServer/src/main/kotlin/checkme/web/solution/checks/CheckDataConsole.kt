@@ -6,7 +6,6 @@ import checkme.web.solution.forms.CheckResult
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.recover
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -27,12 +26,14 @@ data class CheckDataConsole(
             criterion: Criterion,
         ): CheckResult {
             val command = checkDataConsole.command
-            return when (val output = runCommandInDirectory(
-                "/home/jayfeather/Рабочий стол/Files/Работа/checkmeWork/checkme/kotlinServer/src/main/resources/solutions/solution$checkId",
-                command
-            )) {
+            return when (
+                val output = runCommandInDirectory(
+                    "/home/jayfeather/Рабочий стол/Files/Работа/checkmeWork/checkme/kotlinServer/src/main" +
+                        "/resources/solutions/solution$checkId",
+                    command
+                )
+            ) {
                 is Success -> {
-
                     if (output.value.trim() != checkDataConsole.expected.trim()) {
                         CheckResult(0, criterion.message)
                     } else {
@@ -42,7 +43,7 @@ data class CheckDataConsole(
                 is Failure -> {
                     println(
                         "При выполнении теста ${criterion.test} задания " +
-                                "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}"
+                            "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}"
                     )
                     CheckResult(
                         0,

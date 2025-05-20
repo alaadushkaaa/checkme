@@ -1,24 +1,14 @@
 package checkme.web.solution.handlers
 
-import checkme.domain.models.Check
-import checkme.domain.models.CheckType
 import checkme.domain.models.Task
 import checkme.domain.operations.checks.CheckOperationHolder
-import checkme.domain.operations.checks.CreateCheckError
-import checkme.domain.operations.users.ModifyCheckError
-import checkme.web.solution.checks.CheckDataConsole
 import checkme.web.solution.checks.Criterion
-import checkme.web.solution.forms.CheckResult
 import checkme.web.solution.forms.CheckSolutionRequest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
-import org.http4k.lens.MultipartFormFile
-import java.io.File
-import java.time.LocalDateTime
 
 const val COMPLETE_TASK = 10
 const val SOLUTIONS_DIR = "/solutions"
@@ -27,7 +17,7 @@ const val SOLUTION_DIR = "/solution"
 class CheckSolutionHandler(
     private val checkOperations: CheckOperationHolder,
 ) : HttpHandler {
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "NestedBlockDepth")
     override fun invoke(request: Request): Response {
 //        beforeAll.py - выполняется перед всеми тестами.
 //        beforeEach.py - выполняется перед каждым тестом.
@@ -82,7 +72,7 @@ class CheckSolutionHandler(
                     } else {
                         if (form.files.containsKey(index.toString())) {
                             val file = form.files[index.toString()]?.first()
-                            if (file!=null) {
+                            if (file != null) {
                                 val pathToFile = tryAddFileToUserSolutionDirectory(
                                     checkId = newCheck.value.id,
                                     user = checkSolutionRequest.authUser,
@@ -121,4 +111,3 @@ enum class CreationCheckError(val errorText: String) {
 enum class ModifyingCheckError(val errorText: String) {
     UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
 }
-
