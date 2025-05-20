@@ -6,3 +6,4 @@ data class Criterion(
     val test: String,
     val message: String,
 )
+

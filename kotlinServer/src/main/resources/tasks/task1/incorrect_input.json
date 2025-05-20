@@ -1,0 +1,5 @@
+{
+    "type": "console-check",
+    "command": "printf \\\"a\\\\n\\\" | python3 sum.py",
+    "expected": "Incorrect input"
+}

@@ -3,6 +3,10 @@ package checkme.web.solution.checks
 import checkme.domain.models.CheckType
 import checkme.domain.models.Task
 import checkme.web.solution.forms.CheckResult
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result4k
+import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.recover
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -23,25 +27,35 @@ data class CheckDataConsole(
             criterion: Criterion,
         ): CheckResult {
             val command = checkDataConsole.command
-            val output = runCommandInDirectory("абсолютный/путь/resources/solutions/solution$checkId", command)
-            if (output.startsWith("Error:")) {
-                return CheckResult(
-                    0,
-                    "При выполнении теста {${criterion.test} задания " +
-                        "${task.name}-${task.id} произошла ошибка: $output"
-                )
-            }
-            return if (output.trim() != checkDataConsole.expected.trim()) {
-                CheckResult(0, criterion.message)
-            } else {
-                CheckResult(criterion.score, criterion.description)
+            return when (val output = runCommandInDirectory(
+                "/home/jayfeather/Рабочий стол/Files/Работа/checkmeWork/checkme/kotlinServer/src/main/resources/solutions/solution$checkId",
+                command
+            )) {
+                is Success -> {
+
+                    if (output.value.trim() != checkDataConsole.expected.trim()) {
+                        CheckResult(0, criterion.message)
+                    } else {
+                        CheckResult(criterion.score, criterion.description)
+                    }
+                }
+                is Failure -> {
+                    println(
+                        "При выполнении теста ${criterion.test} задания " +
+                                "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}"
+                    )
+                    CheckResult(
+                        0,
+                        criterion.message
+                    )
+                }
             }
         }
 
         private fun runCommandInDirectory(
             directory: String,
             command: String,
-        ): String {
+        ): Result4k<String, String> {
             val process = ProcessBuilder("bash", "-c", command)
                 .directory(File(directory))
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
@@ -53,10 +67,9 @@ data class CheckDataConsole(
 
             if (!process.waitFor(MINUTE_TIMEOUT.toLong(), TimeUnit.SECONDS)) {
                 process.destroy()
-                return "Error: Вышло время на процесс"
+                return Failure("Error: Вышло время на процесс")
             }
-            println(output)
-            return if (error.isBlank()) output else "Error: $error"
+            return if (error.isBlank()) Success(output) else Failure("Error: $error")
         }
     }
 }
