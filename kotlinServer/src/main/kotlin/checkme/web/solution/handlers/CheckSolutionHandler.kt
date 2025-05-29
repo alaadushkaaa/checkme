@@ -1,14 +1,16 @@
 package checkme.web.solution.handlers
 
-import checkme.domain.models.Task
+import checkme.domain.accounts.Role
+import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
-import checkme.web.solution.checks.Criterion
-import checkme.web.solution.forms.CheckSolutionRequest
+import checkme.web.lenses.TaskLenses.taskIdPathField
+import checkme.web.task
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
+import org.http4k.core.body.*
+import org.http4k.lens.*
 
 const val COMPLETE_TASK = 10
 const val SOLUTIONS_DIR = "/solutions"
@@ -23,59 +25,38 @@ class CheckSolutionHandler(
 //        beforeEach.py - выполняется перед каждым тестом.
 //        afterEach.py - выполняется после каждого теста.
 //        afterAll.py - выполняется после всех тестов.
+        val filesField = MultipartFormFile.multi.required("ans")
+        val filesLens = Body.Companion.multipartForm(Validator.Feedback, filesField).toLens()
+
+        val filesForm: MultipartForm = filesLens(request)
+        if (filesForm.errors.isNotEmpty()) {
+            return Response(Status.BAD_REQUEST)
+        }
 
         val objectMapper = jacksonObjectMapper()
-        val checkSolutionRequest = objectMapper.readValue<CheckSolutionRequest>(request.bodyString())
-        val taskId = checkSolutionRequest.taskId
-        val form = checkSolutionRequest.form
+        val taskId = taskIdPathField(request)
 
-        // todo получение задания из бд
-        // todo для каждого задания создается папка - внутри нее файлы-проверки, относящиеся к заданию
-        val criterions = mapOf(
-            "Сложение положительных чисел" to
-                Criterion(
-                    "Сложение чисел происходит корреткно",
-                    COMPLETE_TASK,
-                    "plus_numbers.json",
-                    "Числа складываются неправильно"
-                ),
-            "Некорректный ввод" to
-                Criterion(
-                    "Случай некоректного ввода обрабатывается",
-                    COMPLETE_TASK,
-                    "incorrect_input.json",
-                    "Не обработан случай некорректного ввода чисел"
-                )
-        )
-        val task = Task(
-            1,
-            "Суммирование чисел",
-            criterions,
-            "Файл",
-            "Вам необходимо написать " +
-                "программу, выполняющую суммирование двух чисел. На вход подаются два числа - a и b, " +
-                "в качестве результата - сумма этих чисел. Некорректный ввод необходимо обрабатыввать и " +
-                "выводить строку \"Incorrect input\" в случае ошибки"
-        )
+        // todo добавление auth.user в контекст запроса
+        val user = User(1, "login", "name", "surname", "pass", Role.STUDENT)
 
-        return when (val newCheck = createNewCheck(taskId.toInt(), checkSolutionRequest.authUser.id, checkOperations)) {
+        return when (val newCheck = createNewCheck(taskId, 1, checkOperations)) {
             is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
                 .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
 
             is Success -> {
                 val answers = mutableListOf<String>()
                 var index = 0
-                for (field in form.fields) {
+                for (field in filesForm.files) {
                     if (field.key == index.toString()) {
                         answers.add(field.value.toString())
                         index++
                     } else {
-                        if (form.files.containsKey(index.toString())) {
-                            val file = form.files[index.toString()]?.first()
+                        if (filesForm.files.containsKey(index.toString())) {
+                            val file = filesForm.files[index.toString()]?.first()
                             if (file != null) {
                                 val pathToFile = tryAddFileToUserSolutionDirectory(
                                     checkId = newCheck.value.id,
-                                    user = checkSolutionRequest.authUser,
+                                    user = user,
                                     file
                                 )
                                 answers.add(pathToFile)

@@ -24,7 +24,6 @@ internal fun setStatusError(
     checkOperations: CheckOperationHolder,
 ): Response {
     val objectMapper = jacksonObjectMapper()
-    // todo посмотреть какой ответ уходит при ошибке выполнения!!
     return when (
         val updatedCheckStatusError = updateCheckStatus(
             check.id,
