@@ -8,6 +8,7 @@ import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.users.ModifyCheckError
 import checkme.web.solution.checks.CheckDataConsole
+import checkme.web.solution.checks.Criterion
 import checkme.web.solution.forms.CheckResult
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -138,27 +139,66 @@ internal fun checkStudentAnswer(
     checkId: Int,
 ): Map<String, CheckResult>? {
     val results = mutableMapOf<String, CheckResult>()
-    val objectMapper = jacksonObjectMapper()
+    val specialCriterions = listOf("beforeAll.json", " beforeEach.json", "afterEach.json", "afterAll.json")
+
+    val beforeAllCriterion = task.criterions.entries.firstOrNull {it.value.test == "beforeAll.json"}
+    val beforeAllResult = beforeAllCriterion
+        ?.let { criterionCheck(it, task, checkId) }
+        ?: return null
+    results[beforeAllCriterion.key] = beforeAllResult
+
     for (criterion in task.criterions) {
-        val checkFile = findCheckFile("/src/main/resources/tasks/task${task.id}", criterion.key)
-        val jsonString = checkFile?.readText()
-        if (jsonString == null) {
-            return null
-        } else {
-            val jsonWithCheck = objectMapper.readTree(jsonString)
-            val type = jsonWithCheck.get("type")?.asText()
-            println("Type: $type")
-            when (CheckType.valueOf(type.toString())) {
-                CheckType.CONSOLE_CHECK -> {
-                    val check = objectMapper.readValue<CheckDataConsole>(jsonString)
-                    val checkResult =
-                        CheckDataConsole.consoleCheck(task, check, checkId, criterion.value)
-                    results[criterion.key] = checkResult
-                }
+        val beforeEachCriterion = task.criterions.entries.firstOrNull {it.value.test == "beforeEach.json"}
+        if (beforeEachCriterion != null) {
+            if (results[beforeEachCriterion.key] != null && results[beforeEachCriterion.key]?.score != 0) {
+                val beforeEachResult = criterionCheck(beforeEachCriterion, task, checkId)
+                    ?: return null
+                results[beforeEachCriterion.key] = beforeEachResult
+            }
+        }
+        if (!specialCriterions.contains(criterion.value.test)) {
+            val checkResult = criterionCheck(criterion, task, checkId) ?: return null
+            results[criterion.key] = checkResult
+        }
+        val afterEachCriterion = task.criterions.entries.firstOrNull {it.value.test == "afterEach.json"}
+        if (afterEachCriterion != null) {
+            if (results[afterEachCriterion.key] != null && results[afterEachCriterion.key]?.score != 0) {
+                val afterEachResult = criterionCheck(afterEachCriterion, task, checkId)
+                    ?: return null
+                results[afterEachCriterion.key] = afterEachResult
             }
         }
     }
+
+    val afterAllCriterion = task.criterions.entries.firstOrNull {it.value.test == "afterAll.json"}
+    val afterAllResult = afterAllCriterion
+        ?.let { criterionCheck(it, task, checkId) }
+        ?: return null
+    results[afterAllCriterion.key] = afterAllResult
     return results
+}
+
+private fun criterionCheck(
+    criterion: Map.Entry<String, Criterion>,
+    task: Task,
+    checkId: Int
+) : CheckResult? {
+    val objectMapper = jacksonObjectMapper()
+    val checkFile = findCheckFile("/src/main/resources/tasks/task${task.id}", criterion.key)
+    val jsonString = checkFile?.readText()
+    if (jsonString == null) {
+        return null
+    } else {
+        val jsonWithCheck = objectMapper.readTree(jsonString)
+        val type = jsonWithCheck.get("type")?.asText()
+        println("Type: $type")
+        when (CheckType.valueOf(type.toString())) {
+            CheckType.CONSOLE_CHECK -> {
+                val check = objectMapper.readValue<CheckDataConsole>(jsonString)
+                    return CheckDataConsole.consoleCheck(task, check, checkId, criterion.value)
+            }
+        }
+    }
 }
 
 private fun findCheckFile(
@@ -175,6 +215,7 @@ internal fun tryAddFileToUserSolutionDirectory(
     user: User,
     file: MultipartFormFile,
 ): String {
+    println("Я сюда попал")
     val solutionDir = File(
         "..$SOLUTIONS_DIR$SOLUTION_DIR$checkId" +
             "-${user.name}" +

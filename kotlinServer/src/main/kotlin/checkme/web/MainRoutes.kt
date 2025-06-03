@@ -18,7 +18,7 @@ import org.http4k.routing.*
 val criterions = mapOf(
     "Сложение положительных чисел" to
         Criterion(
-            "Сложение чисел происходит корреткно",
+            "Сложение чисел происходит корректно",
             COMPLETE_TASK,
             "plus_numbers.json",
             "Числа складываются неправильно"

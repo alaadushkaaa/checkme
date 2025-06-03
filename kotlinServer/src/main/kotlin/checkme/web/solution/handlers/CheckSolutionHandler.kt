@@ -9,7 +9,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
-import org.http4k.core.body.*
 import org.http4k.lens.*
 
 const val COMPLETE_TASK = 10
@@ -21,10 +20,6 @@ class CheckSolutionHandler(
 ) : HttpHandler {
     @Suppress("LongMethod", "NestedBlockDepth")
     override fun invoke(request: Request): Response {
-//        beforeAll.py - выполняется перед всеми тестами.
-//        beforeEach.py - выполняется перед каждым тестом.
-//        afterEach.py - выполняется после каждого теста.
-//        afterAll.py - выполняется после всех тестов.
         val filesField = MultipartFormFile.multi.required("ans")
         val filesLens = Body.Companion.multipartForm(Validator.Feedback, filesField).toLens()
 
@@ -46,13 +41,14 @@ class CheckSolutionHandler(
             is Success -> {
                 val answers = mutableListOf<String>()
                 var index = 0
-                for (field in filesForm.files) {
+                for (field in filesForm.fields) {
                     if (field.key == index.toString()) {
                         answers.add(field.value.toString())
                         index++
                     } else {
                         if (filesForm.files.containsKey(index.toString())) {
                             val file = filesForm.files[index.toString()]?.first()
+
                             if (file != null) {
                                 val pathToFile = tryAddFileToUserSolutionDirectory(
                                     checkId = newCheck.value.id,
