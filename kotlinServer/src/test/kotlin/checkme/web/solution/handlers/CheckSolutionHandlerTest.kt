@@ -1,6 +1,11 @@
 package checkme.web.solution.handlers
 
-import checkme.db.*
+import checkme.db.validCheckId
+import checkme.db.validDate
+import checkme.db.validResult
+import checkme.db.validStatusCorrect
+import checkme.db.validTaskId
+import checkme.db.validUserId
 import checkme.domain.models.Check
 import checkme.domain.models.CheckType
 import checkme.domain.models.Task
@@ -15,7 +20,14 @@ import dev.forkhandles.result4k.Success
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldMatch
-import org.http4k.core.*
+import org.http4k.core.Body
+import org.http4k.core.ContentType
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.RequestContexts
+import org.http4k.core.Status
+import org.http4k.core.then
 import org.http4k.filter.ServerFilters
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
@@ -34,44 +46,6 @@ class CheckSolutionHandlerTest : FunSpec({
 
     val contexts = RequestContexts()
     val objectMapper = jacksonObjectMapper()
-    val validCriterions = mapOf(
-        "Сложение положительных чисел" to
-            Criterion(
-                "Сложение чисел происходит корреткно",
-                COMPLETE_TASK,
-                "plus_numbers.json",
-                "Числа складываются неправильно"
-            ),
-        "Некорректный ввод" to
-            Criterion(
-                "Случай некоректного ввода обрабатывается",
-                COMPLETE_TASK,
-                "incorrect_input.json",
-                "Не обработан случай некорректного ввода чисел"
-            )
-    )
-    val validTask = Task(
-        1,
-        "Суммирование чисел",
-        validCriterions,
-        "Файл",
-        "Вам необходимо написать " +
-            "программу, выполняющую суммирование двух чисел. На вход подаются два числа - a и b, " +
-            "в качестве результата - сумма этих чисел. Некорректный ввод необходимо обрабатыввать и " +
-            "выводить строку \"Incorrect input\" в случае ошибки"
-    )
-    val validChecks = listOf(
-        CheckDataConsole(
-            CheckType.CONSOLE_CHECK,
-            "printf \"5\\n3\\n\" | python3 sum.py",
-            "8.0",
-        ),
-        CheckDataConsole(
-            CheckType.CONSOLE_CHECK,
-            "printf \\\"a\\\\n\\\" | python3 sum.py",
-            "Incorrect input",
-        )
-    )
 
     val validCheckResult = Check(validCheckId, validTaskId, validUserId, validDate, validResult, validStatusCorrect)
 
@@ -97,7 +71,8 @@ class CheckSolutionHandlerTest : FunSpec({
         "check solution by valid task id should return OK with check id "
     ) {
         whenever(checkOperations.fetchCheckById(validCheckResult.id)).thenReturn(Success(validCheckResult))
-        whenever(checkOperations.createCheck(any(), any(), any(), anyOrNull(), any())).thenReturn(Success(validCheckResult))
+        whenever(checkOperations.createCheck(any(), any(), any(), anyOrNull(), any()))
+            .thenReturn(Success(validCheckResult))
         whenever(checkOperations.updateCheckResult(any(), any())).thenReturn(Success(validCheckResult))
         whenever(checkOperations.updateCheckStatus(any(), any())).thenReturn(Success(validCheckResult))
 

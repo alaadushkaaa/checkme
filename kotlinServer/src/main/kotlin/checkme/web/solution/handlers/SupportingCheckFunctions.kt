@@ -139,50 +139,89 @@ internal fun checkStudentAnswer(
     checkId: Int,
 ): Map<String, CheckResult>? {
     val results = mutableMapOf<String, CheckResult>()
-    val specialCriterions = listOf("beforeAll.json", " beforeEach.json", "afterEach.json", "afterAll.json")
+    val specialCriteria = listOf("beforeAll.json", " beforeEach.json", "afterEach.json", "afterAll.json")
 
-    val beforeAllCriterion = task.criterions.entries.firstOrNull {it.value.test == "beforeAll.json"}
-    val beforeAllResult = beforeAllCriterion
-        ?.let { criterionCheck(it, task, checkId) }
-        ?: return null
-    results[beforeAllCriterion.key] = beforeAllResult
+    val specialResultBeforeAll = tryCheckSpecialCriterionAll(
+        specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeAll.json" },
+        task = task,
+        checkId = checkId,
+    )
+
+    if (specialResultBeforeAll != null) {
+        results[specialResultBeforeAll.first] = specialResultBeforeAll.second
+    }
 
     for (criterion in task.criterions) {
-        val beforeEachCriterion = task.criterions.entries.firstOrNull {it.value.test == "beforeEach.json"}
-        if (beforeEachCriterion != null) {
-            if (results[beforeEachCriterion.key] != null && results[beforeEachCriterion.key]?.score != 0) {
-                val beforeEachResult = criterionCheck(beforeEachCriterion, task, checkId)
-                    ?: return null
-                results[beforeEachCriterion.key] = beforeEachResult
-            }
+        val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
+            specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeEach.json" },
+            task = task,
+            checkId = checkId
+        )
+
+        if (specialResultBeforeEach != null) {
+            results[specialResultBeforeEach.first] = specialResultBeforeEach.second
         }
-        if (!specialCriterions.contains(criterion.value.test)) {
+
+        if (!specialCriteria.contains(criterion.value.test)) {
             val checkResult = criterionCheck(criterion, task, checkId) ?: return null
             results[criterion.key] = checkResult
         }
-        val afterEachCriterion = task.criterions.entries.firstOrNull {it.value.test == "afterEach.json"}
-        if (afterEachCriterion != null) {
-            if (results[afterEachCriterion.key] != null && results[afterEachCriterion.key]?.score != 0) {
-                val afterEachResult = criterionCheck(afterEachCriterion, task, checkId)
-                    ?: return null
-                results[afterEachCriterion.key] = afterEachResult
-            }
-        }
+
+        val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
+            specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterEach.json" },
+            task = task,
+            checkId = checkId,
+        )
+         if (specialResultAfterEach != null) {
+             results[specialResultAfterEach.first] = specialResultAfterEach.second
+         }
     }
 
-    val afterAllCriterion = task.criterions.entries.firstOrNull {it.value.test == "afterAll.json"}
-    val afterAllResult = afterAllCriterion
-        ?.let { criterionCheck(it, task, checkId) }
-        ?: return null
-    results[afterAllCriterion.key] = afterAllResult
+    val specialResultAfterAll = tryCheckSpecialCriterionAll(
+        specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterAll.json" },
+        task = task,
+        checkId = checkId,
+    )
+
+    if (specialResultAfterAll != null) {
+        results[specialResultAfterAll.first] = specialResultAfterAll.second
+    }
+
     return results
 }
+
+private fun MutableMap<String, CheckResult>.tryCheckSpecialCriterionEach(
+    specialCriterion: Map.Entry<String, Criterion>?,
+    task: Task,
+    checkId: Int,
+) : Pair<String, CheckResult>? {
+    return if (this[specialCriterion?.key] != null
+        && this[specialCriterion?.key]?.score != 0
+        && specialCriterion!=null) {
+        when (val eachResult = criterionCheck(specialCriterion, task, checkId)) {
+            is CheckResult -> Pair(specialCriterion.key, eachResult)
+            else -> null
+        }
+    } else null
+}
+
+private fun tryCheckSpecialCriterionAll(
+    specialCriterion: Map.Entry<String, Criterion>?,
+    task: Task,
+    checkId: Int,
+): Pair<String, CheckResult>? {
+    val allResult = specialCriterion
+        ?.let { criterionCheck(it, task, checkId) }
+        ?: return null
+    return Pair(specialCriterion.key, allResult)
+}
+
 
 private fun criterionCheck(
     criterion: Map.Entry<String, Criterion>,
     task: Task,
-    checkId: Int
-) : CheckResult? {
+    checkId: Int,
+): CheckResult? {
     val objectMapper = jacksonObjectMapper()
     val checkFile = findCheckFile("/src/main/resources/tasks/task${task.id}", criterion.key)
     val jsonString = checkFile?.readText()
@@ -191,11 +230,10 @@ private fun criterionCheck(
     } else {
         val jsonWithCheck = objectMapper.readTree(jsonString)
         val type = jsonWithCheck.get("type")?.asText()
-        println("Type: $type")
         when (CheckType.valueOf(type.toString())) {
             CheckType.CONSOLE_CHECK -> {
                 val check = objectMapper.readValue<CheckDataConsole>(jsonString)
-                    return CheckDataConsole.consoleCheck(task, check, checkId, criterion.value)
+                return CheckDataConsole.consoleCheck(task, check, checkId, criterion.value)
             }
         }
     }
@@ -215,7 +253,6 @@ internal fun tryAddFileToUserSolutionDirectory(
     user: User,
     file: MultipartFormFile,
 ): String {
-    println("Я сюда попал")
     val solutionDir = File(
         "..$SOLUTIONS_DIR$SOLUTION_DIR$checkId" +
             "-${user.name}" +

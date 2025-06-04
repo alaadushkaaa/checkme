@@ -7,7 +7,6 @@ import org.http4k.core.*
 import org.http4k.routing.*
 
 fun solutionRouter(
-    config: AppConfig,
     operations: OperationHolder,
 ): RoutingHttpHandler =
     routes(

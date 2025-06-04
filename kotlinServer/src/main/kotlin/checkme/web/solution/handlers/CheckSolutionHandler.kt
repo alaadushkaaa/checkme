@@ -8,8 +8,15 @@ import checkme.web.task
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
-import org.http4k.core.*
-import org.http4k.lens.*
+import org.http4k.core.Body
+import org.http4k.core.HttpHandler
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
+import org.http4k.lens.MultipartForm
+import org.http4k.lens.MultipartFormFile
+import org.http4k.lens.Validator
+import org.http4k.lens.multipartForm
 
 const val COMPLETE_TASK = 10
 const val SOLUTIONS_DIR = "/solutions"
