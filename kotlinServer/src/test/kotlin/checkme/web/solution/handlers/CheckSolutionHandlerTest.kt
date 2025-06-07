@@ -7,13 +7,9 @@ import checkme.db.validStatusCorrect
 import checkme.db.validTaskId
 import checkme.db.validUserId
 import checkme.domain.models.Check
-import checkme.domain.models.CheckType
-import checkme.domain.models.Task
 import checkme.domain.operations.OperationHolder
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.web.solution.NEW_SOLUTION
-import checkme.web.solution.checks.CheckDataConsole
-import checkme.web.solution.checks.Criterion
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Success

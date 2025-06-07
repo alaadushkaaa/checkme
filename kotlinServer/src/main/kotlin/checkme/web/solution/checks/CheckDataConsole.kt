@@ -2,7 +2,9 @@ package checkme.web.solution.checks
 
 import checkme.domain.models.CheckType
 import checkme.domain.models.Task
+import checkme.domain.models.User
 import checkme.web.solution.forms.CheckResult
+import checkme.web.solution.handlers.SOLUTIONS_DIR
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -22,14 +24,18 @@ data class CheckDataConsole(
         fun consoleCheck(
             task: Task,
             checkDataConsole: CheckDataConsole,
+            user: User,
             checkId: Int,
             criterion: Criterion,
         ): CheckResult {
+            println("Я в консольной проверке")
             val command = checkDataConsole.command
             return when (
                 val output = runCommandInDirectory(
-                    "/home/jayfeather/Рабочий стол/Files/Работа/checkmeWork/checkme/kotlinServer/src/main" +
-                        "/resources/solutions/solution$checkId",
+                    "..$SOLUTIONS_DIR" +
+                            "/${user.name}-${user.surname}-${user.login}" +
+                            "/${task.name}" +
+                            "$checkId",
                     command
                 )
             ) {
