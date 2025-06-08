@@ -11,17 +11,11 @@ import checkme.web.solution.checks.CheckDataConsole
 import checkme.web.solution.checks.Criterion
 import checkme.web.solution.forms.CheckResult
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
-import org.http4k.lens.MultipartFormFile
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STRestartNumber
-import java.io.File
-import java.io.IOException
 import java.time.LocalDateTime
-import kotlin.math.exp
 
 internal fun setStatusError(
     check: Check,
@@ -142,7 +136,6 @@ internal fun checkStudentAnswer(
     checkId: Int,
     user: User,
 ): Map<String, CheckResult>? {
-    println("Мы попали в функцию проверки решения")
     val results = mutableMapOf<String, CheckResult>()
     val specialCriteria = listOf("beforeAll.json", " beforeEach.json", "afterEach.json", "afterAll.json")
 
@@ -152,7 +145,6 @@ internal fun checkStudentAnswer(
         checkId = checkId,
         user = user
     )
-    println("1")
     if (specialResultBeforeAll != null) {
         results[specialResultBeforeAll.first] = specialResultBeforeAll.second
     }
@@ -168,7 +160,6 @@ internal fun checkStudentAnswer(
         if (specialResultBeforeEach != null) {
             results[specialResultBeforeEach.first] = specialResultBeforeEach.second
         }
-        println("2")
         if (!specialCriteria.contains(criterion.value.test)) {
             val checkResult = criterionCheck(criterion, task, checkId, user) ?: return null
             results[criterion.key] = checkResult
@@ -180,7 +171,6 @@ internal fun checkStudentAnswer(
             checkId = checkId,
             user = user
         )
-        println("3")
         if (specialResultAfterEach != null) {
             results[specialResultAfterEach.first] = specialResultAfterEach.second
         }
@@ -192,12 +182,9 @@ internal fun checkStudentAnswer(
         checkId = checkId,
         user = user
     )
-    println("4")
     if (specialResultAfterAll != null) {
         results[specialResultAfterAll.first] = specialResultAfterAll.second
     }
-    println("5")
-    println(results)
     return results
 }
 
@@ -205,7 +192,7 @@ private fun MutableMap<String, CheckResult>.tryCheckSpecialCriterionEach(
     specialCriterion: Map.Entry<String, Criterion>?,
     task: Task,
     checkId: Int,
-    user: User
+    user: User,
 ): Pair<String, CheckResult>? {
     return if (this[specialCriterion?.key] != null &&
         this[specialCriterion?.key]?.score != 0 &&
@@ -246,21 +233,13 @@ private fun criterionCheck(
     } else {
         val jsonWithCheck = objectMapper.readTree(jsonString)
         val type = jsonWithCheck.get("type")?.asText()
-        println("Тип проверки")
-        println(type)
-        println(CheckType.CONSOLE_CHECK.code)
         return when (type.toString()) {
             CheckType.CONSOLE_CHECK.code -> {
-                println("Я готовлюсь пойти в консольную проверку")
-                println(jsonString)
-                println(jsonWithCheck)
-                println(type.toString().uppercase())
                 val check = CheckDataConsole(
-                    type = CheckType.valueOf(type.toString().uppercase()),
-                    command = jsonWithCheck.get("command").asText(),
-                    expected = jsonWithCheck.get("expected").asText()
+                    type = CheckType.CONSOLE_CHECK,
+                    command = jsonWithCheck.get("command").asText().toString(),
+                    expected = jsonWithCheck.get("expected").asText().toString()
                 )
-                    //objectMapper.readValue<CheckDataConsole>(jsonString)
                 CheckDataConsole.consoleCheck(task, check, user, checkId, criterion.value)
             }
 
@@ -268,47 +247,3 @@ private fun criterionCheck(
         }
     }
 }
-
-private fun findCheckFile(
-    directoryPath: String,
-    fileName: String,
-): File? {
-    val dir = File(directoryPath)
-    if (!dir.isDirectory) return null
-    return dir.listFiles()?.firstOrNull { it.name == fileName }
-}
-
-internal fun tryAddFileToUserSolutionDirectory(
-    checkId: Int,
-    user: User,
-    file: MultipartFormFile,
-    taskName: String,
-): String {
-    val solutionDir = File(
-        "..$SOLUTIONS_DIR" +
-                "/${user.name}-${user.surname}-${user.login}" +
-                "/$taskName"
-
-    )
-    if (!solutionDir.exists()) {
-        solutionDir.mkdirs()
-    }
-    val extension = chooseFileExtension(file.contentType.value)
-    val filePath = File(solutionDir, "${checkId}$extension")
-    val fileBytes = file.content.use { it.readAllBytes() }
-    filePath.writeBytes(fileBytes)
-    return filePath.absolutePath.toString()
-}
-
-private fun chooseFileExtension(
-    extension: String
-) : String =
-    when (extension) {
-        "text/x-python" -> ".py"
-        "text/x-java" -> ".java"
-        "text/x-c++" -> ".cpp"
-        "text/x-c" -> ".c"
-        "text/javascript" -> ".js"
-        "application/json" -> ".json"
-        else -> ".txt"
-    }

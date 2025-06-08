@@ -36,7 +36,7 @@ class CheckSolutionHandler(
         val objectMapper = jacksonObjectMapper()
         val taskId = taskIdPathField(request)
 
-        //todo получение id задания из пути, задания из бд
+        // todo получение id задания из пути, задания из бд
         // todo добавление auth.user в контекст запроса
         val user = User(1, "login", "name", "surname", "pass", Role.STUDENT)
 
@@ -45,11 +45,9 @@ class CheckSolutionHandler(
                 .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
 
             is Success -> {
-                println("Проверка создалась")
                 val answers = mutableListOf<String>()
                 var index = 0
                 for (field in filesForm.fields) {
-                    println(field)
                     if (field.key == index.toString()) {
                         answers.add(field.value.toString())
                         index++
@@ -72,9 +70,9 @@ class CheckSolutionHandler(
                 val checksResult = checkStudentAnswer(
                     task = task,
                     checkId = newCheck.value.id,
-                    user = user)
+                    user = user
+                )
                 if (checksResult == null) {
-                    println("Фигня, а не результат")
                     setStatusError(newCheck.value, checkOperations)
                 } else {
                     when (val updatedCheck = updateCheckResult(newCheck.value.id, checksResult, checkOperations)) {

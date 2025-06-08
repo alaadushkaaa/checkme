@@ -28,14 +28,20 @@ data class CheckDataConsole(
             checkId: Int,
             criterion: Criterion,
         ): CheckResult {
-            println("Я в консольной проверке")
             val command = checkDataConsole.command
+            val directoryPath = "..$SOLUTIONS_DIR" +
+                "/${user.name}-${user.surname}-${user.login}" +
+                "/${task.name}" +
+                "/$checkId"
+            if (!File(directoryPath).exists()) {
+                return CheckResult(0, "Проверка не пройдена, файл для проверки решения не найден")
+            }
             return when (
                 val output = runCommandInDirectory(
                     "..$SOLUTIONS_DIR" +
-                            "/${user.name}-${user.surname}-${user.login}" +
-                            "/${task.name}" +
-                            "$checkId",
+                        "/${user.name}-${user.surname}-${user.login}" +
+                        "/${task.name}" +
+                        "/$checkId",
                     command
                 )
             ) {
@@ -47,6 +53,7 @@ data class CheckDataConsole(
                     }
                 }
                 is Failure -> {
+                    // todo заменить на журнал
                     println(
                         "При выполнении теста ${criterion.test} задания " +
                             "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}"
@@ -71,7 +78,6 @@ data class CheckDataConsole(
 
             val output = process.inputStream.bufferedReader().readText()
             val error = process.errorStream.bufferedReader().readText()
-
             if (!process.waitFor(MINUTE_TIMEOUT.toLong(), TimeUnit.SECONDS)) {
                 process.destroy()
                 return Failure("Error: Вышло время на процесс")
