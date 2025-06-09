@@ -23,7 +23,7 @@ private fun createMainRouter(
     SOLUTION_SEGMENT bind solutionRouter(operations = operations),
     // todo необходимо создать базу данных заданий, реализовать страницы
     // todo для каждого задания создается папка - внутри нее файлы-проверки, относящиеся к заданию
-    "/task/68133a0cd4c0f72629c8893f" bind Method.GET to { _ ->
+    "/task/{id}" bind Method.GET to { _ ->
         ok(
             """
             {
