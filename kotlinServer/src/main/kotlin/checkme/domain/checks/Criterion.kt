@@ -1,4 +1,4 @@
-package checkme.web.solution.checks
+package checkme.domain.checks
 
 data class Criterion(
     val description: String,

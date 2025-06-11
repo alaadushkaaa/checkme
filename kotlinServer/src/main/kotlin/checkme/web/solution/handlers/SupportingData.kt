@@ -1,7 +1,7 @@
 package checkme.web.solution.handlers
 
+import checkme.domain.checks.Criterion
 import checkme.domain.models.Task
-import checkme.web.solution.checks.Criterion
 
 val criterions = mapOf(
     "Сложение положительных чисел" to

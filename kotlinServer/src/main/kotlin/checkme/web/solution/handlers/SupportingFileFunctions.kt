@@ -1,6 +1,8 @@
 package checkme.web.solution.handlers
 
+import checkme.domain.models.Check
 import checkme.domain.models.User
+import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
 import java.io.File
 
@@ -37,11 +39,24 @@ internal fun tryAddFileToUserSolutionDirectory(
     return filePath.absolutePath.toString()
 }
 
-internal fun findCheckFile(
-    directoryPath: String,
-    fileName: String,
-): File? {
-    val dir = File(directoryPath)
-    if (!dir.isDirectory) return null
-    return dir.listFiles()?.firstOrNull { it.name == fileName }
+internal fun tryGetFieldsAndFilesFromForm(
+    filesForm: MultipartForm,
+    newCheck: Check,
+    user: User,
+): List<Pair<String, String>> {
+    val fieldAnswers = filesForm.fields
+        .map { Pair("field", it.value.toString()) }
+    val filesAnswers = filesForm.files
+        .map {
+            Pair(
+                "file",
+                tryAddFileToUserSolutionDirectory(
+                    checkId = newCheck.id,
+                    user = user,
+                    file = it.value.first(),
+                    taskName = task.name
+                )
+            )
+        }
+    return fieldAnswers + filesAnswers
 }

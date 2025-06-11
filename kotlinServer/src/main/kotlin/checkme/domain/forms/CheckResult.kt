@@ -1,4 +1,4 @@
-package checkme.web.solution.forms
+package checkme.domain.forms
 
 data class CheckResult (
     val score: Int,

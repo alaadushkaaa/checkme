@@ -1,7 +1,7 @@
 package checkme.domain.operations.dependencies
 
+import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
-import checkme.web.solution.forms.CheckResult
 import java.time.LocalDateTime
 
 interface ChecksDatabase {

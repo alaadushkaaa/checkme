@@ -1,9 +1,9 @@
-package checkme.web.solution.checks
+package checkme.domain.checks
 
+import checkme.domain.forms.CheckResult
 import checkme.domain.models.CheckType
 import checkme.domain.models.Task
 import checkme.domain.models.User
-import checkme.web.solution.forms.CheckResult
 import checkme.web.solution.handlers.SOLUTIONS_DIR
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
@@ -34,7 +34,7 @@ data class CheckDataConsole(
                 "/${task.name}" +
                 "/$checkId"
             if (!File(directoryPath).exists()) {
-                return CheckResult(0, "Проверка не пройдена, файл для проверки решения не найден")
+                return CheckResult(0, "Check failed, file for solution check not found")
             }
             return when (
                 val output = runCommandInDirectory(

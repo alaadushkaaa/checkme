@@ -2,9 +2,9 @@ package checkme.db.checks
 
 import checkme.db.generated.tables.references.CHECKS
 import checkme.db.utils.safeLet
+import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
 import checkme.domain.operations.dependencies.ChecksDatabase
-import checkme.web.solution.forms.CheckResult
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext

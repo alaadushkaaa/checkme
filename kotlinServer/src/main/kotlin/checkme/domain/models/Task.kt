@@ -1,6 +1,6 @@
 package checkme.domain.models
 
-import checkme.web.solution.checks.Criterion
+import checkme.domain.checks.Criterion
 
 data class Task(
     val id: Int,

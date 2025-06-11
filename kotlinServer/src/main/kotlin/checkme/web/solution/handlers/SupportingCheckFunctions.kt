@@ -1,15 +1,10 @@
 package checkme.web.solution.handlers
 
+import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
-import checkme.domain.models.CheckType
-import checkme.domain.models.Task
-import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.users.ModifyCheckError
-import checkme.web.solution.checks.CheckDataConsole
-import checkme.web.solution.checks.Criterion
-import checkme.web.solution.forms.CheckResult
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
@@ -128,122 +123,5 @@ internal fun updateCheckStatus(
         }
 
         is Success -> Success(updatedCheck.value)
-    }
-}
-
-internal fun checkStudentAnswer(
-    task: Task,
-    checkId: Int,
-    user: User,
-): Map<String, CheckResult>? {
-    val results = mutableMapOf<String, CheckResult>()
-    val specialCriteria = listOf("beforeAll.json", " beforeEach.json", "afterEach.json", "afterAll.json")
-
-    val specialResultBeforeAll = tryCheckSpecialCriterionAll(
-        specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeAll.json" },
-        task = task,
-        checkId = checkId,
-        user = user
-    )
-    if (specialResultBeforeAll != null) {
-        results[specialResultBeforeAll.first] = specialResultBeforeAll.second
-    }
-
-    for (criterion in task.criterions) {
-        val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
-            specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeEach.json" },
-            task = task,
-            checkId = checkId,
-            user = user
-        )
-
-        if (specialResultBeforeEach != null) {
-            results[specialResultBeforeEach.first] = specialResultBeforeEach.second
-        }
-        if (!specialCriteria.contains(criterion.value.test)) {
-            val checkResult = criterionCheck(criterion, task, checkId, user) ?: return null
-            results[criterion.key] = checkResult
-        }
-
-        val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
-            specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterEach.json" },
-            task = task,
-            checkId = checkId,
-            user = user
-        )
-        if (specialResultAfterEach != null) {
-            results[specialResultAfterEach.first] = specialResultAfterEach.second
-        }
-    }
-
-    val specialResultAfterAll = tryCheckSpecialCriterionAll(
-        specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterAll.json" },
-        task = task,
-        checkId = checkId,
-        user = user
-    )
-    if (specialResultAfterAll != null) {
-        results[specialResultAfterAll.first] = specialResultAfterAll.second
-    }
-    return results
-}
-
-private fun MutableMap<String, CheckResult>.tryCheckSpecialCriterionEach(
-    specialCriterion: Map.Entry<String, Criterion>?,
-    task: Task,
-    checkId: Int,
-    user: User,
-): Pair<String, CheckResult>? {
-    return if (this[specialCriterion?.key] != null &&
-        this[specialCriterion?.key]?.score != 0 &&
-        specialCriterion != null
-    ) {
-        when (val eachResult = criterionCheck(specialCriterion, task, checkId, user)) {
-            is CheckResult -> Pair(specialCriterion.key, eachResult)
-            else -> null
-        }
-    } else {
-        null
-    }
-}
-
-private fun tryCheckSpecialCriterionAll(
-    specialCriterion: Map.Entry<String, Criterion>?,
-    task: Task,
-    checkId: Int,
-    user: User,
-): Pair<String, CheckResult>? {
-    val allResult = specialCriterion
-        ?.let { criterionCheck(it, task, checkId, user) }
-        ?: return null
-    return Pair(specialCriterion.key, allResult)
-}
-
-private fun criterionCheck(
-    criterion: Map.Entry<String, Criterion>,
-    task: Task,
-    checkId: Int,
-    user: User,
-): CheckResult? {
-    val objectMapper = jacksonObjectMapper()
-    val checkFile = findCheckFile("../tasks/task${task.id}", criterion.value.test)
-    val jsonString = checkFile?.readText()
-    if (jsonString == null) {
-        return null
-    } else {
-        val jsonWithCheck = objectMapper.readTree(jsonString)
-        val type = jsonWithCheck.get("type")?.asText()
-        return when (type.toString()) {
-            CheckType.CONSOLE_CHECK.code -> {
-                val check = CheckDataConsole(
-                    type = CheckType.CONSOLE_CHECK,
-                    command = jsonWithCheck.get("command").asText().toString(),
-                    expected = jsonWithCheck.get("expected").asText().toString()
-                )
-                CheckDataConsole.consoleCheck(task, check, user, checkId, criterion.value)
-            }
-
-            else -> null
-        }
     }
 }

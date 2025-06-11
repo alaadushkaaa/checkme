@@ -1,11 +1,11 @@
 package checkme.domain.operations.checks
 
+import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
 import checkme.domain.operations.dependencies.ChecksDatabase
 import checkme.domain.operations.users.ModifyCheckError
 import checkme.domain.operations.users.ModifyCheckResult
 import checkme.domain.operations.users.ModifyCheckStatus
-import checkme.web.solution.forms.CheckResult
 import dev.forkhandles.result4k.Result
 import java.time.LocalDateTime
 

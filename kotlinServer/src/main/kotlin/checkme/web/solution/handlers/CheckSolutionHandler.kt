@@ -1,9 +1,12 @@
 package checkme.web.solution.handlers
 
 import checkme.domain.accounts.Role
+import checkme.domain.forms.CheckResult
+import checkme.domain.models.Check
 import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.web.lenses.TaskLenses.taskIdPathField
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
@@ -45,47 +48,41 @@ class CheckSolutionHandler(
                 .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
 
             is Success -> {
-                val answers = mutableListOf<String>()
-                var index = 0
-                for (field in filesForm.fields) {
-                    if (field.key == index.toString()) {
-                        answers.add(field.value.toString())
-                        index++
-                    }
-                }
-                index = 0
-                for (file in filesForm.files) {
-                    if (file.value.first().filename == index.toString()) {
-                        val pathToFile = tryAddFileToUserSolutionDirectory(
-                            checkId = newCheck.value.id,
-                            user = user,
-                            file = file.value.first(),
-                            taskName = task.name
-                        )
-                        answers.add(pathToFile)
-                        index++
-                    }
-                    index++
-                }
-                val checksResult = checkStudentAnswer(
-                    task = task,
-                    checkId = newCheck.value.id,
+                val answers = tryGetFieldsAndFilesFromForm(
+                    filesForm = filesForm,
+                    newCheck = newCheck.value,
                     user = user
                 )
-                if (checksResult == null) {
-                    setStatusError(newCheck.value, checkOperations)
-                } else {
-                    when (val updatedCheck = updateCheckResult(newCheck.value.id, checksResult, checkOperations)) {
-                        is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
-                            .body(
-                                objectMapper.writeValueAsString(
-                                    mapOf("error" to updatedCheck.reason.errorText)
-                                )
-                            )
+                val checksResult = Check.checkStudentAnswer(
+                    task = task,
+                    checkId = newCheck.value.id,
+                    user = user,
+                    answers = answers
+                )
+                sendResponseWithChecksResult(
+                    checksResult,
+                    newCheck.value,
+                    objectMapper
+                )
+            }
+        }
+    }
 
-                        is Success -> setStatusChecked(updatedCheck.value, checkOperations)
-                    }
-                }
+    private fun sendResponseWithChecksResult(
+        checksResult: Map<String, CheckResult>?,
+        newCheck: Check,
+        objectMapper: ObjectMapper,
+    ): Response {
+        return when {
+            checksResult == null -> setStatusError(newCheck, checkOperations)
+            else -> when (val updatedCheck = updateCheckResult(newCheck.id, checksResult, checkOperations)) {
+                is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+                    .body(
+                        objectMapper.writeValueAsString(
+                            mapOf("error" to updatedCheck.reason.errorText)
+                        )
+                    )
+                is Success -> setStatusChecked(updatedCheck.value, checkOperations)
             }
         }
     }

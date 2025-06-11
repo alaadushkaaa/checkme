@@ -1,7 +1,7 @@
 package checkme.domain.operations.checks
 
+import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
-import checkme.web.solution.forms.CheckResult
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success

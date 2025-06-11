@@ -1,4 +1,4 @@
-package checkme.web.solution.forms
+package checkme.domain.forms
 
 import checkme.domain.models.User
 
