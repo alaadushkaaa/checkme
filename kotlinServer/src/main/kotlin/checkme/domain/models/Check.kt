@@ -3,7 +3,6 @@ package checkme.domain.models
 import checkme.domain.checks.CheckDataConsole
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
-import checkme.domain.models.Check.Companion.tryCheckSpecialCriterionEach
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 import java.time.LocalDateTime

@@ -80,7 +80,7 @@ data class CheckDataConsole(
             val error = process.errorStream.bufferedReader().readText()
             if (!process.waitFor(MINUTE_TIMEOUT.toLong(), TimeUnit.SECONDS)) {
                 process.destroy()
-                return Failure("Error: Вышло время на процесс")
+                return Failure("Error: The time for the process has expired")
             }
             return if (error.isBlank()) Success(output) else Failure("Error: $error")
         }

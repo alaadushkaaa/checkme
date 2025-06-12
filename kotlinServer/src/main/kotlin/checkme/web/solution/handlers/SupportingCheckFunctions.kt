@@ -20,7 +20,7 @@ internal fun setStatusError(
     return when (
         val updatedCheckStatusError = updateCheckStatus(
             check.id,
-            "Ошибка выполнения",
+            "Runtime error",
             checkOperations
         )
     ) {

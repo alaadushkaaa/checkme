@@ -6,17 +6,17 @@ import checkme.domain.models.Task
 val criterions = mapOf(
     "Сложение положительных чисел" to
         Criterion(
-            "Сложение чисел происходит корректно",
+            "The addition of numbers is correct",
             COMPLETE_TASK,
             "plus_numbers.json",
-            "Числа складываются неправильно"
+            "The numbers add up incorrectly"
         ),
-    "Некорректный ввод" to
+    "Invalid input" to
         Criterion(
-            "Случай некоректного ввода обрабатывается",
+            "The case of incorrect input is processed",
             COMPLETE_TASK,
             "incorrect_input.json",
-            "Не обработан случай некорректного ввода чисел"
+            "Do not handle the case of incorrect number input"
         )
 )
 

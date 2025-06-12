@@ -89,9 +89,9 @@ class CheckSolutionHandler(
 }
 
 enum class CreationCheckError(val errorText: String) {
-    UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
 }
 
 enum class ModifyingCheckError(val errorText: String) {
-    UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
 }
