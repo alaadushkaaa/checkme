@@ -14,7 +14,13 @@ fun corsFilter(config: AppConfig): Filter =
                 "http://localhost:${config.webConfig.port}", // разрешает сервер
                 "http://localhost:3000" // разрешает клиент
             ),
-            headers = listOf("content-type", "access-control-allow-origin", "authorization", "x-custom-header"),
+            headers = listOf(
+                "content-type",
+                "access-control-allow-origin",
+                "authorization",
+                "x-custom-header",
+                "authentication"
+            ),
             methods = listOf(Method.GET, Method.POST, Method.PUT, Method.DELETE),
             credentials = true,
         )

@@ -7,6 +7,9 @@ import checkme.web.auth.AUTH_SEGMENT
 import checkme.web.auth.authRouter
 import checkme.web.filters.catchAndLogExceptionsFilter
 import checkme.web.filters.corsFilter
+import checkme.web.solution.SOLUTION_SEGMENT
+import checkme.web.solution.handlers.task
+import checkme.web.solution.solutionRouter
 import org.http4k.core.*
 import org.http4k.routing.*
 
@@ -16,7 +19,21 @@ private fun createMainRouter(
     jwtTools: JWTTools,
 ) = routes(
     "/" bind Method.GET to { _ -> ok("pong") },
-    AUTH_SEGMENT bind authRouter(config = config, operations = operations, jwtTools = jwtTools)
+    AUTH_SEGMENT bind authRouter(config = config, operations = operations, jwtTools = jwtTools),
+    SOLUTION_SEGMENT bind solutionRouter(operations = operations),
+    // todo необходимо создать базу данных заданий, реализовать страницы
+    // todo для каждого задания создается папка - внутри нее файлы-проверки, относящиеся к заданию
+    "/task/{id}" bind Method.GET to { _ ->
+        ok(
+            """
+            {
+                "name": "${task.name}",
+                "answerFormat": "${task.answerFormat}",
+                "description": "${task.description}"
+            }
+            """.trimIndent()
+        )
+    }
 )
 
 fun createApp(

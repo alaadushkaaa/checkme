@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS checks;
+
+CREATE TABLE checks (
+    id SERIAL PRIMARY KEY,
+	taskId INT NOT NULL,
+	userId INT NOT NULL,
+	date TIMESTAMP NOT NULL,
+	result JSONB,
+	status TEXT NOT NULL
+);

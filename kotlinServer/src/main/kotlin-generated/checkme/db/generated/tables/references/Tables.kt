@@ -4,9 +4,15 @@
 package checkme.db.generated.tables.references
 
 
+import checkme.db.generated.tables.Checks
 import checkme.db.generated.tables.Users
 
 
+
+/**
+ * The table <code>public.checks</code>.
+ */
+val CHECKS: Checks = Checks.CHECKS
 
 /**
  * The table <code>public.users</code>.
