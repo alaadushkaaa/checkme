@@ -13,6 +13,6 @@ interface TasksDatabase {
         name: String,
         criterions: Map<String, Criterion>,
         answerFormat: String,
-        description: String
+        description: String,
     ): Task?
 }

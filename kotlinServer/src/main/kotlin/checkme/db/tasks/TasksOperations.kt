@@ -22,7 +22,6 @@ class TasksOperations (
             .fetchOne()
             ?.toTask()
 
-
     override fun selectAllTask(): List<Task> =
         selectFromTasks()
             .fetch()
@@ -35,7 +34,7 @@ class TasksOperations (
         name: String,
         criterions: Map<String, Criterion>,
         answerFormat: String,
-        description: String
+        description: String,
     ): Task? {
         return jooqContext.insertInto(TASKS)
             .set(TASKS.NAME, name)
