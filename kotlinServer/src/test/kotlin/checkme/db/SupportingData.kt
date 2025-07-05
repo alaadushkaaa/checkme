@@ -4,8 +4,11 @@ package checkme.db
 
 import checkme.config.AppConfig
 import checkme.domain.accounts.PasswordHasher
+import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
+import checkme.domain.models.Task
+import checkme.web.solution.handlers.COMPLETE_TASK
 import java.time.LocalDateTime
 
 val validName = "Иван"
@@ -42,6 +45,34 @@ val validChecks: List<Check> = listOf(
     Check(validCheckId + 1, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, null, validStatusError),
     Check(validCheckId + 3, validTaskId, validUserId, validDate, null, validStatusProcess)
+)
+
+val validCriterions = mapOf(
+    "Сложение положительных чисел" to
+        Criterion(
+            "Сложение чисел происходит корреткно",
+            COMPLETE_TASK,
+            "plus_numbers.json",
+            "Числа складываются неправильно"
+        ),
+    "Некорректный ввод" to
+        Criterion(
+            "Случай некоректного ввода обрабатывается",
+            COMPLETE_TASK,
+            "incorrect_input.json",
+            "Не обработан случай некорректного ввода чисел"
+        )
+)
+
+val validTask: Task = Task(
+    1,
+    "Суммирование чисел",
+    validCriterions,
+    "Файл",
+    "Вам необходимо написать " +
+        "программу, выполняющую суммирование двух чисел. На вход подаются два числа - a и b, " +
+        "в качестве результата - сумма этих чисел. Некорректный ввод необходимо обрабатыввать и " +
+        "выводить строку \"Incorrect input\" в случае ошибки"
 )
 
 val appConfig = AppConfig.fromEnvironment()

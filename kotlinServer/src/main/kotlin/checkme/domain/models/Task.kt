@@ -9,3 +9,8 @@ data class Task(
     val answerFormat: String,
     val description: String,
 )
+
+enum class AnswerFormat(val code: String) {
+    FILE("file"),
+    TEXT("text"),
+}
