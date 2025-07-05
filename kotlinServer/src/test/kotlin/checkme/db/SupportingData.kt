@@ -7,6 +7,7 @@ import checkme.domain.accounts.PasswordHasher
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
+import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import checkme.web.solution.handlers.COMPLETE_TASK
 import java.time.LocalDateTime
@@ -68,7 +69,7 @@ val validTask: Task = Task(
     1,
     "Суммирование чисел",
     validCriterions,
-    "Файл",
+    FormatOfAnswer.FILE,
     "Вам необходимо написать " +
         "программу, выполняющую суммирование двух чисел. На вход подаются два числа - a и b, " +
         "в качестве результата - сумма этих чисел. Некорректный ввод необходимо обрабатыввать и " +
