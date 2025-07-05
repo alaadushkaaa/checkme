@@ -1,0 +1,44 @@
+package checkme.domain.operations.tasks
+
+import checkme.domain.checks.Criterion
+import checkme.domain.models.FormatOfAnswer
+import checkme.domain.models.Task
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result4k
+import dev.forkhandles.result4k.Success
+
+class CreateTask(
+    private val insertTask: (
+        name: String,
+        criterions: Map<String, Criterion>,
+        answerFormat: FormatOfAnswer,
+        description: String,
+    ) -> Task?,
+) : (
+        String,
+        Map<String, Criterion>,
+        FormatOfAnswer,
+        String,
+    ) -> Result4k<Task, CreateTaskError> {
+    override fun invoke(
+        name: String,
+        criterions: Map<String, Criterion>,
+        answerFormat: FormatOfAnswer,
+        description: String,
+    ): Result4k<Task, CreateTaskError> =
+        when (
+            val newTask = insertTask(
+                name,
+                criterions,
+                answerFormat,
+                description
+            )
+        ) {
+            is Task -> Success(newTask)
+            else -> Failure(CreateTaskError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
+enum class CreateTaskError {
+    UNKNOWN_DATABASE_ERROR,
+}
