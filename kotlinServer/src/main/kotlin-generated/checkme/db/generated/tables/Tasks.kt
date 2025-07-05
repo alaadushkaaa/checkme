@@ -5,6 +5,7 @@ package checkme.db.generated.tables
 
 
 import checkme.db.generated.Public
+import checkme.db.generated.enums.AnswerFormat
 import checkme.db.generated.keys.TASKS_PKEY
 import checkme.db.generated.tables.records.TasksRecord
 
@@ -99,7 +100,7 @@ open class Tasks(
     /**
      * The column <code>public.tasks.answerformat</code>.
      */
-    val ANSWERFORMAT: TableField<TasksRecord, String?> = createField(DSL.name("answerformat"), SQLDataType.CLOB.nullable(false), this, "")
+    val ANSWERFORMAT: TableField<TasksRecord, AnswerFormat?> = createField(DSL.name("answerformat"), SQLDataType.VARCHAR.nullable(false).asEnumDataType(AnswerFormat::class.java), this, "")
 
     /**
      * The column <code>public.tasks.description</code>.

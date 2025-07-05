@@ -4,6 +4,7 @@
 package checkme.db.generated.tables.records
 
 
+import checkme.db.generated.enums.AnswerFormat
 import checkme.db.generated.tables.Tasks
 
 import javax.annotation.processing.Generated
@@ -40,9 +41,9 @@ open class TasksRecord() : UpdatableRecordImpl<TasksRecord>(Tasks.TASKS) {
         set(value): Unit = set(2, value)
         get(): JSONB? = get(2) as JSONB?
 
-    open var answerformat: String?
+    open var answerformat: AnswerFormat?
         set(value): Unit = set(3, value)
-        get(): String? = get(3) as String?
+        get(): AnswerFormat? = get(3) as AnswerFormat?
 
     open var description: String?
         set(value): Unit = set(4, value)
@@ -57,7 +58,7 @@ open class TasksRecord() : UpdatableRecordImpl<TasksRecord>(Tasks.TASKS) {
     /**
      * Create a detached, initialised TasksRecord
      */
-    constructor(id: Int? = null, name: String? = null, criterions: JSONB? = null, answerformat: String? = null, description: String? = null): this() {
+    constructor(id: Int? = null, name: String? = null, criterions: JSONB? = null, answerformat: AnswerFormat? = null, description: String? = null): this() {
         this.id = id
         this.name = name
         this.criterions = criterions
