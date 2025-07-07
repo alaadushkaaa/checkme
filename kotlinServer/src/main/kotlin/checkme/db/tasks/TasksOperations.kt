@@ -26,6 +26,7 @@ class TasksOperations (
 
     override fun selectAllTask(): List<Task> =
         selectFromTasks()
+            .orderBy(TASKS.ID)
             .fetch()
             .mapNotNull { record: Record ->
                 record.toTask()

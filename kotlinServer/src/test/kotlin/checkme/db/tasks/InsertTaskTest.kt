@@ -1,7 +1,7 @@
 package checkme.db.tasks
 
 import checkme.db.TestcontainerSpec
-import checkme.db.validTask
+import checkme.db.validTasks
 import checkme.domain.models.FormatOfAnswer
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -10,7 +10,7 @@ class InsertTaskTest : TestcontainerSpec ({ context ->
     val taskOperations = TasksOperations(context)
 
     test("Valid task insertion should return this task") {
-        val taskForInsert = validTask
+        val taskForInsert = validTasks.first()
         val insertedTask =
             taskOperations.insertTask(
                 taskForInsert.name,
@@ -27,7 +27,7 @@ class InsertTaskTest : TestcontainerSpec ({ context ->
 
     for (type in FormatOfAnswer.entries) {
         test("Valid task with answer type $type can be inserted") {
-            val taskForInsert = validTask
+            val taskForInsert = validTasks.first()
             val insertedTask =
                 taskOperations.insertTask(
                     taskForInsert.name,

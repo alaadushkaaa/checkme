@@ -1,57 +1,46 @@
 package checkme.db.tasks
 
 import checkme.db.TestcontainerSpec
-import checkme.db.validTask
-import checkme.domain.models.FormatOfAnswer
-import checkme.domain.models.Task
+import checkme.db.validTasks
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
 class SelectTaskTest : TestcontainerSpec ({ context ->
     val taskOperations = TasksOperations(context)
-    lateinit var insertedTask: Task
 
     beforeEach {
-        insertedTask =
+        for (task in validTasks) {
             taskOperations.insertTask(
-                validTask.name,
-                validTask.criterions,
-                validTask.answerFormat,
-                validTask.description
+                task.name,
+                task.criterions,
+                task.answerFormat,
+                task.description
             ).shouldNotBeNull()
+        }
     }
 
     test("Select all tasks from db") {
-        taskOperations.insertTask(
-            validTask.name,
-            validTask.criterions,
-            FormatOfAnswer.TEXT,
-            validTask.description
-        ).shouldNotBeNull()
-
         taskOperations
             .selectAllTask()
-            .shouldNotBeNull()
-            .size
-            .shouldBe(2)
+            .shouldBe(validTasks)
     }
 
     test("Select task by valid id") {
         val fetchedTask =
             taskOperations
-                .selectTaskById(validTask.id)
+                .selectTaskById(validTasks.first().id)
                 .shouldNotBeNull()
 
-        fetchedTask.name.shouldBe(validTask.name)
-        fetchedTask.criterions.shouldBe(validTask.criterions)
-        fetchedTask.answerFormat.shouldBe(validTask.answerFormat)
-        fetchedTask.description.shouldBe(validTask.description)
+        fetchedTask.name.shouldBe(validTasks.first().name)
+        fetchedTask.criterions.shouldBe(validTasks.first().criterions)
+        fetchedTask.answerFormat.shouldBe(validTasks.first().answerFormat)
+        fetchedTask.description.shouldBe(validTasks.first().description)
     }
 
     test("Task cant be fetched by invalid id") {
         taskOperations
-            .selectTaskById(validTask.id + 1)
+            .selectTaskById(validTasks.first().id + validTasks.size)
             .shouldBeNull()
     }
 })
