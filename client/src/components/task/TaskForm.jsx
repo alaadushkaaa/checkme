@@ -57,7 +57,7 @@ function TaskForm() {
             )),
         ));
         inputsValues.files.forEach((file) => {
-            formData.append(file.name, file, file.name);
+            formData.append("file", file, file.name);
         });
         ['additional_files', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((inputName) => {
             if (inputsValues[inputName]) {
