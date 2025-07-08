@@ -1,6 +1,5 @@
 package checkme.web.lenses
 
-import checkme.web.lenses.GeneralWebLenses.makeBodyLensForFields
 import org.http4k.core.*
 import org.http4k.lens.*
 
