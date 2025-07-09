@@ -1,9 +1,6 @@
 package checkme.web.tasks.handlers
 
-import checkme.db.tasks.TasksOperations
-import checkme.domain.models.Task
 import checkme.domain.operations.tasks.TaskOperationsHolder
-import checkme.web.auth.handlers.SignUpError
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.lenses.TaskLenses
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -29,17 +26,22 @@ class AddTaskHandler(
             )
 
             is Success -> {
-                when (val newTask =
-                    addTask(
-                        validatedNewTask.value,
-                        tasksOperations
-                    )
-                ) {
-                    is Success -> Response(Status.OK).body(
-                        objectMapper.writeValueAsString(
-                            mapOf("taskId" to newTask.value.id)
+                when (
+                    val newTask =
+                        addTask(
+                            validatedNewTask.value,
+                            tasksOperations
                         )
-                    )
+                ) {
+                    is Success -> {
+                        //todo перемещение файлов-проверок в директорию
+                        //todo сохранять особые проверки!
+                        Response(Status.OK).body(
+                            objectMapper.writeValueAsString(
+                                mapOf("taskId" to newTask.value.id)
+                            )
+                        )
+                    }
 
                     is Failure -> Response(Status.INTERNAL_SERVER_ERROR).body(
                         objectMapper.writeValueAsString(
