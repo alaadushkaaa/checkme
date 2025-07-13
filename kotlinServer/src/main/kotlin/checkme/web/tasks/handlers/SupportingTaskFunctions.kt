@@ -12,6 +12,8 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.http4k.lens.MultipartForm
+import org.http4k.lens.MultipartFormFile
+import java.io.File
 
 internal fun addTask(
     task: Task,
@@ -42,8 +44,9 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     val answerFormat = jacksonMapper.readValue<FormatOfAnswer>(TaskLenses.answerFormatField(this).value)
     val files = TaskLenses.filesField(this)
     for (criterion in criterions) {
-        if (!files.map { it.filename }.contains(criterion.value.test))
+        if (!files.map { it.filename }.contains(criterion.value.test)) {
             return Failure(ValidateTaskError.NO_SUCH_FILE_FOR_CRITERION)
+        }
     }
     return Success(
         Task(
@@ -54,6 +57,23 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
             description = description
         )
     )
+}
+
+fun Task.tryAddTaskToDirectory(files: Map<String, List<MultipartFormFile>>) {
+    // todo проверить сохранение файлов со специальными проверками
+    val tasksDir = File(
+        "..$TASKS_DIR" +
+            "/${this.name}" +
+            "-${this.id}"
+    )
+    if (!tasksDir.exists()) {
+        tasksDir.mkdirs()
+    }
+    for (file in files) {
+        val filePath = File(tasksDir, "${file.value.first().filename}.json")
+        val fileBytes = file.value.first().content.use { it.readAllBytes() }
+        filePath.writeBytes(fileBytes)
+    }
 }
 
 enum class CreationTaskError(val errorText: String) {

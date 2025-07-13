@@ -21,6 +21,8 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTask()
         }
 
+    val removeTask: (task: Task) -> Result<Boolean, TaskRemovingError> = RemoveTask(tasksDatabase::deleteTask)
+
     val createCheck: (
         name: String,
         criterions: Map<String, Criterion>,

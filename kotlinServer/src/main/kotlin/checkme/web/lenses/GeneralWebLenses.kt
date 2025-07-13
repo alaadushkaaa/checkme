@@ -1,7 +1,16 @@
 package checkme.web.lenses
 
 import org.http4k.core.*
-import org.http4k.lens.*
+import org.http4k.lens.BiDiBodyLens
+import org.http4k.lens.BiDiLens
+import org.http4k.lens.Lens
+import org.http4k.lens.LensFailure
+import org.http4k.lens.MultipartForm
+import org.http4k.lens.Path
+import org.http4k.lens.Validator
+import org.http4k.lens.WebForm
+import org.http4k.lens.int
+import org.http4k.lens.webForm
 
 object GeneralWebLenses {
     /**
