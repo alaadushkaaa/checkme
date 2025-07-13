@@ -48,6 +48,12 @@ class TasksOperations (
             ?.toTask()
     }
 
+    override fun deleteTask(taskId: Int) {
+        jooqContext.deleteFrom(TASKS)
+            .where(TASKS.ID.eq(taskId))
+            .execute()
+    }
+
     private fun selectFromTasks() =
         jooqContext
             .select(
