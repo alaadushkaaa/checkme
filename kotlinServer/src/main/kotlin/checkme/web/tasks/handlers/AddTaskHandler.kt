@@ -9,6 +9,8 @@ import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.MultipartForm
 
+const val TASKS_DIR = "tasks"
+
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,
 ) : HttpHandler {
@@ -34,8 +36,7 @@ class AddTaskHandler(
                         )
                 ) {
                     is Success -> {
-                        //todo перемещение файлов-проверок в директорию
-                        //todo сохранять особые проверки!
+                        newTask.value.tryAddTaskToDirectory(form.files)
                         Response(Status.OK).body(
                             objectMapper.writeValueAsString(
                                 mapOf("taskId" to newTask.value.id)

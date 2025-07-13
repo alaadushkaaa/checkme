@@ -15,4 +15,6 @@ interface TasksDatabase {
         answerFormat: FormatOfAnswer,
         description: String,
     ): Task?
+
+    fun deleteTask(taskId: Int)
 }

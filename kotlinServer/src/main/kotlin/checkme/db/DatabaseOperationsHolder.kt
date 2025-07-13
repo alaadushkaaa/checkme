@@ -1,9 +1,11 @@
 package checkme.db
 
 import checkme.db.checks.CheckOperations
+import checkme.db.tasks.TasksOperations
 import checkme.db.users.UserOperations
 import checkme.domain.operations.dependencies.ChecksDatabase
 import checkme.domain.operations.dependencies.DatabaseOperations
+import checkme.domain.operations.dependencies.TasksDatabase
 import checkme.domain.operations.dependencies.UsersDatabase
 import org.jooq.DSLContext
 
@@ -13,8 +15,11 @@ class DatabaseOperationsHolder(
 ) : DatabaseOperations {
     private val userOperationsInternal = UserOperations(jooqContext)
     private val checkOperationInternal = CheckOperations(jooqContext)
+    private val taskOperationInternal = TasksOperations(jooqContext)
 
     override val userOperations: UsersDatabase get() = userOperationsInternal
 
     override val checkOperations: ChecksDatabase get() = checkOperationInternal
+
+    override val taskOperations: TasksDatabase get() = taskOperationInternal
 }

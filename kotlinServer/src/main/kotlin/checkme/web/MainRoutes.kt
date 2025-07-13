@@ -10,6 +10,8 @@ import checkme.web.filters.corsFilter
 import checkme.web.solution.SOLUTION_SEGMENT
 import checkme.web.solution.handlers.task
 import checkme.web.solution.solutionRouter
+import checkme.web.tasks.TASK_SEGMENT
+import checkme.web.tasks.taskRouter
 import org.http4k.core.*
 import org.http4k.routing.*
 
@@ -21,8 +23,7 @@ private fun createMainRouter(
     "/" bind Method.GET to { _ -> ok("pong") },
     AUTH_SEGMENT bind authRouter(config = config, operations = operations, jwtTools = jwtTools),
     SOLUTION_SEGMENT bind solutionRouter(operations = operations),
-    // todo необходимо создать базу данных заданий, реализовать страницы
-    // todo для каждого задания создается папка - внутри нее файлы-проверки, относящиеся к заданию
+    TASK_SEGMENT bind taskRouter(operations = operations),
     "/task/{id}" bind Method.GET to { _ ->
         ok(
             """
