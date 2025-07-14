@@ -38,10 +38,6 @@ class SignUpHandler(
                             signUpRequest.surname,
                             tokenResult.value
                         )
-//                        val signUpTokenResponse = mapOf(
-//                            "user_data" to signUpUserResponse,
-//                            "token" to tokenResult.value
-//                        )
                         Response(Status.CREATED).body(objectMapper.writeValueAsString(signUpUserResponse))
                     }
                 }
