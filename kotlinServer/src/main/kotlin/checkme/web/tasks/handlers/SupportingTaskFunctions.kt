@@ -4,6 +4,7 @@ import checkme.domain.checks.Criterion
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import checkme.domain.operations.tasks.CreateTaskError
+import checkme.domain.operations.tasks.TaskFetchingError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.lenses.TaskLenses
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -30,6 +31,21 @@ internal fun addTask(
         is Success -> Success(newTask.value)
         is Failure -> when (newTask.reason) {
             CreateTaskError.UNKNOWN_DATABASE_ERROR -> Failure(CreationTaskError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
+internal fun fetchTask(
+    taskId: Int,
+    taskOperations: TaskOperationsHolder,
+): Result<Task, FetchingTaskError> {
+    return when (
+        val fetchedTask = taskOperations.fetchTaskById(taskId)
+    ) {
+        is Success -> Success(fetchedTask.value)
+        is Failure -> when (fetchedTask.reason) {
+            TaskFetchingError.NO_SUCH_TASK -> Failure(FetchingTaskError.NO_SUCH_TASK)
+            TaskFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingTaskError.UNKNOWN_DATABASE_ERROR)
         }
     }
 }
@@ -77,9 +93,14 @@ fun Task.tryAddTaskToDirectory(files: Map<String, List<MultipartFormFile>>) {
 }
 
 enum class CreationTaskError(val errorText: String) {
-    UNKNOWN_DATABASE_ERROR("Что-то произошло. Попробуйте еще раз позднее или обратитесь за помощью"),
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
 }
 
 enum class ValidateTaskError(val errorText: String) {
-    NO_SUCH_FILE_FOR_CRITERION("Необходимо добавить все файлы для указанных критериев"),
+    NO_SUCH_FILE_FOR_CRITERION("All specified files must be added"),
+}
+
+enum class FetchingTaskError(val errorText: String) {
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
+    NO_SUCH_TASK("The task does not exist"),
 }
