@@ -6,7 +6,7 @@ import checkme.domain.operations.OperationHolder
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 
-const val GENERAL_LOGIN = "Admin"
+const val GENERAL_LOGIN = "admin"
 const val GENERAL_NAME = "Администратор"
 const val GENERAL_SURNAME = "Администратор"
 
