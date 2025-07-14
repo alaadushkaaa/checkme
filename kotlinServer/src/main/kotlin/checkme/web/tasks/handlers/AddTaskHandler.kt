@@ -23,7 +23,7 @@ class AddTaskHandler(
         ) {
             is Failure -> Response(Status.INTERNAL_SERVER_ERROR).body(
                 objectMapper.writeValueAsString(
-                    mapOf("error" to validatedNewTask.reason)
+                    mapOf("error" to validatedNewTask.reason.errorText)
                 )
             )
 
