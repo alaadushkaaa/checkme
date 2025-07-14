@@ -5,6 +5,7 @@ import checkme.db.DatabaseOperationsHolder
 import checkme.db.utils.createJooqContext
 import checkme.domain.operations.OperationHolder
 import checkme.service.initApplication
+import checkme.service.initGeneralUser
 import checkme.web.createApp
 import org.http4k.server.Netty
 import org.http4k.server.asServer
