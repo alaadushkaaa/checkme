@@ -35,13 +35,14 @@ class SignUpHandler(
                         val signUpUserResponse = UserAuthResponse(
                             signUpRequest.username,
                             signUpRequest.name,
-                            signUpRequest.surname
+                            signUpRequest.surname,
+                            tokenResult.value
                         )
-                        val signUpTokenResponse = mapOf(
-                            "user_data" to signUpUserResponse,
-                            "token" to tokenResult.value
-                        )
-                        Response(Status.CREATED).body(objectMapper.writeValueAsString(signUpTokenResponse))
+//                        val signUpTokenResponse = mapOf(
+//                            "user_data" to signUpUserResponse,
+//                            "token" to tokenResult.value
+//                        )
+                        Response(Status.CREATED).body(objectMapper.writeValueAsString(signUpUserResponse))
                     }
                 }
             }
