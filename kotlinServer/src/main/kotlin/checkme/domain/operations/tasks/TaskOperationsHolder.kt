@@ -26,13 +26,13 @@ class TaskOperationsHolder (
     val createCheck: (
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: FormatOfAnswer,
+        answerFormat: List<FormatOfAnswer>,
         description: String,
     ) -> Result<Task, CreateTaskError> =
         CreateTask {
                 name: String,
                 criterions: Map<String, Criterion>,
-                answerFormat: FormatOfAnswer,
+                answerFormat: List<FormatOfAnswer>,
                 description: String,
             ->
             tasksDatabase.insertTask(
