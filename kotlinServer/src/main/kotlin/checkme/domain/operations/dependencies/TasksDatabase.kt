@@ -12,7 +12,7 @@ interface TasksDatabase {
     fun insertTask(
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: FormatOfAnswer,
+        answerFormat: List<FormatOfAnswer>,
         description: String,
     ): Task?
 

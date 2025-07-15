@@ -57,7 +57,8 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     val description = TaskLenses.descriptionField(this).value
     val criterions: Map<String, Criterion> =
         jacksonMapper.readValue<Map<String, Criterion>>(TaskLenses.criterionsField(this).value)
-    val answerFormat = jacksonMapper.readValue<FormatOfAnswer>(TaskLenses.answerFormatField(this).value)
+    val answerFormat: List<FormatOfAnswer> =
+        jacksonMapper.readValue<List<FormatOfAnswer>>(TaskLenses.answerFormatField(this).value)
     val files = TaskLenses.filesField(this)
     for (criterion in criterions) {
         if (!files.map { it.filename }.contains(criterion.value.test)) {
@@ -79,15 +80,15 @@ fun Task.tryAddTaskToDirectory(files: Map<String, List<MultipartFormFile>>) {
     // todo проверить сохранение файлов со специальными проверками
     val tasksDir = File(
         "..$TASKS_DIR" +
-            "/${this.name}" +
+            "/${this.name.trim()}" +
             "-${this.id}"
     )
     if (!tasksDir.exists()) {
         tasksDir.mkdirs()
     }
-    for (file in files) {
-        val filePath = File(tasksDir, "${file.value.first().filename}.json")
-        val fileBytes = file.value.first().content.use { it.readAllBytes() }
+    for (file in files.values.flatten()) {
+        val filePath = File(tasksDir, file.filename)
+        val fileBytes = file.content.use { it.readAllBytes() }
         filePath.writeBytes(fileBytes)
     }
 }
