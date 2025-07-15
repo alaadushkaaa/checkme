@@ -9,7 +9,7 @@ import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.MultipartForm
 
-const val TASKS_DIR = "tasks"
+const val TASKS_DIR = "/tasks"
 
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,

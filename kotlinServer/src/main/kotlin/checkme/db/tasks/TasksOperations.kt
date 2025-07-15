@@ -1,6 +1,5 @@
 package checkme.db.tasks
 
-import checkme.db.generated.enums.AnswerFormat
 import checkme.db.generated.tables.references.TASKS
 import checkme.db.utils.safeLet
 import checkme.domain.checks.Criterion
@@ -35,13 +34,13 @@ class TasksOperations (
     override fun insertTask(
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: FormatOfAnswer,
+        answerFormat: List<FormatOfAnswer>,
         description: String,
     ): Task? {
         return jooqContext.insertInto(TASKS)
             .set(TASKS.NAME, name)
             .set(TASKS.CRITERIONS, jsonb(objectMapper.writeValueAsString(criterions)))
-            .set(TASKS.ANSWERFORMAT, AnswerFormat.valueOf(answerFormat.toString()))
+            .set(TASKS.ANSWERFORMAT, jsonb(objectMapper.writeValueAsString(answerFormat)))
             .set(TASKS.DESCRIPTION, description)
             .returningResult()
             .fetchOne()
@@ -84,14 +83,7 @@ internal fun Record.toTask(): Task? =
             id = id,
             name = name,
             criterions = jacksonObjectMapper().readValue<Map<String, Criterion>>(criterions.data()),
-            answerFormat = FormatOfAnswer.valueOf(answerFormat.toString()),
+            answerFormat = jacksonObjectMapper().readValue<List<FormatOfAnswer>>(answerFormat.data()),
             description = description
         )
-    }
-
-internal fun FormatOfAnswer.asDbAnswerFormat(): AnswerFormat? =
-    when (this) {
-        FormatOfAnswer.FILE -> AnswerFormat.FILE
-        FormatOfAnswer.TEXT -> AnswerFormat.TEXT
-        else -> null
     }

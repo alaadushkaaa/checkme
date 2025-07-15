@@ -11,19 +11,19 @@ class CreateTask(
     private val insertTask: (
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: FormatOfAnswer,
+        answerFormat: List<FormatOfAnswer>,
         description: String,
     ) -> Task?,
 ) : (
         String,
         Map<String, Criterion>,
-        FormatOfAnswer,
+        List<FormatOfAnswer>,
         String,
     ) -> Result4k<Task, CreateTaskError> {
     override fun invoke(
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: FormatOfAnswer,
+        answerFormat: List<FormatOfAnswer>,
         description: String,
     ): Result4k<Task, CreateTaskError> =
         when (

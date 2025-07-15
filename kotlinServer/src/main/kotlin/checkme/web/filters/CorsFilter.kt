@@ -17,6 +17,8 @@ fun corsFilter(config: AppConfig): Filter =
             headers = listOf(
                 "content-type",
                 "access-control-allow-origin",
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials",
                 "authorization",
                 "x-custom-header",
                 "authentication"
