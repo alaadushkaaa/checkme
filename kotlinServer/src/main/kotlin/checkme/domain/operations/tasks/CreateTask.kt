@@ -1,6 +1,7 @@
 package checkme.domain.operations.tasks
 
 import checkme.domain.checks.Criterion
+import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import dev.forkhandles.result4k.Failure
@@ -11,19 +12,19 @@ class CreateTask(
     private val insertTask: (
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: List<FormatOfAnswer>,
+        answerFormat: Map<String, AnswerType>,
         description: String,
     ) -> Task?,
 ) : (
         String,
         Map<String, Criterion>,
-        List<FormatOfAnswer>,
+        Map<String, AnswerType>,
         String,
     ) -> Result4k<Task, CreateTaskError> {
     override fun invoke(
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: List<FormatOfAnswer>,
+        answerFormat: Map<String, AnswerType>,
         description: String,
     ): Result4k<Task, CreateTaskError> =
         when (

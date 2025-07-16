@@ -7,18 +7,32 @@ import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
 
 class RemoveTask(
-    val removeTask: (Int) -> Unit,
-) : (Task) -> Result<Boolean, TaskRemovingError> {
-    override fun invoke(task: Task): Result<Boolean, TaskRemovingError> {
+    private val selectTaskById: (taskId: Int) -> Task?,
+    private val removeTask: (Int) -> Int?,
+) : (Task) -> Result<Int, TaskRemovingError> {
+    override fun invoke(task: Task): Result<Int, TaskRemovingError> {
         return try {
-            removeTask(task.id)
-            Success(true)
+            when {
+                taskNotExists(task.id) -> Failure(TaskRemovingError.TASK_NOT_EXISTS)
+                else -> when (removeTask(task.id)) {
+                    is Int -> Success(task.id)
+                    else -> Failure(TaskRemovingError.UNKNOWN_DELETE_ERROR)
+                }
+            }
         } catch (_: DataAccessException) {
             Failure(TaskRemovingError.UNKNOWN_DATABASE_ERROR)
         }
     }
+
+    private fun taskNotExists(taskId: Int): Boolean =
+        when (selectTaskById(taskId)) {
+            is Task -> false
+            else -> true
+        }
 }
 
 enum class TaskRemovingError {
     UNKNOWN_DATABASE_ERROR,
+    UNKNOWN_DELETE_ERROR,
+    TASK_NOT_EXISTS
 }
