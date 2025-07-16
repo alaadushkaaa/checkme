@@ -1,6 +1,7 @@
 package checkme.web.tasks.handlers
 
 import checkme.domain.checks.Criterion
+import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import checkme.domain.operations.tasks.CreateTaskError
@@ -57,8 +58,9 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     val description = TaskLenses.descriptionField(this).value
     val criterions: Map<String, Criterion> =
         jacksonMapper.readValue<Map<String, Criterion>>(TaskLenses.criterionsField(this).value)
-    val answerFormat: List<FormatOfAnswer> =
+    val answerFormatFromForm: List<FormatOfAnswer> =
         jacksonMapper.readValue<List<FormatOfAnswer>>(TaskLenses.answerFormatField(this).value)
+    val answerFormatBd = answerFormatFromForm.associate { it.name to AnswerType.valueOf(it.type) }
     val files = TaskLenses.filesField(this)
     for (criterion in criterions) {
         if (!files.map { it.filename }.contains(criterion.value.test)) {
@@ -70,7 +72,7 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
             id = taskId ?: -1,
             name = taskName,
             criterions = criterions,
-            answerFormat = answerFormat,
+            answerFormat = answerFormatBd,
             description = description
         )
     )

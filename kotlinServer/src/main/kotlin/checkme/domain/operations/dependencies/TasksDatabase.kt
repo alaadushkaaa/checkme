@@ -1,6 +1,7 @@
 package checkme.domain.operations.dependencies
 
 import checkme.domain.checks.Criterion
+import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 
@@ -12,9 +13,9 @@ interface TasksDatabase {
     fun insertTask(
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: List<FormatOfAnswer>,
+        answerFormat: Map<String, AnswerType>,
         description: String,
     ): Task?
 
-    fun deleteTask(taskId: Int)
+    fun deleteTask(taskId: Int): Int?
 }

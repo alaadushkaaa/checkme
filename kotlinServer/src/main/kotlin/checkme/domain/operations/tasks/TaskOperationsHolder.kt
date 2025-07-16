@@ -1,6 +1,7 @@
 package checkme.domain.operations.tasks
 
 import checkme.domain.checks.Criterion
+import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import checkme.domain.operations.dependencies.TasksDatabase
@@ -21,18 +22,21 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTask()
         }
 
-    val removeTask: (task: Task) -> Result<Boolean, TaskRemovingError> = RemoveTask(tasksDatabase::deleteTask)
+    val removeTask: (task: Task) -> Result<Int, TaskRemovingError> =
+        RemoveTask(
+            selectTaskById = tasksDatabase::selectTaskById,
+            removeTask = tasksDatabase::deleteTask)
 
     val createCheck: (
         name: String,
         criterions: Map<String, Criterion>,
-        answerFormat: List<FormatOfAnswer>,
+        answerFormat: Map<String, AnswerType>,
         description: String,
     ) -> Result<Task, CreateTaskError> =
         CreateTask {
                 name: String,
                 criterions: Map<String, Criterion>,
-                answerFormat: List<FormatOfAnswer>,
+                answerFormat: Map<String, AnswerType>,
                 description: String,
             ->
             tasksDatabase.insertTask(
