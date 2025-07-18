@@ -2,6 +2,8 @@ package checkme.web.tasks.handlers
 
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.lenses.GeneralWebLenses.idOrNull
+import checkme.web.tasks.forms.TaskClientResponse
+import checkme.web.tasks.forms.TaskClientResponse.Companion.toClientEntryAnswerFormat
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
@@ -38,7 +40,15 @@ private fun tryFetchTask(
             )
         )
         is Success -> Response(Status.OK).body(
-            objectMapper.writeValueAsString(task.value)
+            objectMapper.writeValueAsString(
+                TaskClientResponse(
+                    task.value.id,
+                    task.value.name,
+                    task.value.criterions,
+                    task.value.answerFormat.toClientEntryAnswerFormat(),
+                    task.value.description
+                )
+            )
         )
     }
 }
