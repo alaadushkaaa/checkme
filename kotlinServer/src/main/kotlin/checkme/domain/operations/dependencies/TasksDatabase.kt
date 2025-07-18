@@ -2,7 +2,6 @@ package checkme.domain.operations.dependencies
 
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
-import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 
 interface TasksDatabase {

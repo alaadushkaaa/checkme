@@ -2,7 +2,6 @@ package checkme.domain.operations.tasks
 
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
-import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k

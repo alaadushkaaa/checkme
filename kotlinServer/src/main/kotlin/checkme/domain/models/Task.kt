@@ -12,5 +12,5 @@ data class Task(
 
 enum class AnswerType(val code: String) {
     FILE("file"),
-    TEXT("text")
+    TEXT("text"),
 }
