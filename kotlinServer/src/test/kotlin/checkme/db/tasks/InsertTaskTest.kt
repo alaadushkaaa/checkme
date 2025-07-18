@@ -3,23 +3,11 @@ package checkme.db.tasks
 import checkme.db.TestcontainerSpec
 import checkme.db.validTasks
 import checkme.domain.models.AnswerType
-import checkme.domain.models.FormatOfAnswer
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
 class InsertTaskTest : TestcontainerSpec ({ context ->
     val taskOperations = TasksOperations(context)
-
-    beforeEach {
-        for (task in validTasks) {
-            taskOperations.insertTask(
-                task.name,
-                task.criterions,
-                task.answerFormat,
-                task.description
-            ).shouldNotBeNull()
-        }
-    }
 
     test("Valid task insertion should return this task") {
         val taskForInsert = validTasks.first()

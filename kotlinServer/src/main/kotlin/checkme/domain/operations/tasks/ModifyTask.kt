@@ -34,5 +34,5 @@ class RemoveTask(
 enum class TaskRemovingError {
     UNKNOWN_DATABASE_ERROR,
     UNKNOWN_DELETE_ERROR,
-    TASK_NOT_EXISTS
+    TASK_NOT_EXISTS,
 }

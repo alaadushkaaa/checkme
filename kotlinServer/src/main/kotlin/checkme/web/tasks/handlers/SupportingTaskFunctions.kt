@@ -52,6 +52,7 @@ internal fun fetchTask(
 }
 
 // todo add all checks for validate task
+@Suppress("ReturnCount")
 fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     val jacksonMapper = jacksonObjectMapper()
     val taskName = TaskLenses.nameField(this).value
@@ -60,7 +61,15 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
         jacksonMapper.readValue<Map<String, Criterion>>(TaskLenses.criterionsField(this).value)
     val answerFormatFromForm: List<FormatOfAnswer> =
         jacksonMapper.readValue<List<FormatOfAnswer>>(TaskLenses.answerFormatField(this).value)
-    val answerFormatBd = answerFormatFromForm.associate { it.name to AnswerType.valueOf(it.type) }
+
+    for (answerFormat in answerFormatFromForm) {
+        try {
+            AnswerType.valueOf(answerFormat.type.uppercase())
+        } catch (_: IllegalArgumentException) {
+            return Failure(ValidateTaskError.ANSWER_TYPE_ERROR)
+        }
+    }
+    val answerFormatBd = answerFormatFromForm.associate { it.name to AnswerType.valueOf(it.type.uppercase()) }
     val files = TaskLenses.filesField(this)
     for (criterion in criterions) {
         if (!files.map { it.filename }.contains(criterion.value.test)) {
@@ -101,6 +110,7 @@ enum class CreationTaskError(val errorText: String) {
 
 enum class ValidateTaskError(val errorText: String) {
     NO_SUCH_FILE_FOR_CRITERION("All specified files must be added"),
+    ANSWER_TYPE_ERROR("This type of task answer does not exist"),
 }
 
 enum class FetchingTaskError(val errorText: String) {
