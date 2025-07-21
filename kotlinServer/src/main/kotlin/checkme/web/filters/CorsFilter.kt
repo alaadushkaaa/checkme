@@ -12,7 +12,7 @@ fun corsFilter(config: AppConfig): Filter =
         CorsPolicy(
             originPolicy = OriginPolicy.AnyOf(
                 "http://localhost:${config.webConfig.port}", // разрешает сервер
-                "http://localhost:3000" // разрешает клиент
+                "http://localhost:8080" // разрешает клиент
             ),
             headers = listOf(
                 "content-type",
