@@ -19,7 +19,7 @@ function Task() {
     const [inputsValues, addInput] = useForm();
     const fetchTask = useFetch(`/task/${params.taskId}`);
     const postAnswer = usePost(
-        `/check/${params.taskId}`,
+        `/solution/new/${params.taskId}`,
         (data) => navigate(`/results/${data.checkId}`),
     );
     const deleteTask = usePost(

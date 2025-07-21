@@ -45,7 +45,8 @@ class SignInHandler(
                             signInResult.value.surname,
                             tokenResult.value
                         )
-                        Response(Status.CREATED).body(objectMapper.writeValueAsString(signInUserResponse))
+                        Response(Status.CREATED)
+                            .body(objectMapper.writeValueAsString(signInUserResponse))
                     }
                 }
             }
