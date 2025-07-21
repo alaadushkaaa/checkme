@@ -51,6 +51,16 @@ internal fun fetchTask(
     }
 }
 
+internal fun taskExists(
+    taskId: Int,
+    taskOperations: TaskOperationsHolder,
+): Boolean {
+    return when (fetchTask(taskId = taskId, taskOperations = taskOperations)) {
+        is Success -> true
+        is Failure -> false
+    }
+}
+
 // todo add all checks for validate task
 @Suppress("ReturnCount")
 fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {

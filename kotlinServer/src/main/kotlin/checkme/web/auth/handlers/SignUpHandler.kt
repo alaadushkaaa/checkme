@@ -38,7 +38,8 @@ class SignUpHandler(
                             signUpRequest.surname,
                             tokenResult.value
                         )
-                        Response(Status.CREATED).body(objectMapper.writeValueAsString(signUpUserResponse))
+                        Response(Status.CREATED)
+                            .body(objectMapper.writeValueAsString(signUpUserResponse))
                     }
                 }
             }

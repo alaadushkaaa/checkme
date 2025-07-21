@@ -1,5 +1,6 @@
 package checkme.web.lenses
 
+import checkme.domain.models.User
 import org.http4k.core.*
 import org.http4k.lens.BiDiBodyLens
 import org.http4k.lens.BiDiLens
@@ -7,12 +8,19 @@ import org.http4k.lens.Lens
 import org.http4k.lens.LensFailure
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.Path
+import org.http4k.lens.RequestContextKey
+import org.http4k.lens.RequestContextLens
 import org.http4k.lens.Validator
 import org.http4k.lens.WebForm
 import org.http4k.lens.int
 import org.http4k.lens.webForm
 
 object GeneralWebLenses {
+
+    fun userLens(contexts: RequestContexts): RequestContextLens<User?> =
+        RequestContextKey
+            .optional(contexts, "user")
+
     /**
      * Lens for getting {id} from request path
      */

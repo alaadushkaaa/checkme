@@ -4,7 +4,9 @@ import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
+import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.ModifyCheckError
+import checkme.web.tasks.handlers.taskExists
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
@@ -70,21 +72,30 @@ internal fun createNewCheck(
     taskId: Int,
     userId: Int,
     checkOperations: CheckOperationHolder,
+    taskOperations: TaskOperationsHolder,
 ): Result<Check, CreationCheckError> {
-    return when (
-        val newCheck = checkOperations.createCheck(
-            taskId,
-            userId,
-            LocalDateTime.now(),
-            null,
-            "В процессе"
+    if (taskExists(
+            taskId = taskId,
+            taskOperations = taskOperations
         )
     ) {
-        is Failure -> when (newCheck.reason) {
-            CreateCheckError.UNKNOWN_DATABASE_ERROR -> Failure(CreationCheckError.UNKNOWN_DATABASE_ERROR)
-        }
+        return when (
+            val newCheck = checkOperations.createCheck(
+                taskId,
+                userId,
+                LocalDateTime.now(),
+                null,
+                "В процессе"
+            )
+        ) {
+            is Failure -> when (newCheck.reason) {
+                CreateCheckError.UNKNOWN_DATABASE_ERROR -> Failure(CreationCheckError.UNKNOWN_DATABASE_ERROR)
+            }
 
-        is Success -> Success(newCheck.value)
+            is Success -> Success(newCheck.value)
+        }
+    } else {
+        return Failure(CreationCheckError.NO_TASK_FOR_CHECK_IN_DB)
     }
 }
 
