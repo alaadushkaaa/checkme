@@ -3,7 +3,6 @@ package checkme.web.solution.handlers
 import checkme.db.*
 import checkme.domain.accounts.Role
 import checkme.domain.models.Check
-import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.OperationHolder
 import checkme.domain.operations.checks.CheckOperationHolder
@@ -70,8 +69,6 @@ class CheckSolutionHandlerTest : FunSpec({
         whenever(checkOperations.fetchChecksByUserId).thenReturn(mock())
         whenever(checkOperations.updateCheckStatus).thenReturn(mock())
         whenever(taskOperations.fetchTaskById).thenReturn(mock())
-
-
 
         whenever(userLens(any())).thenReturn(mock())
 

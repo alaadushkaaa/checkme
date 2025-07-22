@@ -33,6 +33,7 @@ class CheckSolutionHandler(
 ) : HttpHandler {
     @Suppress("LongMethod", "NestedBlockDepth", "ReturnCount")
     override fun invoke(request: Request): Response {
+        // todo получение id задания из пути
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
         return when {

@@ -36,7 +36,13 @@ class AddTaskHandler(
                         )
                 ) {
                     is Success -> {
-                        newTask.value.tryAddTaskToDirectory(form.files)
+                        // todo если критерии не соответствуют уже добавленным - операция по обновлению
+                        // критериев задания в бд
+                        val updatedCriterions = newTask.value.addTaskToDirectory(
+                            files = form.files,
+                            fields = form.fields,
+                            criterions = newTask.value.criterions
+                        )
                         Response(Status.OK).body(
                             objectMapper.writeValueAsString(
                                 mapOf("taskId" to newTask.value.id)

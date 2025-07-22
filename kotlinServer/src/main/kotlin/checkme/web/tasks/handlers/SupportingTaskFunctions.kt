@@ -14,6 +14,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.http4k.lens.MultipartForm
+import org.http4k.lens.MultipartFormField
 import org.http4k.lens.MultipartFormFile
 import java.io.File
 
@@ -61,7 +62,6 @@ internal fun taskExists(
     }
 }
 
-// todo add all checks for validate task
 @Suppress("ReturnCount")
 fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     val jacksonMapper = jacksonObjectMapper()
@@ -97,12 +97,15 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     )
 }
 
-fun Task.tryAddTaskToDirectory(files: Map<String, List<MultipartFormFile>>) {
-    // todo проверить сохранение файлов со специальными проверками
+fun Task.addTaskToDirectory(
+    files: Map<String, List<MultipartFormFile>>,
+    fields: Map<String, List<MultipartFormField>>,
+    criterions: Map<String, Criterion>,
+): Map<String, Criterion> {
     val tasksDir = File(
         "..$TASKS_DIR" +
-            "/${this.name.trim()}" +
-            "-${this.id}"
+            "/${this.id}" +
+            "-${this.name.trim()}"
     )
     if (!tasksDir.exists()) {
         tasksDir.mkdirs()
@@ -112,6 +115,40 @@ fun Task.tryAddTaskToDirectory(files: Map<String, List<MultipartFormFile>>) {
         val fileBytes = file.content.use { it.readAllBytes() }
         filePath.writeBytes(fileBytes)
     }
+    return tryRenameFileAndUpdateCriterions(
+        criterions = criterions,
+        fields = fields,
+        tasksDir = tasksDir
+    )
+}
+
+fun tryRenameFileAndUpdateCriterions(
+    criterions: Map<String, Criterion>,
+    fields: Map<String, List<MultipartFormField>>,
+    tasksDir: File,
+): Map<String, Criterion> {
+    val updatedCriterions = criterions.toMutableMap()
+    val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
+    for (criteria in specialCriteria) {
+        fields[criteria]?.firstOrNull()?.value?.takeIf { it.isNotBlank() }?.let { originalFileName ->
+            val originalFile = File(tasksDir, originalFileName)
+
+            if (originalFile.exists()) {
+                val newFile = File(tasksDir, "$criteria.json")
+                originalFile.renameTo(newFile)
+                println("Renamed $originalFileName to ${newFile.name} for criteria $criteria")
+
+                updatedCriterions.forEach { (key, value) ->
+                    if (value.test == originalFileName) {
+                        updatedCriterions[key] = value.copy(test = criteria)
+                    }
+                }
+            } else {
+                println("Warning: file $originalFileName not found for criteria $criteria")
+            }
+        }
+    }
+    return updatedCriterions
 }
 
 enum class CreationTaskError(val errorText: String) {
