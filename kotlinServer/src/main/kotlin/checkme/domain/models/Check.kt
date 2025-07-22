@@ -177,7 +177,7 @@ data class Check(
             answers: List<Pair<String, String>>,
         ): CheckResult? {
             val objectMapper = jacksonObjectMapper()
-            val checkFile = findCheckFile("../tasks/task${task.id}", criterion.value.test)
+            val checkFile = findCheckFile("../tasks/${task.id}-${task.name}", criterion.value.test)
             val jsonString = checkFile?.readText()
             if (jsonString == null) {
                 return null
