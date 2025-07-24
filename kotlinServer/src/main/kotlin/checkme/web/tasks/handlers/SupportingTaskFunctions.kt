@@ -13,6 +13,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import org.http4k.core.*
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormField
 import org.http4k.lens.MultipartFormFile
@@ -97,15 +98,14 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     )
 }
 
-fun Task.addTaskToDirectory(
+fun Task.addTaskFilesToDirectory(
     files: Map<String, List<MultipartFormFile>>,
     fields: Map<String, List<MultipartFormField>>,
     criterions: Map<String, Criterion>,
 ): Map<String, Criterion> {
     val tasksDir = File(
         "..$TASKS_DIR" +
-            "/${this.id}" +
-            "-${this.name.trim()}"
+            "/${this.name.trim()}"
     )
     if (!tasksDir.exists()) {
         tasksDir.mkdirs()
@@ -122,6 +122,7 @@ fun Task.addTaskToDirectory(
     )
 }
 
+@Suppress("NestedBlockDepth")
 fun tryRenameFileAndUpdateCriterions(
     criterions: Map<String, Criterion>,
     fields: Map<String, List<MultipartFormField>>,
@@ -140,7 +141,7 @@ fun tryRenameFileAndUpdateCriterions(
 
                 updatedCriterions.forEach { (key, value) ->
                     if (value.test == originalFileName) {
-                        updatedCriterions[key] = value.copy(test = criteria)
+                        updatedCriterions[key] = value.copy(test = "$criteria.json")
                     }
                 }
             } else {

@@ -1,6 +1,7 @@
 package checkme.web.solution.handlers
 
 import checkme.domain.models.Check
+import checkme.domain.models.Task
 import checkme.domain.models.User
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
@@ -43,6 +44,7 @@ internal fun tryGetFieldsAndFilesFromForm(
     filesForm: MultipartForm,
     newCheck: Check,
     user: User,
+    task: Task,
 ): List<Pair<String, String>> {
     val fieldAnswers = filesForm.fields
         .map { Pair("field", it.value.toString()) }

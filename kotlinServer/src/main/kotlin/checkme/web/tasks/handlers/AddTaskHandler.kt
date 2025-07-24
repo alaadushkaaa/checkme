@@ -28,21 +28,19 @@ class AddTaskHandler(
             )
 
             is Success -> {
+                val updatedCriterions = validatedNewTask.value.addTaskFilesToDirectory(
+                    files = form.files,
+                    fields = form.fields,
+                    criterions = validatedNewTask.value.criterions
+                )
                 when (
                     val newTask =
                         addTask(
-                            validatedNewTask.value,
-                            tasksOperations
+                            task = validatedNewTask.value.copy(criterions = updatedCriterions),
+                            taskOperations = tasksOperations
                         )
                 ) {
                     is Success -> {
-                        // todo если критерии не соответствуют уже добавленным - операция по обновлению
-                        // критериев задания в бд
-                        val updatedCriterions = newTask.value.addTaskToDirectory(
-                            files = form.files,
-                            fields = form.fields,
-                            criterions = newTask.value.criterions
-                        )
                         Response(Status.OK).body(
                             objectMapper.writeValueAsString(
                                 mapOf("taskId" to newTask.value.id)
