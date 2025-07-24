@@ -1,6 +1,17 @@
 package checkme.web.solution.handlers
 
-import checkme.db.*
+import checkme.db.appConfiguredPasswordHasher
+import checkme.db.validCheckId
+import checkme.db.validDate
+import checkme.db.validLogin
+import checkme.db.validName
+import checkme.db.validPass
+import checkme.db.validResult
+import checkme.db.validStatusCorrect
+import checkme.db.validSurname
+import checkme.db.validTaskId
+import checkme.db.validTasks
+import checkme.db.validUserId
 import checkme.domain.accounts.Role
 import checkme.domain.models.Check
 import checkme.domain.models.User
@@ -73,7 +84,7 @@ class CheckSolutionHandlerTest : FunSpec({
         whenever(userLens(any())).thenReturn(mock())
 
         val router = routes(
-            "$SOLUTION_DIR$NEW_SOLUTION/{taskId}" bind Method.POST to
+            "$SOLUTION_DIR$NEW_SOLUTION/{id}" bind Method.POST to
                 CheckSolutionHandler(
                     checkOperations = checkOperations,
                     taskOperations = taskOperations,

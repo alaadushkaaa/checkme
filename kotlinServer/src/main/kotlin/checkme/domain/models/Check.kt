@@ -3,7 +3,9 @@ package checkme.domain.models
 import checkme.domain.checks.CheckDataConsole
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
+import checkme.domain.models.Check.Companion.tryCheckSpecialCriterionEach
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.http4k.core.*
 import java.io.File
 import java.time.LocalDateTime
 
@@ -16,7 +18,7 @@ data class Check(
     val status: String,
 ) {
     companion object {
-        private val specialCriteria = listOf("beforeAll.json", " beforeEach.json", "afterEach.json", "afterAll.json")
+        private val specialCriteria = listOf("beforeAll.json", "beforeEach.json", "afterEach.json", "afterAll.json")
 
         internal fun checkStudentAnswer(
             task: Task,
@@ -32,7 +34,7 @@ data class Check(
                 answers = answers,
                 results = results
             )
-            for (criterion in task.criterions) {
+            for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.test) }) {
                 beforeEachCriterionCheck(
                     task = task,
                     checkId = checkId,
@@ -121,16 +123,16 @@ data class Check(
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
         ) {
-            val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeEach.json" },
+            val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterEach.json" },
                 task = task,
                 checkId = checkId,
                 user = user,
                 answers = answers
             )
 
-            if (specialResultBeforeEach != null) {
-                results[specialResultBeforeEach.first] = specialResultBeforeEach.second
+            if (specialResultAfterEach != null) {
+                results[specialResultAfterEach.first] = specialResultAfterEach.second
             }
         }
 
@@ -141,8 +143,11 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
         ): Pair<String, CheckResult>? {
-            return if (this[specialCriterion?.key] != null &&
-                this[specialCriterion?.key]?.score != 0 &&
+            return if (
+                (
+                    (this.criterionAlreadyChecked(specialCriterion)) ||
+                        (this[specialCriterion?.key] == null)
+                ) &&
                 specialCriterion != null
             ) {
                 when (val eachResult = criterionCheck(specialCriterion, task, checkId, user, answers)) {
@@ -177,7 +182,7 @@ data class Check(
             answers: List<Pair<String, String>>,
         ): CheckResult? {
             val objectMapper = jacksonObjectMapper()
-            val checkFile = findCheckFile("../tasks/${task.id}-${task.name}", criterion.value.test)
+            val checkFile = findCheckFile("../tasks/${task.name}", criterion.value.test)
             val jsonString = checkFile?.readText()
             if (jsonString == null) {
                 return null
@@ -193,7 +198,11 @@ data class Check(
                         )
                         CheckDataConsole.consoleCheck(task, check, user, checkId, criterion.value)
                     }
-                    else -> null
+
+                    else -> {
+                        println("Неизвестный тип проверки")
+                        null
+                    }
                 }
             }
         }
@@ -208,6 +217,9 @@ data class Check(
         }
     }
 }
+
+private fun MutableMap<String, CheckResult>.criterionAlreadyChecked(specialCriterion: Map.Entry<String, Criterion>?) =
+    this[specialCriterion?.key] != null && this[specialCriterion?.key]?.score != 0
 
 enum class CheckType(val code: String) {
     CONSOLE_CHECK("console-check"),

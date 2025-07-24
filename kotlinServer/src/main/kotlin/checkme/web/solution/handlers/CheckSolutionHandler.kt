@@ -6,7 +6,9 @@ import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.tools.TokenError
-import checkme.web.lenses.TaskLenses.taskIdPathField
+import checkme.web.lenses.GeneralWebLenses.idOrNull
+import checkme.web.tasks.handlers.ViewTaskError
+import checkme.web.tasks.handlers.fetchTask
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
@@ -33,51 +35,70 @@ class CheckSolutionHandler(
 ) : HttpHandler {
     @Suppress("LongMethod", "NestedBlockDepth", "ReturnCount")
     override fun invoke(request: Request): Response {
-        // todo получение id задания из пути
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
+        val taskId = request.idOrNull() ?: return Response(Status.OK).body(
+            objectMapper.writeValueAsString(
+                mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
+            )
+        )
         return when {
             user == null -> Response(Status.OK)
                 .body(objectMapper.writeValueAsString(mapOf("error" to TokenError.DECODING_ERROR)))
 
             else -> {
-                val filesField = MultipartFormFile.multi.required("ans")
-                val filesLens = Body.Companion.multipartForm(Validator.Feedback, filesField).toLens()
-
-                val filesForm: MultipartForm = filesLens(request)
-                if (filesForm.errors.isNotEmpty()) {
-                    return Response(Status.BAD_REQUEST)
-                }
-                val taskId = taskIdPathField(request)
-
-                return when (
-                    val newCheck = createNewCheck(
+                when (
+                    val task = fetchTask(
                         taskId = taskId,
-                        userId = 1,
-                        checkOperations = checkOperations,
                         taskOperations = taskOperations
                     )
                 ) {
-                    is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
-                        .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
+                    is Failure -> Response(Status.OK).body(
+                        objectMapper.writeValueAsString(
+                            mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
+                        )
+                    )
 
                     is Success -> {
-                        val answers = tryGetFieldsAndFilesFromForm(
-                            filesForm = filesForm,
-                            newCheck = newCheck.value,
-                            user = user
-                        )
-                        val checksResult = Check.checkStudentAnswer(
-                            task = task,
-                            checkId = newCheck.value.id,
-                            user = user,
-                            answers = answers
-                        )
-                        sendResponseWithChecksResult(
-                            checksResult,
-                            newCheck.value,
-                            objectMapper
-                        )
+                        val filesField = MultipartFormFile.multi.required("ans")
+                        val filesLens = Body.Companion.multipartForm(Validator.Feedback, filesField).toLens()
+
+                        val filesForm: MultipartForm = filesLens(request)
+                        if (filesForm.errors.isNotEmpty()) {
+                            return Response(Status.BAD_REQUEST)
+                        }
+
+                        return when (
+                            val newCheck = createNewCheck(
+                                taskId = taskId,
+                                userId = user.id,
+                                checkOperations = checkOperations,
+                                taskOperations = taskOperations
+                            )
+                        ) {
+                            is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+                                .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
+
+                            is Success -> {
+                                val answers = tryGetFieldsAndFilesFromForm(
+                                    filesForm = filesForm,
+                                    newCheck = newCheck.value,
+                                    user = user,
+                                    task = task.value
+                                )
+                                val checksResult = Check.checkStudentAnswer(
+                                    task = task.value,
+                                    checkId = newCheck.value.id,
+                                    user = user,
+                                    answers = answers
+                                )
+                                sendResponseWithChecksResult(
+                                    checksResult,
+                                    newCheck.value,
+                                    objectMapper
+                                )
+                            }
+                        }
                     }
                 }
             }

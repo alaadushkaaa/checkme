@@ -11,7 +11,7 @@ fun solutionRouter(
     contextTools: ContextTools,
 ): RoutingHttpHandler =
     routes(
-        "$NEW_SOLUTION/{taskId}" bind Method.POST to CheckSolutionHandler(
+        "$NEW_SOLUTION/{id}" bind Method.POST to CheckSolutionHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens
