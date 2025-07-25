@@ -24,6 +24,9 @@ kotlin {
             useEsModules()
             commonWebpackConfig {
                 outputFileName = "main.bundle.js"
+                cssSupport {
+                    enabled.set(true)
+                }
             }
         }
         binaries.executable()

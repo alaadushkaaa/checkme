@@ -21,8 +21,9 @@ import ru.yarsu.serializableClasses.ResponseUnauthorized
 class SignIn(
     private val serverUrl: String,
     private val routing: Routing,
-) : VPanel(spacing = 5) {
+) : VPanel(spacing = 5, className = "authorization-card") {
     init {
+
         div("Вход в систему")
         val formPanelSignIn = formPanel<FormSignIn> {
             add(
@@ -39,7 +40,7 @@ class SignIn(
             )
         }
         formPanelSignIn.add(HPanel {
-            button("Войти").onClick {
+            button("Войти", className = "authorization-buttons-panel").onClick {
                 val validateForm = formPanelSignIn.validate()
                 if (validateForm) {
                     val requestInit = RequestInit()
@@ -65,7 +66,7 @@ class SignIn(
                                 val responseUnauthorized =
                                     Json.Default.decodeFromString<ResponseUnauthorized>(jsonString)
                                 formPanelSignIn.add(
-                                    Div(responseUnauthorized.error)
+                                    Div(responseUnauthorized.error, className = "error-message")
                                         .apply {
                                             window.setTimeout({ visible = false }, 3000)
                                         }
@@ -73,7 +74,7 @@ class SignIn(
                             }
                         } else {
                             formPanelSignIn.add(
-                                Div("Код ошибки ${response.status}: ${response.statusText}")
+                                Div("Код ошибки ${response.status}: ${response.statusText}", className = "error-message")
                                     .apply {
                                         window.setTimeout({ visible = false }, 3000)
                                     }
