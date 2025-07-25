@@ -62,11 +62,8 @@ class CheckSolutionHandler(
                     is Success -> {
                         val filesField = MultipartFormFile.multi.required("ans")
                         val filesLens = Body.Companion.multipartForm(Validator.Feedback, filesField).toLens()
-
                         val filesForm: MultipartForm = filesLens(request)
-                        if (filesForm.errors.isNotEmpty()) {
-                            return Response(Status.BAD_REQUEST)
-                        }
+                        if (filesForm.errors.isNotEmpty()) return Response(Status.BAD_REQUEST)
 
                         return when (
                             val newCheck = createNewCheck(
