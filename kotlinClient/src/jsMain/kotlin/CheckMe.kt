@@ -5,7 +5,6 @@ import io.kvision.Hot
 import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.panel.root
-import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
 import io.kvision.startApplication
 import io.kvision.utils.useModule
@@ -32,30 +31,21 @@ class CheckMe : Application() {
         val serverUrl = "http://localhost:9999/"
         val routing = Routing.init("/")
         val applicationRoot = root("checkMe") { }
-        routing.on("/authorization", {
+        routing.on("/authorization/sign_in", {
             applicationRoot.removeAll()
             if (UserInformationStorage.isAuthorized()){
                 routing.navigate("/")
             } else {
                 val signIn = SignIn(serverUrl, routing)
+                applicationRoot.add(signIn)
+            }
+        }).on("/authorization/sign_up", {
+            applicationRoot.removeAll()
+            if (UserInformationStorage.isAuthorized()){
+                routing.navigate("/")
+            } else {
                 val signUp = SignUp(serverUrl, routing)
-                applicationRoot.vPanel {
-                    button("Регистрация") {
-                        onClick {
-                            if (signIn.visible) {
-                                this.text = "Вход"
-                                signIn.visible = false
-                                signUp.visible = true
-                            } else {
-                                this.text = "Регистрация"
-                                signIn.visible = true
-                                signUp.visible = false
-                            }
-                        }
-                    }
-                    add(signIn)
-                    add(signUp)
-                }
+                applicationRoot.add(signUp)
             }
         }).on("/", {
             applicationRoot.removeAll()
@@ -64,12 +54,12 @@ class CheckMe : Application() {
                 applicationRoot.button("Выйти") {
                     onClick {
                         UserInformationStorage.deleteUserInformation()
-                        routing.navigate("/authorization")
+                        routing.navigate("/authorization/sign_in")
                     }
                 }
             }
             else {
-                routing.navigate("/authorization")
+                routing.navigate("/authorization/sign_in")
             }
         }).resolve()
     }
