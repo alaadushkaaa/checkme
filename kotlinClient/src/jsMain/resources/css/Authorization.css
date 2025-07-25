@@ -1,6 +1,5 @@
 .Authorization {
-    display: flex;
-    justify-content: center;
+    align-items: center;
 }
 
 .authorization-card {
@@ -8,13 +7,12 @@
     height: max-content;
 }
 
-.authorization-card p {
-    font-size: 20px;
+.authorization-card div {
     margin-bottom: 10px;
 }
 
-.authorization-card div {
-    text-align: center;
+.authorization-card label {
+    font-size: 20px;
 }
 
 .authorization-card input {
@@ -24,13 +22,8 @@
 }
 
 .authorization-buttons-panel {
-    margin-top: 50px;
+    margin-top: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.authorization-buttons-panel a{
-    text-decoration: underline;
-    cursor: pointer;
 }

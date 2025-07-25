@@ -23,9 +23,8 @@ import ru.yarsu.serializableClasses.ResponseUnauthorized
 class SignUp(
     private val serverUrl: String,
     private val routing: Routing,
-) : VPanel(spacing = 5, className = "Authorization") {
+) : VPanel(className = "Authorization") {
     init {
-        this.visible = false
         h2("Регистрация в системе")
         val formPanelSignUp = formPanel<FormSignUp>(className = "authorization-card") {
             add(
@@ -65,8 +64,8 @@ class SignUp(
                 it[FormSignUp::password] == it[FormSignUp::passwordRepeat]
             }
         }
-        formPanelSignUp.add(HPanel {
-            button("Зарегистрироваться", className = "authorization-buttons-panel").onClick {
+        formPanelSignUp.add(HPanel(className = "authorization-buttons-panel") {
+            button("Зарегистрироваться").onClick {
                 val validateForm = formPanelSignUp.validate()
                 if (validateForm) {
                     val requestInit = RequestInit()
@@ -110,6 +109,9 @@ class SignUp(
                         }
                     }
                 }
+            }
+            button("Вход").onClick{
+                routing.navigate("/authorization/sign_in")
             }
         })
     }
