@@ -3,13 +3,15 @@ package ru.yarsu.authorization
 import io.kvision.form.formPanel
 import io.kvision.form.text.Password
 import io.kvision.form.text.Text
-import io.kvision.html.Div
 import io.kvision.html.button
-import io.kvision.html.div
+import io.kvision.html.h2
 import io.kvision.panel.HPanel
 import io.kvision.panel.VPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
+import io.kvision.toast.Toast
+import io.kvision.toast.ToastOptions
+import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
@@ -21,11 +23,11 @@ import ru.yarsu.serializableClasses.ResponseUnauthorized
 class SignUp(
     private val serverUrl: String,
     private val routing: Routing,
-) : VPanel(spacing = 5, className = "authorization-card") {
+) : VPanel(spacing = 5, className = "Authorization") {
     init {
         this.visible = false
-        div("Регистрация в системе")
-        val formPanelSignUp = formPanel<FormSignUp> {
+        h2("Регистрация в системе")
+        val formPanelSignUp = formPanel<FormSignUp>(className = "authorization-card") {
             add(
                 FormSignUp::login,
                 Text(label = "Логин") { placeholder = "Введите логин" },
@@ -91,19 +93,19 @@ class SignUp(
                                 val jsonString = JSON.stringify(it)
                                 val responseUnauthorized =
                                     Json.Default.decodeFromString<ResponseUnauthorized>(jsonString)
-                                formPanelSignUp.add(
-                                    Div(responseUnauthorized.error, className = "error-message")
-                                        .apply {
-                                            window.setTimeout({ visible = false }, 3000)
-                                        }
+                                Toast.danger(responseUnauthorized.error,
+                                    ToastOptions(
+                                        duration = 3000,
+                                        position = ToastPosition.TOPRIGHT,
+                                    )
                                 )
                             }
                         } else {
-                            formPanelSignUp.add(
-                                Div("Код ошибки ${response.status}: ${response.statusText}", className = "error-message")
-                                    .apply {
-                                        window.setTimeout({ visible = false }, 3000)
-                                    }
+                            Toast.danger("Код ошибки ${response.status}: ${response.statusText}",
+                                ToastOptions(
+                                    duration = 5000,
+                                    position = ToastPosition.TOPRIGHT,
+                                )
                             )
                         }
                     }
