@@ -39,7 +39,7 @@ class CheckMe : Application() {
             } else {
                 val signIn = SignIn(serverUrl, routing)
                 val signUp = SignUp(serverUrl, routing)
-                applicationRoot.vPanel(className = "Authorization") {
+                applicationRoot.vPanel {
                     button("Регистрация") {
                         onClick {
                             if (signIn.visible) {
