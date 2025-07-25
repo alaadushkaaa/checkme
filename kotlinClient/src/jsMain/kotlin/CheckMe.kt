@@ -2,8 +2,6 @@ package ru.yarsu
 
 import io.kvision.Application
 import io.kvision.Hot
-import io.kvision.html.button
-import io.kvision.html.div
 import io.kvision.panel.root
 import io.kvision.routing.Routing
 import io.kvision.startApplication
@@ -11,6 +9,7 @@ import io.kvision.utils.useModule
 import ru.yarsu.authorization.SignIn
 import ru.yarsu.authorization.SignUp
 import ru.yarsu.localStorage.UserInformationStorage
+import ru.yarsu.pages.MainPage
 
 @JsModule("./css/App.css")
 external val cssApp: dynamic
@@ -50,13 +49,8 @@ class CheckMe : Application() {
         }).on("/", {
             applicationRoot.removeAll()
             if (UserInformationStorage.isAuthorized()){
-                applicationRoot.div("Базовая страница CheckMe")
-                applicationRoot.button("Выйти") {
-                    onClick {
-                        UserInformationStorage.deleteUserInformation()
-                        routing.navigate("/authorization/sign_in")
-                    }
-                }
+                val mainPage = MainPage(routing)
+                applicationRoot.add(mainPage)
             }
             else {
                 routing.navigate("/authorization/sign_in")

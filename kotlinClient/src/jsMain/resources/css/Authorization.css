@@ -21,6 +21,10 @@
     height: 25px;
 }
 
+.invalid-feedback {
+    color: #e62d2d;
+}
+
 .authorization-buttons-panel {
     margin-top: 24px;
     display: flex;
