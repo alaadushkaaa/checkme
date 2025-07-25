@@ -8,12 +8,26 @@ import io.kvision.panel.root
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
 import io.kvision.startApplication
+import io.kvision.utils.useModule
 import ru.yarsu.authorization.SignIn
 import ru.yarsu.authorization.SignUp
 import ru.yarsu.localStorage.UserInformationStorage
 
+@JsModule("./css/App.css")
+external val cssApp: dynamic
+
+@JsModule("./css/Authorization.css")
+external val cssAuthorization: dynamic
+
+@JsModule("./css/ErrorMessage.css")
+external val cssErrorMessage: dynamic
 
 class CheckMe : Application() {
+    init {
+        useModule(cssApp)
+        useModule(cssAuthorization)
+        useModule(cssErrorMessage)
+    }
     override fun start() {
         val serverUrl = "http://localhost:9999/"
         val routing = Routing.init("/")
@@ -25,7 +39,7 @@ class CheckMe : Application() {
             } else {
                 val signIn = SignIn(serverUrl, routing)
                 val signUp = SignUp(serverUrl, routing)
-                applicationRoot.vPanel {
+                applicationRoot.vPanel(className = "Authorization") {
                     button("Регистрация") {
                         onClick {
                             if (signIn.visible) {
