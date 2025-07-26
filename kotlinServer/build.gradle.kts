@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.jwtJava)
     implementation(libs.bundles.jackson)
     implementation(libs.flexmark)
-    implementation(libs.slf4j)
     implementation(libs.flywayPostgresql)
     implementation(libs.bundles.apachePoi)
     implementation(libs.bundles.scribeJava)

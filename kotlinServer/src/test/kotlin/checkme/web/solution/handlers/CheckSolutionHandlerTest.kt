@@ -1,14 +1,23 @@
 package checkme.web.solution.handlers
 
+import checkme.db.appConfiguredPasswordHasher
 import checkme.db.validCheckId
 import checkme.db.validDate
+import checkme.db.validLogin
+import checkme.db.validName
+import checkme.db.validPass
 import checkme.db.validResult
 import checkme.db.validStatusCorrect
+import checkme.db.validSurname
 import checkme.db.validTaskId
+import checkme.db.validTasks
 import checkme.db.validUserId
+import checkme.domain.accounts.Role
 import checkme.domain.models.Check
+import checkme.domain.models.User
 import checkme.domain.operations.OperationHolder
 import checkme.domain.operations.checks.CheckOperationHolder
+import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.solution.NEW_SOLUTION
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -27,6 +36,7 @@ import org.http4k.core.then
 import org.http4k.filter.ServerFilters
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
+import org.http4k.lens.RequestContextLens
 import org.http4k.lens.Validator
 import org.http4k.lens.multipartForm
 import org.http4k.routing.*
@@ -37,6 +47,7 @@ import org.mockito.kotlin.whenever
 
 class CheckSolutionHandlerTest : FunSpec({
     lateinit var operations: OperationHolder
+    lateinit var taskOperations: TaskOperationsHolder
     lateinit var checkOperations: CheckOperationHolder
     lateinit var handler: HttpHandler
 
@@ -44,11 +55,23 @@ class CheckSolutionHandlerTest : FunSpec({
     val objectMapper = jacksonObjectMapper()
 
     val validCheckResult = Check(validCheckId, validTaskId, validUserId, validDate, validResult, validStatusCorrect)
+    val validTaskResult = validTasks.first()
+    val validUser = User(
+        validUserId,
+        validLogin,
+        validName,
+        validSurname,
+        appConfiguredPasswordHasher.hash(validPass),
+        Role.STUDENT
+    )
+    val userLens: RequestContextLens<User?> = mock()
 
     beforeTest {
         operations = mock()
         checkOperations = mock()
+        taskOperations = mock()
         whenever(operations.checkOperations).thenReturn(checkOperations)
+        whenever(operations.taskOperations).thenReturn(taskOperations)
 
         whenever(checkOperations.createCheck).thenReturn(mock())
         whenever(checkOperations.fetchCheckById).thenReturn(mock())
@@ -56,9 +79,17 @@ class CheckSolutionHandlerTest : FunSpec({
         whenever(checkOperations.updateCheckResult).thenReturn(mock())
         whenever(checkOperations.fetchChecksByUserId).thenReturn(mock())
         whenever(checkOperations.updateCheckStatus).thenReturn(mock())
+        whenever(taskOperations.fetchTaskById).thenReturn(mock())
+
+        whenever(userLens(any())).thenReturn(mock())
 
         val router = routes(
-            "$SOLUTION_DIR$NEW_SOLUTION/{taskId}" bind Method.POST to CheckSolutionHandler(checkOperations)
+            "$SOLUTION_DIR$NEW_SOLUTION/{id}" bind Method.POST to
+                CheckSolutionHandler(
+                    checkOperations = checkOperations,
+                    taskOperations = taskOperations,
+                    userLens = userLens
+                )
         )
         handler = ServerFilters.InitialiseRequestContext(contexts).then(router)
     }
@@ -71,6 +102,10 @@ class CheckSolutionHandlerTest : FunSpec({
             .thenReturn(Success(validCheckResult))
         whenever(checkOperations.updateCheckResult(any(), any())).thenReturn(Success(validCheckResult))
         whenever(checkOperations.updateCheckStatus(any(), any())).thenReturn(Success(validCheckResult))
+
+        whenever(taskOperations.fetchTaskById(any())).thenReturn(Success(validTaskResult))
+
+        whenever(userLens(any())).thenReturn(validUser)
 
         val filePart = MultipartFormFile(
             filename = "solution.txt",

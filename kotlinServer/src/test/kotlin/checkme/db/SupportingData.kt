@@ -6,8 +6,8 @@ import checkme.config.AppConfig
 import checkme.domain.accounts.PasswordHasher
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
+import checkme.domain.models.AnswerType
 import checkme.domain.models.Check
-import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import checkme.web.solution.handlers.COMPLETE_TASK
 import java.time.LocalDateTime
@@ -70,7 +70,7 @@ val validTasks: List<Task> = listOf(
         1,
         "Суммирование чисел",
         validCriterions,
-        FormatOfAnswer.FILE,
+        mapOf("Прикрепите файл" to AnswerType.FILE),
         "Вам необходимо написать " +
             "программу, выполняющую суммирование двух чисел. На вход подаются два числа - a и b, " +
             "в качестве результата - сумма этих чисел. Некорректный ввод необходимо обрабатыввать и " +
@@ -80,17 +80,20 @@ val validTasks: List<Task> = listOf(
         2,
         "Вычитание чисел",
         validCriterions,
-        FormatOfAnswer.TEXT,
+        mapOf("Введите текст" to AnswerType.TEXT),
         "Вам необходимо написать " +
             "программу, выполняющую вычитание двух чисел. На вход подаются два числа - a и b, " +
-            "в качестве результата - результат вычитания этих чисел. Некорректный ввод необходимо обрабатыввать и " +
+            "в качестве результата - результат вычитания этих чисел. Некорректный ввод необходимо обрабатывать и " +
             "выводить строку \"Incorrect input\" в случае ошибки"
     ),
     Task(
         3,
         "Тестовое задание",
         validCriterions,
-        FormatOfAnswer.TEXT,
+        mapOf(
+            "Введите текст" to AnswerType.TEXT,
+            "Прикрепите файл" to AnswerType.FILE
+        ),
         "Текст тестового задания"
     ),
 )
