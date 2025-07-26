@@ -15,7 +15,7 @@ class TaskHandler(
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
-        val taskId = request.idOrNull() ?: return Response(Status.INTERNAL_SERVER_ERROR).body(
+        val taskId = request.idOrNull() ?: return Response(Status.BAD_REQUEST).body(
             objectMapper.writeValueAsString(
                 mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
             )
@@ -34,7 +34,7 @@ private fun tryFetchTask(
     taskOperations: TaskOperationsHolder,
 ): Response {
     return when (val task = fetchTask(taskId, taskOperations)) {
-        is Failure -> return Response(Status.INTERNAL_SERVER_ERROR).body(
+        is Failure -> return Response(Status.BAD_REQUEST).body(
             objectMapper.writeValueAsString(
                 mapOf("error" to task.reason.errorText)
             )

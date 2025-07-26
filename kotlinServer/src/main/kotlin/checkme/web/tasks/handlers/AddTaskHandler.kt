@@ -21,7 +21,7 @@ class AddTaskHandler(
         return when (
             val validatedNewTask = form.validateForm(taskId)
         ) {
-            is Failure -> Response(Status.INTERNAL_SERVER_ERROR).body(
+            is Failure -> Response(Status.BAD_REQUEST).body(
                 objectMapper.writeValueAsString(
                     mapOf("error" to validatedNewTask.reason.errorText)
                 )
@@ -48,7 +48,7 @@ class AddTaskHandler(
                         )
                     }
 
-                    is Failure -> Response(Status.INTERNAL_SERVER_ERROR).body(
+                    is Failure -> Response(Status.BAD_REQUEST).body(
                         objectMapper.writeValueAsString(
                             mapOf("error" to newTask.reason.errorText)
                         )
