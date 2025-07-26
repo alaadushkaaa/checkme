@@ -37,13 +37,13 @@ class CheckSolutionHandler(
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
-        val taskId = request.idOrNull() ?: return Response(Status.OK).body(
+        val taskId = request.idOrNull() ?: return Response(Status.BAD_REQUEST).body(
             objectMapper.writeValueAsString(
                 mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
             )
         )
         return when {
-            user == null -> Response(Status.OK)
+            user == null -> Response(Status.BAD_REQUEST)
                 .body(objectMapper.writeValueAsString(mapOf("error" to TokenError.DECODING_ERROR)))
 
             else -> {
@@ -53,7 +53,7 @@ class CheckSolutionHandler(
                         taskOperations = taskOperations
                     )
                 ) {
-                    is Failure -> Response(Status.OK).body(
+                    is Failure -> Response(Status.BAD_REQUEST).body(
                         objectMapper.writeValueAsString(
                             mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
                         )
@@ -110,7 +110,7 @@ class CheckSolutionHandler(
         return when {
             checksResult == null -> setStatusError(newCheck, checkOperations)
             else -> when (val updatedCheck = updateCheckResult(newCheck.id, checksResult, checkOperations)) {
-                is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+                is Failure -> Response(Status.BAD_REQUEST)
                     .body(
                         objectMapper.writeValueAsString(
                             mapOf("error" to updatedCheck.reason.errorText)

@@ -26,7 +26,7 @@ internal fun setStatusError(
             checkOperations
         )
     ) {
-        is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+        is Failure -> Response(Status.BAD_REQUEST)
             .body(
                 objectMapper.writeValueAsString(
                     mapOf("error" to updatedCheckStatusError.reason.errorText)
@@ -53,7 +53,7 @@ internal fun setStatusChecked(
             checkOperations
         )
     ) {
-        is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
+        is Failure -> Response(Status.BAD_REQUEST)
             .body(
                 objectMapper.writeValueAsString(
                     mapOf("error" to updatedCheckStatus.reason.errorText)
