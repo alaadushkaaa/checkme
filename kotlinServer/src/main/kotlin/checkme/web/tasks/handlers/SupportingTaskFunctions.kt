@@ -13,7 +13,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
-import org.http4k.core.*
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormField
 import org.http4k.lens.MultipartFormFile
@@ -24,7 +23,7 @@ internal fun addTask(
     taskOperations: TaskOperationsHolder,
 ): Result<Task, CreationTaskError> {
     return when (
-        val newTask = taskOperations.createCheck(
+        val newTask = taskOperations.createTask(
             task.name,
             task.criterions,
             task.answerFormat,
@@ -98,6 +97,8 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     )
 }
 
+// первоначально функция добавляет все файлы с проверками, относящиеся к заданию, в соответствующую директорию,
+// затем вызывается функция tryRenameFileAndUpdateCriterions для обновления имен файлов-проверок с особыми критериями
 fun Task.addTaskFilesToDirectory(
     files: Map<String, List<MultipartFormFile>>,
     fields: Map<String, List<MultipartFormField>>,
@@ -122,6 +123,10 @@ fun Task.addTaskFilesToDirectory(
     )
 }
 
+// Функция возвращает обновленный список критериев.
+// Если у задания есть особые проверки из списка specialCriteria, то файл такой проверки получает новое
+// название - "beforeAll", "beforeEach", "afterEach", "afterAll" в соответствие со своим типом.
+// Если имя было изменено, фиксируем это в критериях задания для последующего исполнения.
 @Suppress("NestedBlockDepth")
 fun tryRenameFileAndUpdateCriterions(
     criterions: Map<String, Criterion>,

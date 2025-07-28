@@ -1,8 +1,10 @@
 package checkme.web.tasks.handlers
 
+import checkme.domain.models.Task
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.lenses.TaskLenses
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
@@ -28,33 +30,47 @@ class AddTaskHandler(
             )
 
             is Success -> {
-                val updatedCriterions = validatedNewTask.value.addTaskFilesToDirectory(
-                    files = form.files,
-                    fields = form.fields,
-                    criterions = validatedNewTask.value.criterions
+                tryAddTaskAndFiles(
+                    validatedNewTask = validatedNewTask.value,
+                    taskOperations = tasksOperations,
+                    objectMapper = objectMapper,
+                    form = form
                 )
-                when (
-                    val newTask =
-                        addTask(
-                            task = validatedNewTask.value.copy(criterions = updatedCriterions),
-                            taskOperations = tasksOperations
-                        )
-                ) {
-                    is Success -> {
-                        Response(Status.OK).body(
-                            objectMapper.writeValueAsString(
-                                mapOf("taskId" to newTask.value.id)
-                            )
-                        )
-                    }
-
-                    is Failure -> Response(Status.BAD_REQUEST).body(
-                        objectMapper.writeValueAsString(
-                            mapOf("error" to newTask.reason.errorText)
-                        )
-                    )
-                }
             }
         }
+    }
+}
+
+private fun tryAddTaskAndFiles(
+    validatedNewTask: Task,
+    taskOperations: TaskOperationsHolder,
+    objectMapper: ObjectMapper,
+    form: MultipartForm,
+): Response {
+    val updatedCriterions = validatedNewTask.addTaskFilesToDirectory(
+        files = form.files,
+        fields = form.fields,
+        criterions = validatedNewTask.criterions
+    )
+    return when (
+        val newTask =
+            addTask(
+                task = validatedNewTask.copy(criterions = updatedCriterions),
+                taskOperations = taskOperations
+            )
+    ) {
+        is Success -> {
+            Response(Status.OK).body(
+                objectMapper.writeValueAsString(
+                    mapOf("taskId" to newTask.value.id)
+                )
+            )
+        }
+
+        is Failure -> Response(Status.BAD_REQUEST).body(
+            objectMapper.writeValueAsString(
+                mapOf("error" to newTask.reason.errorText)
+            )
+        )
     }
 }

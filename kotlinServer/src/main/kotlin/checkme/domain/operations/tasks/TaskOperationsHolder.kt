@@ -27,7 +27,7 @@ class TaskOperationsHolder (
             removeTask = tasksDatabase::deleteTask
         )
 
-    val createCheck: (
+    val createTask: (
         name: String,
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
