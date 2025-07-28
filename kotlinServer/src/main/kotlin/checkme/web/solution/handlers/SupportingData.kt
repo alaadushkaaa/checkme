@@ -1,7 +1,7 @@
 package checkme.web.solution.handlers
 
 import checkme.domain.checks.Criterion
-import checkme.domain.models.FormatOfAnswer
+import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 
 val criterions = mapOf(
@@ -25,7 +25,7 @@ val task = Task(
     1,
     "Суммирование чисел",
     criterions,
-    FormatOfAnswer.FILE,
+    mapOf("Прикрепите файл" to AnswerType.FILE),
     "Вам необходимо написать " +
         "программу, выполняющую суммирование двух чисел. На вход подаются два числа - a и b, " +
         "в качестве результата - сумма этих чисел. Некорректный ввод необходимо обрабатыввать и " +

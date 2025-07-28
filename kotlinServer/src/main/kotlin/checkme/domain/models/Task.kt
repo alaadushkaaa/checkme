@@ -6,11 +6,11 @@ data class Task(
     val id: Int,
     val name: String,
     val criterions: Map<String, Criterion>,
-    val answerFormat: FormatOfAnswer,
+    val answerFormat: Map<String, AnswerType>,
     val description: String,
 )
 
-enum class FormatOfAnswer(val code: String) {
+enum class AnswerType(val code: String) {
     FILE("file"),
     TEXT("text"),
 }

@@ -75,6 +75,7 @@ codegen = [
 
 logging = [
     "logback",
+    "slf4j",
 ]
 
 apachePoi = [
