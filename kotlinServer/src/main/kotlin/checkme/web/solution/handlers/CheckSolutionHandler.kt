@@ -7,6 +7,11 @@ import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.tools.TokenError
 import checkme.web.lenses.GeneralWebLenses.idOrNull
+import checkme.web.solution.supportingFiles.createNewCheck
+import checkme.web.solution.supportingFiles.setStatusChecked
+import checkme.web.solution.supportingFiles.setStatusError
+import checkme.web.solution.supportingFiles.tryGetFieldsAndFilesFromForm
+import checkme.web.solution.supportingFiles.updateCheckResult
 import checkme.web.tasks.handlers.ViewTaskError
 import checkme.web.tasks.handlers.fetchTask
 import com.fasterxml.jackson.databind.ObjectMapper

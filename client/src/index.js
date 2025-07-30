@@ -20,8 +20,8 @@ root.render(
                 <Route path='/' element={<TasksList/>}/>
                 <Route path='/task/new' element={<TaskForm/>}/>
                 <Route path='/task/:taskId' element={<Task/>}/>
-                <Route path='/results/me' element={<ResultList/>}/>
-                <Route path='/results/:checkId' element={<Result/>}/>
+                <Route path='/solution/me' element={<ResultList/>}/>
+                <Route path='/solution/:checkId' element={<Result/>}/>
                 <Route path='/history/:page' element={<History/>}/>
                 <Route path='/users' element={<UserList/>}/>
             </Route>

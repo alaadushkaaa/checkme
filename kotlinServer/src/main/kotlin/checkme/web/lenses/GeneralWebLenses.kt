@@ -25,6 +25,7 @@ object GeneralWebLenses {
      * Lens for getting {id} from request path
      */
     val idFromPathField = Path.int().of("id")
+    val checkIdFromPathField = Path.int().of("checkId")
 
     /**
      * Invoke lens to value
@@ -79,4 +80,5 @@ object GeneralWebLenses {
     infix fun <T> BiDiLens<MultipartForm, T>.from(form: MultipartForm) = this(form)
 
     fun Request.idOrNull() = lensOrNull(idFromPathField, this)
+    fun Request.checkIdOrNull() = lensOrNull(checkIdFromPathField, this)
 }

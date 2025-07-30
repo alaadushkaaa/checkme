@@ -12,7 +12,7 @@ import ErrorMessage from './ErrorMessage';
 function Result() {
     const params = useParams();
     const navigate = useNavigate();
-    const fetchCheck = useFetch(`/results/${params.checkId}`);
+    const fetchCheck = useFetch(`/solution/${params.checkId}`);
 
     useEffect(() => {
         if (fetchCheck.data && fetchCheck.data.status === 'В процессе') {

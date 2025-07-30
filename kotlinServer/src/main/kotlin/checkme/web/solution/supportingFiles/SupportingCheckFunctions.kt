@@ -1,11 +1,15 @@
-package checkme.web.solution.handlers
+package checkme.web.solution.supportingFiles
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
+import checkme.domain.operations.checks.CheckFetchingError
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.ModifyCheckError
+import checkme.web.solution.handlers.CreationCheckError
+import checkme.web.solution.handlers.FetchingCheckError
+import checkme.web.solution.handlers.ModifyingCheckError
 import checkme.web.tasks.handlers.taskExists
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
@@ -134,5 +138,21 @@ internal fun updateCheckStatus(
         }
 
         is Success -> Success(updatedCheck.value)
+    }
+}
+
+internal fun fetchCheckById(
+    checkId: Int,
+    checkOperations: CheckOperationHolder
+) : Result<Check, FetchingCheckError> {
+    return when (
+        val fetchedCheck = checkOperations.fetchCheckById(checkId)
+    ) {
+        is Failure -> when (fetchedCheck.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+        is Success -> Success(fetchedCheck.value)
     }
 }

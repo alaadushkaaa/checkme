@@ -1,8 +1,9 @@
-package checkme.web.solution.handlers
+package checkme.web.solution.supportingFiles
 
 import checkme.domain.models.Check
 import checkme.domain.models.Task
 import checkme.domain.models.User
+import checkme.web.solution.handlers.SOLUTIONS_DIR
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
 import java.io.File
