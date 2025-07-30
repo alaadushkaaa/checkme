@@ -80,5 +80,6 @@ object GeneralWebLenses {
     infix fun <T> BiDiLens<MultipartForm, T>.from(form: MultipartForm) = this(form)
 
     fun Request.idOrNull() = lensOrNull(idFromPathField, this)
+
     fun Request.checkIdOrNull() = lensOrNull(checkIdFromPathField, this)
 }

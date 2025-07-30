@@ -143,8 +143,8 @@ internal fun updateCheckStatus(
 
 internal fun fetchCheckById(
     checkId: Int,
-    checkOperations: CheckOperationHolder
-) : Result<Check, FetchingCheckError> {
+    checkOperations: CheckOperationHolder,
+): Result<Check, FetchingCheckError> {
     return when (
         val fetchedCheck = checkOperations.fetchCheckById(checkId)
     ) {
