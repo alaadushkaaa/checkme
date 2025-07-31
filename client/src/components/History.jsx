@@ -8,7 +8,7 @@ import Loading from './Loading';
 
 function History() {
     const params = useParams();
-    const fetchResults = useFetch(`/history/${params.page}`);
+    const fetchResults = useFetch(`/solution/all/${params.page}`);
     const navigate = useNavigate();
 
     useEffect(() => {

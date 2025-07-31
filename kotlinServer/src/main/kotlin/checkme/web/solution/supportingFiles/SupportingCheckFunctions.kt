@@ -7,6 +7,8 @@ import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.ModifyCheckError
+import checkme.web.solution.forms.CheckWithAllData
+import checkme.web.solution.forms.CheckWithTaskData
 import checkme.web.solution.handlers.CreationCheckError
 import checkme.web.solution.handlers.FetchingCheckError
 import checkme.web.solution.handlers.ModifyingCheckError
@@ -14,6 +16,7 @@ import checkme.web.tasks.handlers.taskExists
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import java.time.LocalDateTime
@@ -154,5 +157,37 @@ internal fun fetchCheckById(
         }
 
         is Success -> Success(fetchedCheck.value)
+    }
+}
+
+internal fun fetchAllChecksWithData(
+    checkOperations: CheckOperationHolder,
+    page: Int?,
+): Result4k<List<CheckWithAllData>, FetchingCheckError> {
+    return when (
+        val fetchedChecks = checkOperations.fetchAllChecksWithData(page)
+    ) {
+        is Failure -> when (fetchedChecks.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+        is Success -> Success(fetchedChecks.value)
+    }
+}
+
+internal fun fetchAllUsersChecksWithTaskData(
+    checkOperations: CheckOperationHolder,
+    userId: Int,
+): Result4k<List<CheckWithTaskData>, FetchingCheckError> {
+    return when (
+        val fetchedChecks = checkOperations.fetchAllUsersChecksWithTaskData(userId)
+    ) {
+        is Failure -> when (fetchedChecks.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+        is Success -> Success(fetchedChecks.value)
     }
 }

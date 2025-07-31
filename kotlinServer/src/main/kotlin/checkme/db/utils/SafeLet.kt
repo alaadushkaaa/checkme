@@ -30,3 +30,16 @@ inline fun <IN1 : Any, IN2 : Any, IN3 : Any, IN4 : Any, IN5 : Any, OUT : Any> sa
     } else {
         null
     }
+
+inline fun <IN1 : Any, IN2 : Any, IN3 : Any, IN4 : Any, OUT : Any> safeLet(
+    arg1: IN1?,
+    arg2: IN2?,
+    arg3: IN3?,
+    arg4: IN4?,
+    block: (IN1, IN2, IN3, IN4) -> OUT?,
+): OUT? =
+    if (arg1 != null && arg2 != null && arg3 != null && arg4 != null) {
+        block(arg1, arg2, arg3, arg4)
+    } else {
+        null
+    }

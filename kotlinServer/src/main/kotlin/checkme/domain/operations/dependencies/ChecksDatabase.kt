@@ -2,6 +2,8 @@ package checkme.domain.operations.dependencies
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
+import checkme.web.solution.forms.CheckWithAllData
+import checkme.web.solution.forms.CheckWithTaskData
 import java.time.LocalDateTime
 
 interface ChecksDatabase {
@@ -10,6 +12,12 @@ interface ChecksDatabase {
     fun selectChecksByUserId(userId: Int): List<Check>
 
     fun selectAllChecks(): List<Check>
+
+    fun selectAllUsersChecks(userId: Int): List<CheckWithTaskData>
+
+    fun selectCheckByIdWithData(checkId: Int): CheckWithAllData?
+
+    fun selectAllChecksWithData(page: Int?): List<CheckWithAllData>
 
     fun insertCheck(
         taskId: Int,

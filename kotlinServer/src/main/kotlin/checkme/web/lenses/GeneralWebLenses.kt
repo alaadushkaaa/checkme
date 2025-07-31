@@ -2,18 +2,7 @@ package checkme.web.lenses
 
 import checkme.domain.models.User
 import org.http4k.core.*
-import org.http4k.lens.BiDiBodyLens
-import org.http4k.lens.BiDiLens
-import org.http4k.lens.Lens
-import org.http4k.lens.LensFailure
-import org.http4k.lens.MultipartForm
-import org.http4k.lens.Path
-import org.http4k.lens.RequestContextKey
-import org.http4k.lens.RequestContextLens
-import org.http4k.lens.Validator
-import org.http4k.lens.WebForm
-import org.http4k.lens.int
-import org.http4k.lens.webForm
+import org.http4k.lens.*
 
 object GeneralWebLenses {
 
@@ -26,6 +15,14 @@ object GeneralWebLenses {
      */
     val idFromPathField = Path.int().of("id")
     val checkIdFromPathField = Path.int().of("checkId")
+    val userIdFromPathField = Path.int().of("user")
+    val taskIdFromPathField = Path.int().of("task")
+    val pageCountFromPathField = Path.int().of("page")
+// todo когда появится интерфейс для прсомотра результатов по конкретному заданию, конкретного пользователя и т.д.
+
+//    val userIdQuery = Query.int().optional("user")
+//    val taskIdkQuery = Query.int().optional("task")
+//    val pageCountQuery = Query.int().defaulted("page", 1)
 
     /**
      * Invoke lens to value
@@ -82,4 +79,10 @@ object GeneralWebLenses {
     fun Request.idOrNull() = lensOrNull(idFromPathField, this)
 
     fun Request.checkIdOrNull() = lensOrNull(checkIdFromPathField, this)
+
+    fun Request.userIdOrNull() = lensOrNull(userIdFromPathField, this)
+
+    fun Request.taskIdOrNull() = lensOrNull(taskIdFromPathField, this)
+
+    fun Request.pageCountOrNull() = lensOrNull(pageCountFromPathField, this)
 }
