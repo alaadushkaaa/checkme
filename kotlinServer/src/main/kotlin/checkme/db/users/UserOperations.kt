@@ -5,7 +5,8 @@ import checkme.db.generated.tables.references.USERS
 import checkme.db.utils.safeLet
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
-import checkme.domain.operations.dependencies.UsersDatabase
+import checkme.domain.operations.dependencies.users.UsersDatabase
+import checkme.web.solution.forms.UserDataForAllResults
 import org.jooq.DSLContext
 import org.jooq.Record
 
@@ -38,6 +39,16 @@ class UserOperations (
             .mapNotNull { record: Record ->
                 record.toUser()
             }
+
+    override fun selectUserNameSurname(userId: Int): UserDataForAllResults? =
+        jooqContext
+            .select(
+                USERS.NAME,
+                USERS.SURNAME
+            ).from(USERS)
+            .where(USERS.ID.eq(userId))
+            .fetchOne()
+            ?.let {record : Record -> record.toUserDataForAllResults() }
 
     override fun insertUser(
         login: String,
@@ -94,4 +105,19 @@ internal fun Role.asDbRole(): UserRole? =
         Role.STUDENT -> UserRole.STUDENT
         Role.ADMIN -> UserRole.ADMIN
         else -> null
+    }
+
+
+internal fun Record.toUserDataForAllResults() : UserDataForAllResults? =
+    safeLet(
+        this[USERS.NAME],
+        this[USERS.SURNAME]
+    ) {
+            name,
+            surname
+        ->
+        UserDataForAllResults(
+            name = name,
+            surname = surname
+        )
     }

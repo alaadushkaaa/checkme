@@ -3,7 +3,8 @@ package checkme.domain.operations.tasks
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
-import checkme.domain.operations.dependencies.TasksDatabase
+import checkme.domain.operations.dependencies.tasks.TasksDatabase
+import checkme.web.solution.forms.TaskDataForAllResults
 import dev.forkhandles.result4k.Result
 
 class TaskOperationsHolder (
@@ -21,11 +22,18 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTask()
         }
 
+    val fetchTaskName: (Int) -> Result<TaskDataForAllResults, TaskFetchingError> =
+        FetchTaskName {
+            taskId: Int, ->
+            tasksDatabase.selectTaskName(taskId)
+        }
+
     val removeTask: (task: Task) -> Result<Int, TaskRemovingError> =
         RemoveTask(
             selectTaskById = tasksDatabase::selectTaskById,
             removeTask = tasksDatabase::deleteTask
         )
+
 
     val createTask: (
         name: String,

@@ -2,10 +2,11 @@ package checkme.domain.operations.checks
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
-import checkme.domain.operations.dependencies.ChecksDatabase
+import checkme.domain.operations.dependencies.checks.ChecksDatabase
 import checkme.domain.operations.users.ModifyCheckError
 import checkme.domain.operations.users.ModifyCheckResult
 import checkme.domain.operations.users.ModifyCheckStatus
+import checkme.web.solution.forms.CheckDataForAllResults
 import checkme.web.solution.forms.CheckWithAllData
 import checkme.web.solution.forms.CheckWithTaskData
 import dev.forkhandles.result4k.Result
@@ -20,27 +21,15 @@ class CheckOperationHolder (
             checksDatabase.selectCheckById(checkId)
         }
 
-    val fetchCheckDataById: (Int) -> Result<CheckWithAllData, CheckFetchingError> =
-        FetchCheckDataById {
+    val fetchAllChecksDateStatus: (Int) -> Result<List<CheckDataForAllResults>, CheckFetchingError> =
+        FetchAllChecksDateStatus {
                 checkId: Int ->
-            checksDatabase.selectCheckByIdWithData(checkId)
+            checksDatabase.selectAllChecksDateStatus(checkId)
         }
 
     val fetchAllChecks: () -> Result<List<Check>, CheckFetchingError> =
         FetchAllChecks {
             checksDatabase.selectAllChecks()
-        }
-
-    val fetchAllChecksWithData: (Int?) -> Result<List<CheckWithAllData>, CheckFetchingError> =
-        FetchAllChecksWithData {
-                page: Int? ->
-            checksDatabase.selectAllChecksWithData(page)
-        }
-
-    val fetchAllUsersChecksWithTaskData: (Int) -> Result<List<CheckWithTaskData>, CheckFetchingError> =
-        FetchAllUsersChecksWithTaskData {
-                userId: Int ->
-            checksDatabase.selectAllUsersChecks(userId)
         }
 
     val fetchChecksByUserId: (Int) -> Result<List<Check>, CheckFetchingError> =

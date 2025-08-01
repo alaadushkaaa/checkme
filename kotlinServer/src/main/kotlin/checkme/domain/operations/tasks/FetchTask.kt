@@ -1,6 +1,7 @@
 package checkme.domain.operations.tasks
 
 import checkme.domain.models.Task
+import checkme.web.solution.forms.TaskDataForAllResults
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -29,6 +30,20 @@ class FetchAllTasks(
         try {
             when (val tasks = fetchAllTasks()) {
                 is List<Task> -> Success(tasks)
+                else -> Failure(TaskFetchingError.NO_SUCH_TASK)
+            }
+        } catch (_: DataAccessException) {
+            Failure(TaskFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
+class FetchTaskName(
+    private val fetchTaskName: (taskId: Int) -> TaskDataForAllResults?
+) : (Int)  -> Result4k<TaskDataForAllResults, TaskFetchingError> {
+    override fun invoke(taskId: Int): Result4k<TaskDataForAllResults, TaskFetchingError> =
+        try {
+            when (val taskName = fetchTaskName(taskId)) {
+                is TaskDataForAllResults -> Success(taskName)
                 else -> Failure(TaskFetchingError.NO_SUCH_TASK)
             }
         } catch (_: DataAccessException) {

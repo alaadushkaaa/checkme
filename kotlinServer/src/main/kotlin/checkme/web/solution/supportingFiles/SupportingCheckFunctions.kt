@@ -7,6 +7,7 @@ import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.ModifyCheckError
+import checkme.web.solution.forms.CheckDataForAllResults
 import checkme.web.solution.forms.CheckWithAllData
 import checkme.web.solution.forms.CheckWithTaskData
 import checkme.web.solution.handlers.CreationCheckError
@@ -160,28 +161,12 @@ internal fun fetchCheckById(
     }
 }
 
-internal fun fetchAllChecksWithData(
+internal fun fetchAllChecksDateStatus(
     checkOperations: CheckOperationHolder,
-    page: Int?,
-): Result4k<List<CheckWithAllData>, FetchingCheckError> {
+    page: Int,
+): Result4k<List<CheckDataForAllResults>, FetchingCheckError> {
     return when (
-        val fetchedChecks = checkOperations.fetchAllChecksWithData(page)
-    ) {
-        is Failure -> when (fetchedChecks.reason) {
-            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
-            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
-        }
-
-        is Success -> Success(fetchedChecks.value)
-    }
-}
-
-internal fun fetchAllUsersChecksWithTaskData(
-    checkOperations: CheckOperationHolder,
-    userId: Int,
-): Result4k<List<CheckWithTaskData>, FetchingCheckError> {
-    return when (
-        val fetchedChecks = checkOperations.fetchAllUsersChecksWithTaskData(userId)
+        val fetchedChecks = checkOperations.fetchAllChecksDateStatus(page)
     ) {
         is Failure -> when (fetchedChecks.reason) {
             CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
