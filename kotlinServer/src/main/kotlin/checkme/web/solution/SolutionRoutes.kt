@@ -18,12 +18,23 @@ fun solutionRouter(
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens
         ),
+        "/me" bind Method.GET to ListResultsHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
         "/{checkId}" bind Method.GET to ResultHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens
         ),
-        "/all/{pageId}" bind Method.GET to ListResultsHandler()
+        "/all/{page}" bind Method.GET to ListResultsHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
     )
 
 const val SOLUTION_SEGMENT = "/solution"

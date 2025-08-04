@@ -6,9 +6,6 @@ import checkme.domain.operations.dependencies.checks.ChecksDatabase
 import checkme.domain.operations.users.ModifyCheckError
 import checkme.domain.operations.users.ModifyCheckResult
 import checkme.domain.operations.users.ModifyCheckStatus
-import checkme.web.solution.forms.CheckDataForAllResults
-import checkme.web.solution.forms.CheckWithAllData
-import checkme.web.solution.forms.CheckWithTaskData
 import dev.forkhandles.result4k.Result
 import java.time.LocalDateTime
 
@@ -21,10 +18,10 @@ class CheckOperationHolder (
             checksDatabase.selectCheckById(checkId)
         }
 
-    val fetchAllChecksDateStatus: (Int) -> Result<List<CheckDataForAllResults>, CheckFetchingError> =
-        FetchAllChecksDateStatus {
-                checkId: Int ->
-            checksDatabase.selectAllChecksDateStatus(checkId)
+    val fetchAllChecksPagination: (Int) -> Result<List<Check>, CheckFetchingError> =
+        FetchAllChecksPagination {
+                page: Int ->
+            checksDatabase.selectAllChecksPagination(page)
         }
 
     val fetchAllChecks: () -> Result<List<Check>, CheckFetchingError> =

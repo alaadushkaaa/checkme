@@ -20,8 +20,8 @@ class UserOperationHolder(
     val fetchUserByLogin: (String) -> Result4k<User, UserFetchingError> =
         FetchUserByLogin { login: String -> usersDatabase.selectUserByLogin(login) }
 
-    val fetchUserNAmeSurname: (Int) -> Result4k<UserDataForAllResults, UserFetchingError> =
-        FetchUserNameSurname { userId: Int -> usersDatabase.selectUserNameSurname(userId)}
+    val fetchUserNameSurname: (Int) -> Result4k<UserDataForAllResults, UserFetchingError> =
+        FetchUserNameSurname { userId: Int -> usersDatabase.selectUserNameSurname(userId) }
 
     val createUser: (String, String, String, String, Role) -> Result4k<User, UserCreationError> =
         CreateUser(

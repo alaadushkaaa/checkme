@@ -3,8 +3,8 @@ package checkme.db
 import checkme.db.checks.CheckOperations
 import checkme.db.tasks.TasksOperations
 import checkme.db.users.UserOperations
-import checkme.domain.operations.dependencies.checks.ChecksDatabase
 import checkme.domain.operations.dependencies.DatabaseOperations
+import checkme.domain.operations.dependencies.checks.ChecksDatabase
 import checkme.domain.operations.dependencies.tasks.TasksDatabase
 import checkme.domain.operations.dependencies.users.UsersDatabase
 import org.jooq.DSLContext

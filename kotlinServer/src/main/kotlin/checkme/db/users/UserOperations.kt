@@ -48,7 +48,7 @@ class UserOperations (
             ).from(USERS)
             .where(USERS.ID.eq(userId))
             .fetchOne()
-            ?.let {record : Record -> record.toUserDataForAllResults() }
+            ?.let { record: Record -> record.toUserDataForAllResults() }
 
     override fun insertUser(
         login: String,
@@ -107,14 +107,13 @@ internal fun Role.asDbRole(): UserRole? =
         else -> null
     }
 
-
-internal fun Record.toUserDataForAllResults() : UserDataForAllResults? =
+internal fun Record.toUserDataForAllResults(): UserDataForAllResults? =
     safeLet(
         this[USERS.NAME],
         this[USERS.SURNAME]
     ) {
             name,
-            surname
+            surname,
         ->
         UserDataForAllResults(
             name = name,

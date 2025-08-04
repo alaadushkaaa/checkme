@@ -5,7 +5,6 @@ import checkme.db.utils.safeLet
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
 import checkme.domain.operations.dependencies.checks.ChecksDatabase
-import checkme.web.solution.forms.CheckDataForAllResults
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
@@ -14,7 +13,6 @@ import org.jooq.Record
 import java.time.LocalDateTime
 
 const val CHECKS_LIMIT = 10
-
 
 class CheckOperations(
     private val jooqContext: DSLContext,
@@ -43,21 +41,13 @@ class CheckOperations(
                 record.toCheck()
             }
 
-    override fun selectAllChecksDateStatus(page: Int): List<CheckDataForAllResults> =
-        jooqContext
-            .select(
-                CHECKS.ID,
-                CHECKS.TASKID,
-                CHECKS.USERID,
-                CHECKS.DATE,
-                CHECKS.STATUS
-            ).from(CHECKS)
+    override fun selectAllChecksPagination(page: Int): List<Check> =
+        selectFromChecks()
             .orderBy(CHECKS.ID)
             .limit(CHECKS_LIMIT)
             .offset((page - 1) * CHECKS_LIMIT)
             .fetch()
-            .mapNotNull {record : Record -> record.toCheckDataForAllResult() }
-
+            .mapNotNull { record: Record -> record.toCheck() }
 
     override fun updateCheckStatus(
         checkId: Int,
@@ -139,27 +129,3 @@ internal fun Record.toCheck(): Check? =
             status
         )
     }
-
-internal fun Record.toCheckDataForAllResult() : CheckDataForAllResults? =
-    safeLet(
-        this[CHECKS.ID],
-        this[CHECKS.TASKID],
-        this[CHECKS.USERID],
-        this[CHECKS.DATE],
-        this[CHECKS.STATUS],
-    ) {
-            id,
-            taskId,
-            userId,
-            date,
-            status
-        ->
-        CheckDataForAllResults(
-            id = id.toString(),
-            taskId = taskId,
-            userId = userId,
-            date = date,
-            status = status
-        )
-    }
-

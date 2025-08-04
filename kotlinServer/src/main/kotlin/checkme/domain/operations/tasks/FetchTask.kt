@@ -38,8 +38,8 @@ class FetchAllTasks(
 }
 
 class FetchTaskName(
-    private val fetchTaskName: (taskId: Int) -> TaskDataForAllResults?
-) : (Int)  -> Result4k<TaskDataForAllResults, TaskFetchingError> {
+    private val fetchTaskName: (taskId: Int) -> TaskDataForAllResults?,
+) : (Int) -> Result4k<TaskDataForAllResults, TaskFetchingError> {
     override fun invoke(taskId: Int): Result4k<TaskDataForAllResults, TaskFetchingError> =
         try {
             when (val taskName = fetchTaskName(taskId)) {

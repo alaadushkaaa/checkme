@@ -39,7 +39,7 @@ class TasksOperations (
             ).from(TASKS)
             .where(TASKS.ID.eq(taskId))
             .fetchOne()
-            ?.let {record : Record -> record.toTaskDataForAllResults() }
+            ?.let { record: Record -> record.toTaskDataForAllResults() }
 
     override fun insertTask(
         name: String,
@@ -97,7 +97,7 @@ internal fun Record.toTask(): Task? =
         )
     }
 
-internal fun Record.toTaskDataForAllResults() : TaskDataForAllResults? =
+internal fun Record.toTaskDataForAllResults(): TaskDataForAllResults? =
     safeLet(
         this[TASKS.NAME]
     ) {

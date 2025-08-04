@@ -20,7 +20,7 @@ function Task() {
     const fetchTask = useFetch(`/task/${params.taskId}`);
     const postAnswer = usePost(
         `/solution/new/${params.taskId}`,
-        (data) => navigate(`/results/${data.checkId}`),
+        (data) => navigate(`/solution/${data.checkId}`),
     );
     const deleteTask = usePost(
         `/task/${params.taskId}`,

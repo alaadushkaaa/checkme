@@ -8,7 +8,7 @@ import Loading from './Loading';
  * Component with all check results made by currently logged user
  */
 function ResultList() {
-    const fetchResults = useFetch('/results');
+    const fetchResults = useFetch('/solution/me');
     const navigate = useNavigate();
 
     if (fetchResults.error) {
@@ -26,7 +26,7 @@ function ResultList() {
                 <div
                     role="link"
                     tabIndex={0}
-                    onClick={() => navigate(`/results/${result._id}`)}
+                    onClick={() => navigate(`/solution/${result.id}`)}
                     className="block"
                 >
                     <div className=""> {result.task.name} </div>

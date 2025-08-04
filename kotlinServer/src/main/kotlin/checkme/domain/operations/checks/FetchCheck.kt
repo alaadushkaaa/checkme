@@ -1,9 +1,6 @@
 package checkme.domain.operations.checks
 
 import checkme.domain.models.Check
-import checkme.web.solution.forms.CheckDataForAllResults
-import checkme.web.solution.forms.CheckWithAllData
-import checkme.web.solution.forms.CheckWithTaskData
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -39,14 +36,14 @@ class FetchChecksByUserId(
         }
 }
 
-class FetchAllChecksDateStatus(
-    private val fetchAllChecksWithData: (Int) -> List<CheckDataForAllResults>?,
-) : (Int) -> Result4k<List<CheckDataForAllResults>, CheckFetchingError> {
+class FetchAllChecksPagination(
+    private val fetchAllChecksWithData: (Int) -> List<Check>?,
+) : (Int) -> Result4k<List<Check>, CheckFetchingError> {
 
-    override fun invoke(page: Int): Result4k<List<CheckDataForAllResults>, CheckFetchingError> =
+    override fun invoke(page: Int): Result4k<List<Check>, CheckFetchingError> =
         try {
             when (val checks = fetchAllChecksWithData(page)) {
-                is List<CheckDataForAllResults> -> Success(checks)
+                is List<Check> -> Success(checks)
                 else -> Failure(CheckFetchingError.NO_SUCH_CHECK)
             }
         } catch (_: DataAccessException) {

@@ -23,7 +23,7 @@ inline fun <IN1 : Any, IN2 : Any, OUT : Any> safeLet(
         null
     }
 
-inline fun <IN1 : Any, IN2 : Any, IN3:Any, OUT : Any> safeLet(
+inline fun <IN1 : Any, IN2 : Any, IN3 : Any, OUT : Any> safeLet(
     arg1: IN1?,
     arg2: IN2?,
     arg3: IN3?,

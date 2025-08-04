@@ -2,7 +2,6 @@ package checkme.domain.operations.dependencies.checks
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
-import checkme.web.solution.forms.CheckDataForAllResults
 import java.time.LocalDateTime
 
 interface ChecksDatabase {
@@ -12,7 +11,7 @@ interface ChecksDatabase {
 
     fun selectAllChecks(): List<Check>
 
-    fun selectAllChecksDateStatus(page: Int): List<CheckDataForAllResults>
+    fun selectAllChecksPagination(page: Int): List<Check>
 
     fun insertCheck(
         taskId: Int,

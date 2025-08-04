@@ -22,7 +22,7 @@ root.render(
                 <Route path='/task/:taskId' element={<Task/>}/>
                 <Route path='/solution/me' element={<ResultList/>}/>
                 <Route path='/solution/:checkId' element={<Result/>}/>
-                <Route path='/history/:page' element={<History/>}/>
+                <Route path='/solution/all/:page' element={<History/>}/>
                 <Route path='/users' element={<UserList/>}/>
             </Route>
         </Routes>

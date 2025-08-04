@@ -24,7 +24,7 @@ class TaskOperationsHolder (
 
     val fetchTaskName: (Int) -> Result<TaskDataForAllResults, TaskFetchingError> =
         FetchTaskName {
-            taskId: Int, ->
+                taskId: Int ->
             tasksDatabase.selectTaskName(taskId)
         }
 
@@ -33,7 +33,6 @@ class TaskOperationsHolder (
             selectTaskById = tasksDatabase::selectTaskById,
             removeTask = tasksDatabase::deleteTask
         )
-
 
     val createTask: (
         name: String,

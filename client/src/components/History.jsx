@@ -40,7 +40,7 @@ function History() {
                         key={result._id}
                         role="link"
                         tabIndex={0}
-                        onClick={() => navigate(`/results/${result._id}`)}
+                        onClick={() => navigate(`/solution/${result.id}`)}
                         className="block"
                     >
                         <div className="">
@@ -56,14 +56,14 @@ function History() {
                 <button
                     className="navigation-buttons"
                     disabled={params.page <= 1}
-                    onClick={() => navigate(`/history/${Number(params.page) - 1}`)}
+                    onClick={() => navigate(`/solution/all/${Number(params.page) - 1}`)}
                 >
                     {'<'}-
                 </button>
                 <button
                     className="navigation-buttons"
                     disabled={fetchResults.data.length < 10}
-                    onClick={() => navigate(`/history/${Number(params.page) + 1}`)}
+                    onClick={() => navigate(`/solution/all/${Number(params.page) + 1}`)}
                 >
                     -{'>'}
                 </button>
