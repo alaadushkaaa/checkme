@@ -120,7 +120,7 @@ private fun tryFetchAllSolutionsByAdmin(
     }
 }
 
-private fun ObjectMapper.sendBadRequestError(message: Any? = null): Response {
+fun ObjectMapper.sendBadRequestError(message: Any? = null): Response {
     val errorMessage = message ?: FetchingCheckError.UNKNOWN_DATABASE_ERROR
     return Response(Status.BAD_REQUEST)
         .body(this.writeValueAsString(mapOf("error" to errorMessage)))
