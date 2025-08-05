@@ -6,7 +6,7 @@ import checkme.db.utils.safeLet
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import checkme.domain.operations.dependencies.users.UsersDatabase
-import checkme.web.solution.forms.UserDataForAllResults
+import checkme.web.solution.forms.UserNameSurnameForAllResults
 import org.jooq.DSLContext
 import org.jooq.Record
 
@@ -40,7 +40,7 @@ class UserOperations (
                 record.toUser()
             }
 
-    override fun selectUserNameSurname(userId: Int): UserDataForAllResults? =
+    override fun selectUserNameSurname(userId: Int): UserNameSurnameForAllResults? =
         jooqContext
             .select(
                 USERS.NAME,
@@ -107,7 +107,7 @@ internal fun Role.asDbRole(): UserRole? =
         else -> null
     }
 
-internal fun Record.toUserDataForAllResults(): UserDataForAllResults? =
+internal fun Record.toUserDataForAllResults(): UserNameSurnameForAllResults? =
     safeLet(
         this[USERS.NAME],
         this[USERS.SURNAME]
@@ -115,7 +115,7 @@ internal fun Record.toUserDataForAllResults(): UserDataForAllResults? =
             name,
             surname,
         ->
-        UserDataForAllResults(
+        UserNameSurnameForAllResults(
             name = name,
             surname = surname
         )

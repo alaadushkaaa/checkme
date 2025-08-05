@@ -9,7 +9,7 @@ import checkme.db.validPass
 import checkme.db.validSurname
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
-import checkme.web.solution.forms.UserDataForAllResults
+import checkme.web.solution.forms.UserNameSurnameForAllResults
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -131,7 +131,7 @@ class SelectUserTest : TestcontainerSpec({ context ->
         userOperations
             .selectUserNameSurname(insertedUser.id)
             .shouldNotBeNull()
-            .shouldBe(UserDataForAllResults(name = insertedUser.name, surname = insertedUser.surname))
+            .shouldBe(UserNameSurnameForAllResults(name = insertedUser.name, surname = insertedUser.surname))
     }
 
     test("Cant select user name and surname by invalid user id") {

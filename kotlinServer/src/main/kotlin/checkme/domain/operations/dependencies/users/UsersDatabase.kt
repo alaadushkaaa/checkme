@@ -2,7 +2,7 @@ package checkme.domain.operations.dependencies.users
 
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
-import checkme.web.solution.forms.UserDataForAllResults
+import checkme.web.solution.forms.UserNameSurnameForAllResults
 
 interface UsersDatabase {
 
@@ -14,7 +14,7 @@ interface UsersDatabase {
 
     fun selectAllUsers(): List<User>
 
-    fun selectUserNameSurname(userId: Int): UserDataForAllResults?
+    fun selectUserNameSurname(userId: Int): UserNameSurnameForAllResults?
 
     fun insertUser(
         login: String,

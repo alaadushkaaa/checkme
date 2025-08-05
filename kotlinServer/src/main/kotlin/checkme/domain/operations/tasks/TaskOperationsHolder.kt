@@ -4,7 +4,7 @@ import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.domain.operations.dependencies.tasks.TasksDatabase
-import checkme.web.solution.forms.TaskDataForAllResults
+import checkme.web.solution.forms.TaskNameForAllResults
 import dev.forkhandles.result4k.Result
 
 class TaskOperationsHolder (
@@ -22,7 +22,7 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTask()
         }
 
-    val fetchTaskName: (Int) -> Result<TaskDataForAllResults, TaskFetchingError> =
+    val fetchTaskName: (Int) -> Result<TaskNameForAllResults, TaskFetchingError> =
         FetchTaskName {
                 taskId: Int ->
             tasksDatabase.selectTaskName(taskId)

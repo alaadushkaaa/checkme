@@ -6,7 +6,7 @@ import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.domain.operations.dependencies.tasks.TasksDatabase
-import checkme.web.solution.forms.TaskDataForAllResults
+import checkme.web.solution.forms.TaskNameForAllResults
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
@@ -32,7 +32,7 @@ class TasksOperations (
                 record.toTask()
             }
 
-    override fun selectTaskName(taskId: Int): TaskDataForAllResults? =
+    override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
         jooqContext
             .select(
                 TASKS.NAME
@@ -97,13 +97,13 @@ internal fun Record.toTask(): Task? =
         )
     }
 
-internal fun Record.toTaskDataForAllResults(): TaskDataForAllResults? =
+internal fun Record.toTaskDataForAllResults(): TaskNameForAllResults? =
     safeLet(
         this[TASKS.NAME]
     ) {
             name,
         ->
-        TaskDataForAllResults(
+        TaskNameForAllResults(
             name = name,
         )
     }

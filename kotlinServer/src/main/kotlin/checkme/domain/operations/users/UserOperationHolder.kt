@@ -4,7 +4,7 @@ import checkme.config.AppConfig
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import checkme.domain.operations.dependencies.users.UsersDatabase
-import checkme.web.solution.forms.UserDataForAllResults
+import checkme.web.solution.forms.UserNameSurnameForAllResults
 import dev.forkhandles.result4k.Result4k
 
 class UserOperationHolder(
@@ -20,7 +20,7 @@ class UserOperationHolder(
     val fetchUserByLogin: (String) -> Result4k<User, UserFetchingError> =
         FetchUserByLogin { login: String -> usersDatabase.selectUserByLogin(login) }
 
-    val fetchUserNameSurname: (Int) -> Result4k<UserDataForAllResults, UserFetchingError> =
+    val fetchUserNameSurname: (Int) -> Result4k<UserNameSurnameForAllResults, UserFetchingError> =
         FetchUserNameSurname { userId: Int -> usersDatabase.selectUserNameSurname(userId) }
 
     val createUser: (String, String, String, String, Role) -> Result4k<User, UserCreationError> =

@@ -7,22 +7,22 @@ data class CheckWithAllData(
     val date: String,
     val status: String,
     val result: Map<String, CheckResult>?,
-    val user: UserDataForAllResults,
-    val task: TaskDataForAllResults,
+    val user: UserNameSurnameForAllResults,
+    val task: TaskNameForAllResults,
 )
 
 data class CheckWithTaskData(
     val id: String,
     val date: String,
     val status: String,
-    val task: TaskDataForAllResults,
+    val task: TaskNameForAllResults,
 )
 
-data class TaskDataForAllResults(
+data class TaskNameForAllResults(
     val name: String,
 )
 
-data class UserDataForAllResults(
+data class UserNameSurnameForAllResults(
     val name: String,
     val surname: String,
 )

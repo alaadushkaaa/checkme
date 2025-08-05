@@ -2,7 +2,7 @@ package checkme.db.tasks
 
 import checkme.db.TestcontainerSpec
 import checkme.db.validTasks
-import checkme.web.solution.forms.TaskDataForAllResults
+import checkme.web.solution.forms.TaskNameForAllResults
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -49,7 +49,7 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
         taskOperations
             .selectTaskName(validTasks.first().id)
             .shouldNotBeNull()
-            .shouldBe(TaskDataForAllResults(validTasks.first().name))
+            .shouldBe(TaskNameForAllResults(validTasks.first().name))
     }
 
     test("Task name cant be fetched by invalid task id") {

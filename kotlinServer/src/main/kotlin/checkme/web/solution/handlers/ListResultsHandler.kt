@@ -30,27 +30,23 @@ class ListResultsHandler(
         val user = userLens(request)
         val page = request.pageCountOrNull()
         return when {
-            user == null -> Response(Status.BAD_REQUEST)
-                .body(objectMapper.writeValueAsString(mapOf("error" to ViewCheckResultError.USER_HAS_NOT_RIGHTS)))
+            user == null -> objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
 
-            else -> {
-                if (user.isAdmin() && page != null) {
-                    tryFetchAllSolutionsByAdmin(
-                        page = page,
-                        objectMapper = objectMapper,
-                        checkOperations = checkOperations,
-                        userOperations = userOperations,
-                        taskOperations = taskOperations
-                    )
-                } else {
-                    tryFetchUserSolutions(
-                        userId = user.id,
-                        objectMapper = objectMapper,
-                        checkOperations = checkOperations,
-                        taskOperations = taskOperations
-                    )
-                }
-            }
+            user.isAdmin() && page != null ->
+                tryFetchAllSolutionsByAdmin(
+                    page = page,
+                    objectMapper = objectMapper,
+                    checkOperations = checkOperations,
+                    userOperations = userOperations,
+                    taskOperations = taskOperations
+                )
+
+            else -> tryFetchUserSolutions(
+                userId = user.id,
+                objectMapper = objectMapper,
+                checkOperations = checkOperations,
+                taskOperations = taskOperations
+            )
         }
     }
 }
@@ -125,11 +121,7 @@ private fun tryFetchAllSolutionsByAdmin(
 }
 
 private fun ObjectMapper.sendBadRequestError(message: Any? = null): Response {
-    return if (message == null) {
-        Response(Status.BAD_REQUEST)
-            .body(this.writeValueAsString(mapOf("error" to FetchingCheckError.UNKNOWN_DATABASE_ERROR)))
-    } else {
-        Response(Status.BAD_REQUEST)
-            .body(this.writeValueAsString(mapOf("error" to message)))
-    }
+    val errorMessage = message ?: FetchingCheckError.UNKNOWN_DATABASE_ERROR
+    return Response(Status.BAD_REQUEST)
+        .body(this.writeValueAsString(mapOf("error" to errorMessage)))
 }
