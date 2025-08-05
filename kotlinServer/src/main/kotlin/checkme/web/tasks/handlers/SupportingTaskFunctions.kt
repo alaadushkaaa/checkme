@@ -68,6 +68,21 @@ internal fun fetchAllTasksIdAndName(
 }
 
 
+internal fun fetchAllTasks(
+    taskOperations: TaskOperationsHolder,
+): Result<List<Task>, FetchingTaskError> {
+    return when (
+        val fetchedTasks = taskOperations.fetchAllTasks()
+    ) {
+        is Success -> Success(fetchedTasks.value)
+        is Failure -> when (fetchedTasks.reason) {
+            TaskFetchingError.NO_SUCH_TASK -> Failure(FetchingTaskError.NO_SUCH_TASK)
+            TaskFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingTaskError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
+
 internal fun taskExists(
     taskId: Int,
     taskOperations: TaskOperationsHolder,
