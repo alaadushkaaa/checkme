@@ -2,7 +2,7 @@ package checkme.domain.operations.checks
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
-import checkme.domain.operations.dependencies.ChecksDatabase
+import checkme.domain.operations.dependencies.checks.ChecksDatabase
 import checkme.domain.operations.users.ModifyCheckError
 import checkme.domain.operations.users.ModifyCheckResult
 import checkme.domain.operations.users.ModifyCheckStatus
@@ -14,9 +14,14 @@ class CheckOperationHolder (
 ) {
     val fetchCheckById: (Int) -> Result<Check, CheckFetchingError> =
         FetchCheckById {
-                checkId: Int,
-            ->
+                checkId: Int ->
             checksDatabase.selectCheckById(checkId)
+        }
+
+    val fetchAllChecksPagination: (Int) -> Result<List<Check>, CheckFetchingError> =
+        FetchAllChecksPagination {
+                page: Int ->
+            checksDatabase.selectAllChecksPagination(page)
         }
 
     val fetchAllChecks: () -> Result<List<Check>, CheckFetchingError> =

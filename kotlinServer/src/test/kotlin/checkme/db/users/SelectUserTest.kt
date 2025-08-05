@@ -9,6 +9,7 @@ import checkme.db.validPass
 import checkme.db.validSurname
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
+import checkme.web.solution.forms.UserNameSurnameForAllResults
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -123,6 +124,19 @@ class SelectUserTest : TestcontainerSpec({ context ->
     test("User cant be fetched by invalid login") {
         userOperations
             .selectUserByLogin(insertedUser.login + "1")
+            .shouldBeNull()
+    }
+
+    test("Select user name and surname should return entity with this fields") {
+        userOperations
+            .selectUserNameSurname(insertedUser.id)
+            .shouldNotBeNull()
+            .shouldBe(UserNameSurnameForAllResults(name = insertedUser.name, surname = insertedUser.surname))
+    }
+
+    test("Cant select user name and surname by invalid user id") {
+        userOperations
+            .selectUserNameSurname(insertedUser.id + 2)
             .shouldBeNull()
     }
 })

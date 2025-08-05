@@ -2,6 +2,7 @@ package checkme.domain.operations.users
 
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
+import checkme.web.solution.forms.UserNameSurnameForAllResults
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -45,6 +46,20 @@ class FetchUserByLogin(
         try {
             when (val user = fetchUsersByLogin(login)) {
                 is User -> Success(user)
+                else -> Failure(UserFetchingError.NO_SUCH_USER)
+            }
+        } catch (_: DataAccessException) {
+            Failure(UserFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
+class FetchUserNameSurname(
+    private val fetchUserNameSurname: (Int) -> UserNameSurnameForAllResults?,
+) : (Int) -> Result4k<UserNameSurnameForAllResults, UserFetchingError> {
+    override operator fun invoke(userId: Int): Result4k<UserNameSurnameForAllResults, UserFetchingError> =
+        try {
+            when (val userData = fetchUserNameSurname(userId)) {
+                is UserNameSurnameForAllResults -> Success(userData)
                 else -> Failure(UserFetchingError.NO_SUCH_USER)
             }
         } catch (_: DataAccessException) {

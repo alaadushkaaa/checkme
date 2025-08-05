@@ -2,6 +2,7 @@ package checkme.db.checks
 
 import checkme.db.TestcontainerSpec
 import checkme.db.validChecks
+import checkme.db.validChecksMany
 import checkme.domain.models.Check
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -56,5 +57,27 @@ class SelectCheckTest : TestcontainerSpec({ context ->
     test("Select all checks should return all of this inserted checks") {
         val selectedChecks = checkOperations.selectAllChecks().shouldNotBeNull()
         selectedChecks shouldContainExactlyInAnyOrder insertedChecks
+    }
+
+    test(
+        "Select all checks pagination should return a list with the size of the inserted checks if " +
+            "there are less than 10"
+    ) {
+        val selectedChecksBefore = checkOperations.selectAllChecksPagination(1).shouldNotBeNull()
+        selectedChecksBefore.size.shouldBe(insertedChecks.size)
+    }
+
+    test("Select all checks pagination should return a list with the size 10 if this count exists") {
+        validChecksMany.map {
+            checkOperations.insertCheck(
+                it.taskId,
+                it.userId,
+                it.date,
+                it.result,
+                it.status
+            ).shouldNotBeNull()
+        }
+        val selectedChecksBefore = checkOperations.selectAllChecksPagination(1).shouldNotBeNull()
+        selectedChecksBefore.size.shouldBe(10)
     }
 })

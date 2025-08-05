@@ -4,7 +4,7 @@ import checkme.db.generated.tables.references.CHECKS
 import checkme.db.utils.safeLet
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
-import checkme.domain.operations.dependencies.ChecksDatabase
+import checkme.domain.operations.dependencies.checks.ChecksDatabase
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
@@ -12,7 +12,9 @@ import org.jooq.JSONB.jsonb
 import org.jooq.Record
 import java.time.LocalDateTime
 
-class CheckOperations (
+const val CHECKS_LIMIT = 10
+
+class CheckOperations(
     private val jooqContext: DSLContext,
 ) : ChecksDatabase {
     private val objectMapper = jacksonObjectMapper()
@@ -33,10 +35,19 @@ class CheckOperations (
     override fun selectChecksByUserId(userId: Int): List<Check> =
         selectFromChecks()
             .where(CHECKS.USERID.eq(userId))
+            .orderBy(CHECKS.ID)
             .fetch()
             .mapNotNull { record: Record ->
                 record.toCheck()
             }
+
+    override fun selectAllChecksPagination(page: Int): List<Check> =
+        selectFromChecks()
+            .orderBy(CHECKS.ID)
+            .limit(CHECKS_LIMIT)
+            .offset((page - 1) * CHECKS_LIMIT)
+            .fetch()
+            .mapNotNull { record: Record -> record.toCheck() }
 
     override fun updateCheckStatus(
         checkId: Int,

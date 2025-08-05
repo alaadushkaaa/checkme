@@ -1,8 +1,9 @@
-package checkme.web.solution.handlers
+package checkme.web.solution.supportingFiles
 
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
+import checkme.web.solution.handlers.COMPLETE_TASK
 
 val criterions = mapOf(
     "Сложение положительных чисел" to

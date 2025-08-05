@@ -36,6 +36,21 @@ class FetchChecksByUserId(
         }
 }
 
+class FetchAllChecksPagination(
+    private val fetchAllChecksWithData: (Int) -> List<Check>?,
+) : (Int) -> Result4k<List<Check>, CheckFetchingError> {
+
+    override fun invoke(page: Int): Result4k<List<Check>, CheckFetchingError> =
+        try {
+            when (val checks = fetchAllChecksWithData(page)) {
+                is List<Check> -> Success(checks)
+                else -> Failure(CheckFetchingError.NO_SUCH_CHECK)
+            }
+        } catch (_: DataAccessException) {
+            Failure(CheckFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
 class FetchAllChecks(
     private val fetchAllChecks: () -> List<Check>?,
 ) : () -> Result4k<List<Check>, CheckFetchingError> {

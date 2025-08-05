@@ -35,6 +35,17 @@ val validResult = mapOf(
     "check2" to CheckResult(0, "Проверка не пройдена")
 )
 
+val validResultOne = mapOf(
+    "check1" to CheckResult(10, "Проверка пройдена")
+)
+
+val validResultMany = mapOf(
+    "check1" to CheckResult(10, "Проверка пройдена"),
+    "check2" to CheckResult(0, "Проверка не пройдена"),
+    "check3" to CheckResult(5, "Проверка пройдена частично"),
+    "check4" to CheckResult(3, "Проверка не пройдена не полностью")
+)
+
 val validStatusCorrect = "Проверено"
 
 val validStatusProcess = "В процессе"
@@ -46,6 +57,17 @@ val validChecks: List<Check> = listOf(
     Check(validCheckId + 1, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, null, validStatusError),
     Check(validCheckId + 3, validTaskId, validUserId, validDate, null, validStatusProcess)
+)
+
+val validChecksMany: List<Check> = listOf(
+    Check(validCheckId + 4, validTaskId, validUserId, validDate, validResult, validStatusCorrect),
+    Check(validCheckId + 5, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
+    Check(validCheckId + 6, validTaskId, validUserId + 1, validDate, null, validStatusError),
+    Check(validCheckId + 7, validTaskId, validUserId, validDate, null, validStatusProcess),
+    Check(validCheckId + 8, validTaskId, validUserId, validDate, null, validStatusError),
+    Check(validCheckId + 9, validTaskId + 2, validUserId, validDate, validResult, validStatusCorrect),
+    Check(validCheckId + 10, validTaskId + 2, validUserId, validDate, validResultOne, validStatusCorrect),
+    Check(validCheckId + 11, validTaskId, validUserId + 2, validDate, validResultMany, validStatusCorrect)
 )
 
 val validCriterions = mapOf(

@@ -1,15 +1,20 @@
-package checkme.web.solution.handlers
+package checkme.web.solution.supportingFiles
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
+import checkme.domain.operations.checks.CheckFetchingError
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.ModifyCheckError
+import checkme.web.solution.handlers.CreationCheckError
+import checkme.web.solution.handlers.FetchingCheckError
+import checkme.web.solution.handlers.ModifyingCheckError
 import checkme.web.tasks.handlers.taskExists
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import java.time.LocalDateTime
@@ -134,5 +139,53 @@ internal fun updateCheckStatus(
         }
 
         is Success -> Success(updatedCheck.value)
+    }
+}
+
+internal fun fetchCheckById(
+    checkId: Int,
+    checkOperations: CheckOperationHolder,
+): Result<Check, FetchingCheckError> {
+    return when (
+        val fetchedCheck = checkOperations.fetchCheckById(checkId)
+    ) {
+        is Failure -> when (fetchedCheck.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+        is Success -> Success(fetchedCheck.value)
+    }
+}
+
+internal fun fetchAllChecksPagination(
+    checkOperations: CheckOperationHolder,
+    page: Int,
+): Result4k<List<Check>, FetchingCheckError> {
+    return when (
+        val fetchedChecks = checkOperations.fetchAllChecksPagination(page)
+    ) {
+        is Failure -> when (fetchedChecks.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+        is Success -> Success(fetchedChecks.value)
+    }
+}
+
+internal fun fetchCheckByUserId(
+    userId: Int,
+    checkOperations: CheckOperationHolder,
+): Result4k<List<Check>, FetchingCheckError> {
+    return when (
+        val fetchedChecks = checkOperations.fetchChecksByUserId(userId)
+    ) {
+        is Failure -> when (fetchedChecks.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+        is Success -> Success(fetchedChecks.value)
     }
 }

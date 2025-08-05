@@ -17,7 +17,7 @@ function Header() {
                 <Link className="navigation-link" to="/">
                     Список задач
                 </Link>
-                <Link className="navigation-link" to="/results/me">
+                <Link className="navigation-link" to="/solution/me">
                     Мои решения
                 </Link>
                 <AdminRequired>
@@ -26,7 +26,7 @@ function Header() {
                     </Link>
                 </AdminRequired>
                 <AdminRequired>
-                    <Link className="navigation-link" to="/history/1">
+                    <Link className="navigation-link" to="/solution/all/1">
                         История задач
                     </Link>
                 </AdminRequired>

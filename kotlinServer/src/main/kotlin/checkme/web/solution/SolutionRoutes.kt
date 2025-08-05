@@ -3,6 +3,8 @@ package checkme.web.solution
 import checkme.domain.operations.OperationHolder
 import checkme.web.context.ContextTools
 import checkme.web.solution.handlers.CheckSolutionHandler
+import checkme.web.solution.handlers.ListResultsHandler
+import checkme.web.solution.handlers.ResultHandler
 import org.http4k.core.*
 import org.http4k.routing.*
 
@@ -15,7 +17,24 @@ fun solutionRouter(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens
-        )
+        ),
+        "/me" bind Method.GET to ListResultsHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
+        "/{checkId}" bind Method.GET to ResultHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userLens = contextTools.userLens
+        ),
+        "/all/{page}" bind Method.GET to ListResultsHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
     )
 
 const val SOLUTION_SEGMENT = "/solution"

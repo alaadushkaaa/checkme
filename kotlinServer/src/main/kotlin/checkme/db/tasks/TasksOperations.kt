@@ -5,7 +5,8 @@ import checkme.db.utils.safeLet
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
-import checkme.domain.operations.dependencies.TasksDatabase
+import checkme.domain.operations.dependencies.tasks.TasksDatabase
+import checkme.web.solution.forms.TaskNameForAllResults
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
@@ -30,6 +31,15 @@ class TasksOperations (
             .mapNotNull { record: Record ->
                 record.toTask()
             }
+
+    override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
+        jooqContext
+            .select(
+                TASKS.NAME
+            ).from(TASKS)
+            .where(TASKS.ID.eq(taskId))
+            .fetchOne()
+            ?.let { record: Record -> record.toTaskDataForAllResults() }
 
     override fun insertTask(
         name: String,
@@ -84,5 +94,16 @@ internal fun Record.toTask(): Task? =
             criterions = jacksonObjectMapper().readValue<Map<String, Criterion>>(criterions.data()),
             answerFormat = jacksonObjectMapper().readValue<Map<String, AnswerType>>(answerFormat.data()),
             description = description
+        )
+    }
+
+internal fun Record.toTaskDataForAllResults(): TaskNameForAllResults? =
+    safeLet(
+        this[TASKS.NAME]
+    ) {
+            name,
+        ->
+        TaskNameForAllResults(
+            name = name,
         )
     }

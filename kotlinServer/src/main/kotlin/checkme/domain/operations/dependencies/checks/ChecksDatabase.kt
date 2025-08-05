@@ -1,4 +1,4 @@
-package checkme.domain.operations.dependencies
+package checkme.domain.operations.dependencies.checks
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
@@ -10,6 +10,8 @@ interface ChecksDatabase {
     fun selectChecksByUserId(userId: Int): List<Check>
 
     fun selectAllChecks(): List<Check>
+
+    fun selectAllChecksPagination(page: Int): List<Check>
 
     fun insertCheck(
         taskId: Int,
