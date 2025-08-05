@@ -8,6 +8,7 @@ import checkme.domain.operations.tasks.CreateTaskError
 import checkme.domain.operations.tasks.TaskFetchingError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.lenses.TaskLenses
+import checkme.web.tasks.forms.TasksListData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
@@ -51,6 +52,21 @@ internal fun fetchTask(
         }
     }
 }
+
+internal fun fetchAllTasksIdAndName(
+    taskOperations: TaskOperationsHolder,
+): Result<List<TasksListData>, FetchingTaskError> {
+    return when (
+        val fetchedTasks = taskOperations.fetchAllTasksIdAndName()
+    ) {
+        is Success -> Success(fetchedTasks.value)
+        is Failure -> when (fetchedTasks.reason) {
+            TaskFetchingError.NO_SUCH_TASK -> Failure(FetchingTaskError.NO_SUCH_TASK)
+            TaskFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingTaskError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
 
 internal fun taskExists(
     taskId: Int,
