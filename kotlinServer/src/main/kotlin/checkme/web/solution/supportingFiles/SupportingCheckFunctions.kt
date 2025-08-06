@@ -8,7 +8,7 @@ import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.ModifyCheckError
 import checkme.web.commonExtensions.sendBadRequestError
-import checkme.web.commonExtensions.sendOKRequest
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.solution.handlers.CreationCheckError
 import checkme.web.solution.handlers.FetchingCheckError
 import checkme.web.solution.handlers.ModifyingCheckError
@@ -35,7 +35,7 @@ internal fun setStatusError(
     ) {
         is Failure -> objectMapper.sendBadRequestError(updatedCheckStatusError.reason.errorText)
 
-        is Success -> objectMapper.sendOKRequest(mapOf("checkId" to check.id))
+        is Success -> objectMapper.sendOKResponse(mapOf("checkId" to check.id))
     }
 }
 
@@ -53,7 +53,7 @@ internal fun setStatusChecked(
     ) {
         is Failure -> objectMapper.sendBadRequestError(updatedCheckStatus.reason.errorText)
 
-        is Success -> objectMapper.sendOKRequest(mapOf("checkId" to check.id))
+        is Success -> objectMapper.sendOKResponse(mapOf("checkId" to check.id))
     }
 }
 

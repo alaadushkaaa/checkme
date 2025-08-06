@@ -5,7 +5,7 @@ import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.UserOperationHolder
 import checkme.web.commonExtensions.sendBadRequestError
-import checkme.web.commonExtensions.sendOKRequest
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.pageCountOrNull
 import checkme.web.solution.forms.CheckWithAllData
 import checkme.web.solution.forms.CheckWithTaskData
@@ -78,7 +78,7 @@ private fun tryFetchUserSolutions(
                     task = taskData.valueOrNull()!!
                 )
             }
-            objectMapper.sendOKRequest(checksWithTaskData)
+            objectMapper.sendOKResponse(checksWithTaskData)
         }
     }
 }
@@ -114,7 +114,7 @@ private fun tryFetchAllSolutionsByAdmin(
                     task = taskData.valueOrNull()!!
                 )
             }
-            objectMapper.sendOKRequest(checksWithAllData)
+            objectMapper.sendOKResponse(checksWithAllData)
         }
     }
 }

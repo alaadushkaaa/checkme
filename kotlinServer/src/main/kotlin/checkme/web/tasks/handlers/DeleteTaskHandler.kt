@@ -4,7 +4,7 @@ import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
-import checkme.web.commonExtensions.sendOKRequest
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -55,7 +55,7 @@ private fun tryDeleteTask(
     ) {
         is Failure -> objectMapper.sendBadRequestError(deleteFlag.reason.errorText)
 
-        is Success -> objectMapper.sendOKRequest(mapOf("status" to "complete"))
+        is Success -> objectMapper.sendOKResponse(mapOf("status" to "complete"))
     }
 }
 

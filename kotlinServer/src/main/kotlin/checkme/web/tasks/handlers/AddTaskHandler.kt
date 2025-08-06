@@ -4,7 +4,7 @@ import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
-import checkme.web.commonExtensions.sendOKRequest
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.lenses.TaskLenses
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -68,7 +68,7 @@ private fun tryAddTaskAndFiles(
                 taskOperations = taskOperations
             )
     ) {
-        is Success -> objectMapper.sendOKRequest(mapOf("taskId" to newTask.value.id))
+        is Success -> objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
 
         is Failure -> objectMapper.sendBadRequestError(newTask.reason.errorText)
     }

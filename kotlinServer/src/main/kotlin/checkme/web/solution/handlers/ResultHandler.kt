@@ -5,7 +5,7 @@ import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
-import checkme.web.commonExtensions.sendOKRequest
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.checkIdOrNull
 import checkme.web.solution.forms.ResultResponse
 import checkme.web.solution.forms.TaskResultResponse
@@ -88,7 +88,7 @@ private fun tryFetchTaskAndSendResponse(
     ) {
         is Failure -> objectMapper.sendBadRequestError(fetchedTaskForResult.reason.errorText)
 
-        is Success -> objectMapper.sendOKRequest(
+        is Success -> objectMapper.sendOKResponse(
             ResultResponse(
                 status = check.status,
                 result = check.result,

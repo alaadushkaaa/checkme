@@ -2,7 +2,7 @@ package checkme.web.tasks.handlers
 
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
-import checkme.web.commonExtensions.sendOKRequest
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.tasks.forms.TaskClientResponse
 import checkme.web.tasks.forms.TaskClientResponse.Companion.toClientEntryAnswerFormat
@@ -35,7 +35,7 @@ private fun tryFetchTask(
     return when (val task = fetchTask(taskId, taskOperations)) {
         is Failure -> return objectMapper.sendBadRequestError(task.reason.errorText)
 
-        is Success -> objectMapper.sendOKRequest(
+        is Success -> objectMapper.sendOKResponse(
             TaskClientResponse(
                 task.value.id,
                 task.value.name,

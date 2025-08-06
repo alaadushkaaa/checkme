@@ -3,7 +3,7 @@ package checkme.web.tasks.handlers
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
-import checkme.web.commonExtensions.sendOKRequest
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.solution.handlers.ViewCheckResultError
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -40,6 +40,6 @@ private fun tryFetchTasks(
         val tasks = fetchAllTasksIdName(taskOperations)
     ) {
         is Failure -> objectMapper.sendBadRequestError(tasks.reason)
-        is Success -> objectMapper.sendOKRequest(tasks.value)
+        is Success -> objectMapper.sendOKResponse(tasks.value)
     }
 }
