@@ -3,6 +3,7 @@ package checkme.db.tasks
 import checkme.db.TestcontainerSpec
 import checkme.db.validTasks
 import checkme.web.solution.forms.TaskNameForAllResults
+import checkme.web.tasks.forms.TasksListData
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -56,5 +57,12 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
         taskOperations
             .selectTaskName(validTasks.first().id + validTasks.size)
             .shouldBeNull()
+    }
+
+    test("Select task id and name should return entities with only id and task name") {
+        taskOperations
+            .selectAllTasksIdAndName()
+            .shouldNotBeNull()
+            .shouldBe(validTasks.map { TasksListData(it.id.toString(), it.name) })
     }
 })
