@@ -6,6 +6,7 @@ import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.tools.TokenError
+import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.solution.supportingFiles.createNewCheck
 import checkme.web.solution.supportingFiles.setStatusChecked
@@ -42,14 +43,10 @@ class CheckSolutionHandler(
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
-        val taskId = request.idOrNull() ?: return Response(Status.BAD_REQUEST).body(
-            objectMapper.writeValueAsString(
-                mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
-            )
-        )
+        val taskId =
+            request.idOrNull() ?: return objectMapper.sendBadRequestError(ViewTaskError.NO_TASK_ID_ERROR.errorText)
         return when {
-            user == null -> Response(Status.BAD_REQUEST)
-                .body(objectMapper.writeValueAsString(mapOf("error" to TokenError.DECODING_ERROR)))
+            user == null -> objectMapper.sendBadRequestError(mapOf("error" to TokenError.DECODING_ERROR))
 
             else -> {
                 when (
@@ -58,11 +55,7 @@ class CheckSolutionHandler(
                         taskOperations = taskOperations
                     )
                 ) {
-                    is Failure -> Response(Status.BAD_REQUEST).body(
-                        objectMapper.writeValueAsString(
-                            mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
-                        )
-                    )
+                    is Failure -> objectMapper.sendBadRequestError(ViewTaskError.NO_TASK_ID_ERROR.errorText)
 
                     is Success -> {
                         val filesField = MultipartFormFile.multi.required("ans")
@@ -78,8 +71,7 @@ class CheckSolutionHandler(
                                 taskOperations = taskOperations
                             )
                         ) {
-                            is Failure -> Response(Status.INTERNAL_SERVER_ERROR)
-                                .body(objectMapper.writeValueAsString(mapOf("error" to newCheck.reason.errorText)))
+                            is Failure -> objectMapper.sendBadRequestError(newCheck.reason.errorText)
 
                             is Success -> {
                                 val answers = tryGetFieldsAndFilesFromForm(
@@ -115,12 +107,7 @@ class CheckSolutionHandler(
         return when {
             checksResult == null -> setStatusError(newCheck, checkOperations)
             else -> when (val updatedCheck = updateCheckResult(newCheck.id, checksResult, checkOperations)) {
-                is Failure -> Response(Status.BAD_REQUEST)
-                    .body(
-                        objectMapper.writeValueAsString(
-                            mapOf("error" to updatedCheck.reason.errorText)
-                        )
-                    )
+                is Failure -> objectMapper.sendBadRequestError(updatedCheck.reason.errorText)
 
                 is Success -> setStatusChecked(updatedCheck.value, checkOperations)
             }

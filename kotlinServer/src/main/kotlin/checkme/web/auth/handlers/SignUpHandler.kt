@@ -7,6 +7,9 @@ import checkme.domain.operations.users.UserOperationHolder
 import checkme.domain.tools.JWTTools
 import checkme.web.auth.forms.SignUpRequest
 import checkme.web.auth.forms.UserAuthResponse
+import checkme.web.commonExtensions.sendBadRequestError
+import checkme.web.commonExtensions.sendStatusCreated
+import checkme.web.commonExtensions.sendStatusUnauthorized
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
@@ -24,13 +27,12 @@ class SignUpHandler(
         val objectMapper = jacksonObjectMapper()
         val signUpRequest = objectMapper.readValue<SignUpRequest>(request.bodyString())
         return when (val userInsertResult = tryInsert(form = signUpRequest, userOperations = userOperations)) {
-            is Failure -> Response(Status.UNAUTHORIZED)
-                .body(objectMapper.writeValueAsString(mapOf("error" to userInsertResult.reason.errorText)))
+            is Failure -> objectMapper.sendStatusUnauthorized(userInsertResult.reason.errorText)
+
             is Success -> {
                 when (val tokenResult = jwtTools.createUserJwt(userInsertResult.value.id)) {
-                    is Failure -> Response(
-                        Status.INTERNAL_SERVER_ERROR
-                    ).body(objectMapper.writeValueAsString(SignUpError.TOKEN_CREATION_ERROR.errorText))
+                    is Failure -> objectMapper.sendBadRequestError(SignUpError.TOKEN_CREATION_ERROR.errorText)
+
                     is Success -> {
                         val signUpUserResponse = UserAuthResponse(
                             signUpRequest.username,
@@ -38,8 +40,7 @@ class SignUpHandler(
                             signUpRequest.surname,
                             tokenResult.value
                         )
-                        Response(Status.CREATED)
-                            .body(objectMapper.writeValueAsString(signUpUserResponse))
+                        objectMapper.sendStatusCreated(signUpUserResponse)
                     }
                 }
             }

@@ -4,6 +4,8 @@ import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.UserOperationHolder
+import checkme.web.commonExtensions.sendBadRequestError
+import checkme.web.commonExtensions.sendOKRequest
 import checkme.web.lenses.GeneralWebLenses.pageCountOrNull
 import checkme.web.solution.forms.CheckWithAllData
 import checkme.web.solution.forms.CheckWithTaskData
@@ -76,8 +78,7 @@ private fun tryFetchUserSolutions(
                     task = taskData.valueOrNull()!!
                 )
             }
-            Response(Status.OK)
-                .body(objectMapper.writeValueAsString(checksWithTaskData))
+            objectMapper.sendOKRequest(checksWithTaskData)
         }
     }
 }
@@ -96,8 +97,7 @@ private fun tryFetchAllSolutionsByAdmin(
                 page = page
             )
     ) {
-        is Failure -> Response(Status.BAD_REQUEST)
-            .body(objectMapper.writeValueAsString(mapOf("error" to checksWithData.reason.errorText)))
+        is Failure -> objectMapper.sendBadRequestError(mapOf("error" to checksWithData.reason.errorText))
 
         is Success -> {
             val checksWithAllData = checksWithData.value.map { check ->
@@ -114,14 +114,7 @@ private fun tryFetchAllSolutionsByAdmin(
                     task = taskData.valueOrNull()!!
                 )
             }
-            Response(Status.OK)
-                .body(objectMapper.writeValueAsString(checksWithAllData))
+            objectMapper.sendOKRequest(checksWithAllData)
         }
     }
-}
-
-fun ObjectMapper.sendBadRequestError(message: Any? = null): Response {
-    val errorMessage = message ?: FetchingCheckError.UNKNOWN_DATABASE_ERROR
-    return Response(Status.BAD_REQUEST)
-        .body(this.writeValueAsString(mapOf("error" to errorMessage)))
 }

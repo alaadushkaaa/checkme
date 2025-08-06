@@ -195,6 +195,7 @@ enum class CreationTaskError(val errorText: String) {
 enum class ValidateTaskError(val errorText: String) {
     NO_SUCH_FILE_FOR_CRITERION("All specified files must be added"),
     ANSWER_TYPE_ERROR("This type of task answer does not exist"),
+    USER_HAS_NOT_RIGHTS("Not allowed to add task")
 }
 
 enum class FetchingTaskError(val errorText: String) {
