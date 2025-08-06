@@ -32,7 +32,7 @@ class ResultHandler(
         return when {
             user == null -> objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
 
-            else -> {
+            else ->
                 tryFetchCheckResultData(
                     taskOperations = taskOperations,
                     checkOperations = checkOperations,
@@ -40,7 +40,6 @@ class ResultHandler(
                     user = user,
                     checkId = checkId
                 )
-            }
         }
     }
 }
@@ -61,10 +60,11 @@ private fun tryFetchCheckResultData(
         is Failure -> objectMapper.sendBadRequestError(check.reason.errorText)
 
         is Success -> {
-            if (!user.isAdmin() && user.id != check.value.userId) objectMapper.sendBadRequestError(
-                ViewCheckResultError.USER_HAS_NOT_RIGHTS
-            )
-            else {
+            if (!user.isAdmin() && user.id != check.value.userId) {
+                objectMapper.sendBadRequestError(
+                    ViewCheckResultError.USER_HAS_NOT_RIGHTS
+                )
+            } else {
                 tryFetchTaskAndSendResponse(
                     taskOperations = taskOperations,
                     objectMapper = objectMapper,

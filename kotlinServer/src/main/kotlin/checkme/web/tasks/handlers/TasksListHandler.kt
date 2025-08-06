@@ -4,14 +4,12 @@ import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKRequest
-import checkme.web.solution.forms.ResultResponse
-import checkme.web.solution.forms.TaskResultResponse
 import checkme.web.solution.handlers.ViewCheckResultError
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.http4k.core.*
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
+import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
 
 class TasksListHandler(
@@ -37,9 +35,9 @@ class TasksListHandler(
 private fun tryFetchTasks(
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
-) : Response {
+): Response {
     return when (
-        val tasks = fetchAllTasksIdAndName(taskOperations)
+        val tasks = fetchAllTasksIdName(taskOperations)
     ) {
         is Failure -> objectMapper.sendBadRequestError(tasks.reason)
         is Success -> objectMapper.sendOKRequest(tasks.value)

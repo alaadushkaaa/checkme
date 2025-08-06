@@ -10,10 +10,12 @@ fun ObjectMapper.sendBadRequestError(message: Any? = null): Response {
         .body(this.writeValueAsString(mapOf("error" to errorMessage)))
 }
 
-fun ObjectMapper.sendOKRequest(data: Any): Response = Response(Status.OK)
-    .body(this.writeValueAsString(data))
+fun ObjectMapper.sendOKRequest(data: Any): Response =
+    Response(Status.OK)
+        .body(this.writeValueAsString(data))
 
-fun ObjectMapper.sendStatusUnauthorized(message: Any) = Response(Status.UNAUTHORIZED)
-    .body(this.writeValueAsString(mapOf("error" to message)))
+fun ObjectMapper.sendStatusUnauthorized(message: Any) =
+    Response(Status.UNAUTHORIZED)
+        .body(this.writeValueAsString(mapOf("error" to message)))
 
 fun ObjectMapper.sendStatusCreated(data: Any) = Response(Status.CREATED).body(this.writeValueAsString(data))

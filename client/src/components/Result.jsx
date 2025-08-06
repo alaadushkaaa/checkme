@@ -43,12 +43,12 @@ function Result() {
         <div>
             <h2> Результат: {countTotalScore()} </h2>
             <a
-                onClick={() => navigate(`/task/${fetchCheck.data.task._id}`)}
+                onClick={() => navigate(`/task/${fetchCheck.data.task.id}`)}
                 role="link"
                 tabIndex={0}
                 onKeyDown={(event) => {
                     if (event.key === 'Enter') {
-                        navigate(`/task/${fetchCheck.data.task._id}`);
+                        navigate(`/task/${fetchCheck.data.task.id}`);
                     }
                 }}
                 className="task-link"

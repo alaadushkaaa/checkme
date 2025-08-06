@@ -7,6 +7,7 @@ import checkme.domain.models.Task
 import checkme.domain.operations.tasks.CreateTaskError
 import checkme.domain.operations.tasks.TaskFetchingError
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.domain.operations.tasks.TaskRemovingError
 import checkme.web.lenses.TaskLenses
 import checkme.web.tasks.forms.TasksListData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -53,9 +54,23 @@ internal fun fetchTask(
     }
 }
 
-internal fun fetchAllTasksIdAndName(
+internal fun deleteTask(
+    task: Task,
     taskOperations: TaskOperationsHolder,
-): Result<List<TasksListData>, FetchingTaskError> {
+): Result<Int, RemovingTaskError> {
+    return when (
+        val deletedTask = taskOperations.removeTask(task)
+    ) {
+        is Success -> Success(deletedTask.value)
+        is Failure -> when (deletedTask.reason) {
+            TaskRemovingError.TASK_NOT_EXISTS -> Failure(RemovingTaskError.NO_SUCH_TASK)
+            TaskRemovingError.UNKNOWN_DELETE_ERROR -> Failure(RemovingTaskError.UNKNOWN_DELETE_ERROR)
+            TaskRemovingError.UNKNOWN_DATABASE_ERROR -> Failure(RemovingTaskError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
+internal fun fetchAllTasksIdName(taskOperations: TaskOperationsHolder): Result<List<TasksListData>, FetchingTaskError> {
     return when (
         val fetchedTasks = taskOperations.fetchAllTasksIdAndName()
     ) {
@@ -67,10 +82,7 @@ internal fun fetchAllTasksIdAndName(
     }
 }
 
-
-internal fun fetchAllTasks(
-    taskOperations: TaskOperationsHolder,
-): Result<List<Task>, FetchingTaskError> {
+internal fun fetchAllTasks(taskOperations: TaskOperationsHolder): Result<List<Task>, FetchingTaskError> {
     return when (
         val fetchedTasks = taskOperations.fetchAllTasks()
     ) {
@@ -81,7 +93,6 @@ internal fun fetchAllTasks(
         }
     }
 }
-
 
 internal fun taskExists(
     taskId: Int,
@@ -195,10 +206,16 @@ enum class CreationTaskError(val errorText: String) {
 enum class ValidateTaskError(val errorText: String) {
     NO_SUCH_FILE_FOR_CRITERION("All specified files must be added"),
     ANSWER_TYPE_ERROR("This type of task answer does not exist"),
-    USER_HAS_NOT_RIGHTS("Not allowed to add task")
+    USER_HAS_NOT_RIGHTS("Not allowed to add task"),
 }
 
 enum class FetchingTaskError(val errorText: String) {
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
     NO_SUCH_TASK("The task does not exist"),
+}
+
+enum class RemovingTaskError(val errorText: String) {
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
+    NO_SUCH_TASK("The task does not exist"),
+    UNKNOWN_DELETE_ERROR("Something was wrong until task deleting. Please try again later."),
 }

@@ -73,5 +73,3 @@ private fun tryAddTaskAndFiles(
         is Failure -> objectMapper.sendBadRequestError(newTask.reason.errorText)
     }
 }
-
-
