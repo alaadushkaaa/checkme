@@ -1,7 +1,10 @@
 package checkme.web.tasks.handlers
 
 import checkme.domain.models.Task
+import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.web.commonExtensions.sendBadRequestError
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.lenses.TaskLenses
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -10,32 +13,38 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.MultipartForm
+import org.http4k.lens.RequestContextLens
 
 const val TASKS_DIR = "/tasks"
 
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,
+    private val userLens: RequestContextLens<User?>,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
+        val user = userLens(request)
         val taskId = request.idOrNull()
         val form: MultipartForm = TaskLenses.multipartFormFieldsAll(request)
-        return when (
-            val validatedNewTask = form.validateForm(taskId)
-        ) {
-            is Failure -> Response(Status.BAD_REQUEST).body(
-                objectMapper.writeValueAsString(
-                    mapOf("error" to validatedNewTask.reason.errorText)
-                )
-            )
+        return when {
+            user == null || !user.isAdmin() ->
+                objectMapper.sendBadRequestError(ValidateTaskError.USER_HAS_NOT_RIGHTS.errorText)
 
-            is Success -> {
-                tryAddTaskAndFiles(
-                    validatedNewTask = validatedNewTask.value,
-                    taskOperations = tasksOperations,
-                    objectMapper = objectMapper,
-                    form = form
-                )
+            else -> {
+                when (
+                    val validatedNewTask = form.validateForm(taskId)
+                ) {
+                    is Failure -> objectMapper.sendBadRequestError(validatedNewTask.reason.errorText)
+
+                    is Success -> {
+                        tryAddTaskAndFiles(
+                            validatedNewTask = validatedNewTask.value,
+                            taskOperations = tasksOperations,
+                            objectMapper = objectMapper,
+                            form = form
+                        )
+                    }
+                }
             }
         }
     }
@@ -59,18 +68,8 @@ private fun tryAddTaskAndFiles(
                 taskOperations = taskOperations
             )
     ) {
-        is Success -> {
-            Response(Status.OK).body(
-                objectMapper.writeValueAsString(
-                    mapOf("taskId" to newTask.value.id)
-                )
-            )
-        }
+        is Success -> objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
 
-        is Failure -> Response(Status.BAD_REQUEST).body(
-            objectMapper.writeValueAsString(
-                mapOf("error" to newTask.reason.errorText)
-            )
-        )
+        is Failure -> objectMapper.sendBadRequestError(newTask.reason.errorText)
     }
 }

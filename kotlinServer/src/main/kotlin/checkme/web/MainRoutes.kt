@@ -23,7 +23,7 @@ private fun createMainRouter(
     "/" bind Method.GET to { _ -> ok("pong") },
     AUTH_SEGMENT bind authRouter(config = config, operations = operations, jwtTools = jwtTools),
     SOLUTION_SEGMENT bind solutionRouter(operations = operations, contextTools = contextTools),
-    TASK_SEGMENT bind taskRouter(operations = operations),
+    TASK_SEGMENT bind taskRouter(operations = operations, contextTools = contextTools),
 )
 
 fun createApp(

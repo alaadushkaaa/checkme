@@ -1,5 +1,6 @@
 package checkme.db.tasks
 
+import checkme.db.generated.tables.references.CHECKS
 import checkme.db.generated.tables.references.TASKS
 import checkme.db.utils.safeLet
 import checkme.domain.checks.Criterion
@@ -7,13 +8,16 @@ import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.domain.operations.dependencies.tasks.TasksDatabase
 import checkme.web.solution.forms.TaskNameForAllResults
+import checkme.web.tasks.forms.TasksListData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
 import org.jooq.JSONB.jsonb
 import org.jooq.Record
+import org.jooq.impl.DSL.commit
+import org.jooq.impl.DSL.rollback
 
-class TasksOperations (
+class TasksOperations(
     private val jooqContext: DSLContext,
 ) : TasksDatabase {
     private val objectMapper = jacksonObjectMapper()
@@ -31,6 +35,15 @@ class TasksOperations (
             .mapNotNull { record: Record ->
                 record.toTask()
             }
+
+    override fun selectAllTasksIdAndName(): List<TasksListData> =
+        jooqContext
+            .select(
+                TASKS.ID,
+                TASKS.NAME
+            ).from(TASKS)
+            .fetch()
+            .mapNotNull { record: Record -> record.toTasksListData() }
 
     override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
         jooqContext
@@ -57,9 +70,24 @@ class TasksOperations (
             ?.toTask()
     }
 
-    override fun deleteTask(taskId: Int): Int? =
-        jooqContext.delete(TASKS)
-            .where(TASKS.ID.eq(taskId))
+    override fun deleteTask(taskId: Int): Int {
+        var deleteTaskFlag = 0
+        jooqContext.transaction { _ ->
+            deleteSolutions(taskId)
+            deleteTaskFlag = jooqContext.delete(TASKS)
+                .where(TASKS.ID.eq(taskId))
+                .execute()
+            when {
+                deleteTaskFlag == 1 -> commit()
+                else -> rollback()
+            }
+        }
+        return deleteTaskFlag
+    }
+
+    private fun deleteSolutions(taskId: Int): Int =
+        jooqContext.delete(CHECKS)
+            .where(CHECKS.TASKID.eq(taskId))
             .execute()
 
     private fun selectFromTasks() =
@@ -104,6 +132,20 @@ internal fun Record.toTaskDataForAllResults(): TaskNameForAllResults? =
             name,
         ->
         TaskNameForAllResults(
+            name = name,
+        )
+    }
+
+internal fun Record.toTasksListData(): TasksListData? =
+    safeLet(
+        this[TASKS.ID],
+        this[TASKS.NAME]
+    ) {
+            id,
+            name,
+        ->
+        TasksListData(
+            id = id.toString(),
             name = name,
         )
     }

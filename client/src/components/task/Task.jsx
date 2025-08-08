@@ -23,7 +23,7 @@ function Task() {
         (data) => navigate(`/solution/${data.checkId}`),
     );
     const deleteTask = usePost(
-        `/task/${params.taskId}`,
+        `/task/delete/${params.taskId}`,
         () => navigate('/'),
     );
 

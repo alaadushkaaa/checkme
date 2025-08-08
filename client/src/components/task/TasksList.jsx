@@ -13,16 +13,16 @@ function TasksList({ fetchData: tasks }) {
             <h2> Список задач </h2>
             {tasks.map((task) => (
                 <div
-                    key={task._id}
+                    key={task.id}
                     role="link"
                     tabIndex={0}
                     className="block task-item"
                     onKeyDown={(event) => {
                         if (event.key === 'Enter') {
-                            navigate(`/task/${task._id}`);
+                            navigate(`/task/${task.id}`);
                         }
                     }}
-                    onClick={() => navigate(`/task/${task._id}`)}
+                    onClick={() => navigate(`/task/${task.id}`)}
                 >
                     {task.name}
                 </div>
@@ -31,4 +31,4 @@ function TasksList({ fetchData: tasks }) {
     );
 }
 
-export default withFetch(TasksList, '/tasks');
+export default withFetch(TasksList, '/task/all');

@@ -4,6 +4,8 @@ import checkme.domain.models.Check
 import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.web.commonExtensions.sendBadRequestError
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.checkIdOrNull
 import checkme.web.solution.forms.ResultResponse
 import checkme.web.solution.forms.TaskResultResponse
@@ -24,16 +26,13 @@ class ResultHandler(
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
-        val checkId = request.checkIdOrNull() ?: return Response(Status.BAD_REQUEST).body(
-            objectMapper.writeValueAsString(
-                mapOf("error" to ViewCheckResultError.NO_CHECK_ID_ERROR.errorText)
-            )
-        )
-        return when {
-            user == null -> Response(Status.BAD_REQUEST)
-                .body(objectMapper.writeValueAsString(mapOf("error" to ViewCheckResultError.USER_HAS_NOT_RIGHTS)))
+        val checkId = request.checkIdOrNull()
+            ?: return objectMapper.sendBadRequestError(ViewCheckResultError.NO_CHECK_ID_ERROR.errorText)
 
-            else -> {
+        return when {
+            user == null -> objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
+
+            else ->
                 tryFetchCheckResultData(
                     taskOperations = taskOperations,
                     checkOperations = checkOperations,
@@ -41,7 +40,6 @@ class ResultHandler(
                     user = user,
                     checkId = checkId
                 )
-            }
         }
     }
 }
@@ -59,20 +57,13 @@ private fun tryFetchCheckResultData(
             checkOperations = checkOperations
         )
     ) {
-        is Failure -> Response(Status.BAD_REQUEST).body(
-            objectMapper.writeValueAsString(
-                mapOf("error" to check.reason.errorText)
-            )
-        )
+        is Failure -> objectMapper.sendBadRequestError(check.reason.errorText)
 
         is Success -> {
             if (!user.isAdmin() && user.id != check.value.userId) {
-                Response(Status.BAD_REQUEST)
-                    .body(
-                        objectMapper.writeValueAsString(
-                            mapOf("error" to ViewCheckResultError.USER_HAS_NOT_RIGHTS)
-                        )
-                    )
+                objectMapper.sendBadRequestError(
+                    ViewCheckResultError.USER_HAS_NOT_RIGHTS
+                )
             } else {
                 tryFetchTaskAndSendResponse(
                     taskOperations = taskOperations,
@@ -95,26 +86,18 @@ private fun tryFetchTaskAndSendResponse(
             taskOperations = taskOperations
         )
     ) {
-        is Failure -> Response(Status.BAD_REQUEST).body(
-            objectMapper.writeValueAsString(
-                mapOf("error" to fetchedTaskForResult.reason.errorText)
-            )
-        )
+        is Failure -> objectMapper.sendBadRequestError(fetchedTaskForResult.reason.errorText)
 
-        is Success -> {
-            Response(Status.OK).body(
-                objectMapper.writeValueAsString(
-                    ResultResponse(
-                        status = check.status,
-                        result = check.result,
-                        task = TaskResultResponse(
-                            id = fetchedTaskForResult.value.id.toString(),
-                            name = fetchedTaskForResult.value.name
-                        )
-                    )
+        is Success -> objectMapper.sendOKResponse(
+            ResultResponse(
+                status = check.status,
+                result = check.result,
+                task = TaskResultResponse(
+                    id = fetchedTaskForResult.value.id.toString(),
+                    name = fetchedTaskForResult.value.name
                 )
             )
-        }
+        )
     }
 }
 

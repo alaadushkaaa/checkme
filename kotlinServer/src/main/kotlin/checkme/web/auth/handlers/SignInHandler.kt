@@ -8,6 +8,8 @@ import checkme.domain.operations.users.UserOperationHolder
 import checkme.domain.tools.JWTTools
 import checkme.web.auth.forms.SignInRequest
 import checkme.web.auth.forms.UserAuthResponse
+import checkme.web.commonExtensions.sendStatusCreated
+import checkme.web.commonExtensions.sendStatusUnauthorized
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
@@ -24,19 +26,11 @@ class SignInHandler(
         val objectMapper = jacksonObjectMapper()
         val signInRequest = objectMapper.readValue<SignInRequest>(request.bodyString())
         return when (val signInResult = checkLoginPass(signInRequest, userOperations, config)) {
-            is Failure -> Response(
-                Status.UNAUTHORIZED
-            ).body(objectMapper.writeValueAsString(mapOf("error" to signInResult.reason.errorTest)))
+            is Failure -> objectMapper.sendStatusUnauthorized(signInResult.reason.errorTest)
 
             is Success -> {
                 when (val tokenResult = jwtTools.createUserJwt(signInResult.value.id)) {
-                    is Failure -> Response(
-                        Status.UNAUTHORIZED
-                    ).body(
-                        objectMapper.writeValueAsString(
-                            mapOf("error" to SignInError.TOKEN_CREATION_ERROR.errorTest)
-                        )
-                    )
+                    is Failure -> objectMapper.sendStatusUnauthorized(SignInError.TOKEN_CREATION_ERROR.errorTest)
 
                     is Success -> {
                         val signInUserResponse = UserAuthResponse(
@@ -45,8 +39,7 @@ class SignInHandler(
                             signInResult.value.surname,
                             tokenResult.value
                         )
-                        Response(Status.CREATED)
-                            .body(objectMapper.writeValueAsString(signInUserResponse))
+                        objectMapper.sendStatusCreated(signInUserResponse)
                     }
                 }
             }

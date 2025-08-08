@@ -1,6 +1,8 @@
 package checkme.web.tasks.handlers
 
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.web.commonExtensions.sendBadRequestError
+import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.tasks.forms.TaskClientResponse
 import checkme.web.tasks.forms.TaskClientResponse.Companion.toClientEntryAnswerFormat
@@ -15,11 +17,8 @@ class TaskHandler(
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
-        val taskId = request.idOrNull() ?: return Response(Status.BAD_REQUEST).body(
-            objectMapper.writeValueAsString(
-                mapOf("error" to ViewTaskError.NO_TASK_ID_ERROR.errorText)
-            )
-        )
+        val taskId =
+            request.idOrNull() ?: return objectMapper.sendBadRequestError(ViewTaskError.NO_TASK_ID_ERROR.errorText)
         return tryFetchTask(
             taskId = taskId,
             objectMapper = objectMapper,
@@ -34,20 +33,15 @@ private fun tryFetchTask(
     taskOperations: TaskOperationsHolder,
 ): Response {
     return when (val task = fetchTask(taskId, taskOperations)) {
-        is Failure -> return Response(Status.BAD_REQUEST).body(
-            objectMapper.writeValueAsString(
-                mapOf("error" to task.reason.errorText)
-            )
-        )
-        is Success -> Response(Status.OK).body(
-            objectMapper.writeValueAsString(
-                TaskClientResponse(
-                    task.value.id,
-                    task.value.name,
-                    task.value.criterions,
-                    task.value.answerFormat.toClientEntryAnswerFormat(),
-                    task.value.description
-                )
+        is Failure -> return objectMapper.sendBadRequestError(task.reason.errorText)
+
+        is Success -> objectMapper.sendOKResponse(
+            TaskClientResponse(
+                task.value.id,
+                task.value.name,
+                task.value.criterions,
+                task.value.answerFormat.toClientEntryAnswerFormat(),
+                task.value.description
             )
         )
     }
