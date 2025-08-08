@@ -22,5 +22,5 @@ interface TasksDatabase {
         description: String,
     ): Task?
 
-    fun deleteTask(taskId: Int): Int?
+    fun deleteTask(taskId: Int): Int
 }

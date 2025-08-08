@@ -20,7 +20,8 @@ class DeleteTaskHandler(
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
-        val taskId = request.idOrNull() ?: return objectMapper.sendBadRequestError(DeleteTaskError.NO_ID_TO_DELETE_TASK)
+        val taskId = request.idOrNull()
+            ?: return objectMapper.sendBadRequestError(DeleteTaskError.NO_ID_TO_DELETE_TASK.errorText)
         return when {
             user?.isAdmin() == true ->
                 when (
@@ -29,14 +30,15 @@ class DeleteTaskHandler(
                         taskOperations = tasksOperations
                     )
                 ) {
-                    is Failure -> objectMapper.sendBadRequestError(DeleteTaskError.TASK_NOT_EXISTS)
+                    is Failure -> objectMapper.sendBadRequestError(DeleteTaskError.TASK_NOT_EXISTS.errorText)
                     is Success -> tryDeleteTask(
                         taskToDelete = taskToDelete.value,
                         objectMapper = objectMapper,
                         tasksOperations = tasksOperations
                     )
                 }
-            else -> objectMapper.sendBadRequestError(DeleteTaskError.USER_HAS_NOT_RIGHTS)
+
+            else -> objectMapper.sendBadRequestError(DeleteTaskError.USER_HAS_NOT_RIGHTS.errorText)
         }
     }
 }
