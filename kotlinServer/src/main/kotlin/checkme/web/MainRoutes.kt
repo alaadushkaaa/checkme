@@ -21,7 +21,12 @@ private fun createMainRouter(
     contextTools: ContextTools,
 ) = routes(
     "/" bind Method.GET to { _ -> ok("pong") },
-    AUTH_SEGMENT bind authRouter(config = config, operations = operations, jwtTools = jwtTools),
+    AUTH_SEGMENT bind authRouter(
+        config = config,
+        operations = operations,
+        jwtTools = jwtTools,
+        contextTools = contextTools
+    ),
     SOLUTION_SEGMENT bind solutionRouter(operations = operations, contextTools = contextTools),
     TASK_SEGMENT bind taskRouter(operations = operations, contextTools = contextTools),
 )

@@ -6,7 +6,7 @@ import Loading from '../Loading';
 import UserGroupForm from './UserGroupForm';
 
 function UserList() {
-    const fetchResults = useFetch('/users');
+    const fetchResults = useFetch('/user/all');
     const groupHints = useFetch('/groups');
     const popup = useContext(PopupContext);
 
@@ -37,8 +37,8 @@ function UserList() {
         <div>
             <h2> Список пользователей </h2>
             {fetchResults.data.map((user) => (
-                <div key={user._id}>
-                    <div> {user.name} {user.surname} ({user.username}) </div>
+                <div key={user.id}>
+                    <div> {user.name} {user.surname} ({user.login}) </div>
                     <button onClick={() => changeRole(user)}> Изменить роли </button>
                 </div>
             ))}

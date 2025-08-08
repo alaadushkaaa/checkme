@@ -31,7 +31,7 @@ function Header() {
                     </Link>
                 </AdminRequired>
                 <AdminRequired>
-                    <Link className="navigation-link" to="/users">
+                    <Link className="navigation-link" to="/user/all">
                         Пользователи
                     </Link>
                 </AdminRequired>

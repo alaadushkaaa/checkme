@@ -6,6 +6,7 @@ import checkme.db.utils.safeLet
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import checkme.domain.operations.dependencies.users.UsersDatabase
+import checkme.web.solution.forms.UserDataForUsersList
 import checkme.web.solution.forms.UserNameSurnameForAllResults
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -49,6 +50,17 @@ class UserOperations (
             .where(USERS.ID.eq(userId))
             .fetchOne()
             ?.let { record: Record -> record.toUserDataForAllResults() }
+
+    override fun selectAllUsersWithoutPassword(): List<UserDataForUsersList> =
+        jooqContext
+            .select(
+                USERS.ID,
+                USERS.LOGIN,
+                USERS.NAME,
+                USERS.SURNAME
+            ).from(USERS)
+            .fetch()
+            .mapNotNull { record: Record -> record.toUserDataForUsersLIst() }
 
     override fun insertUser(
         login: String,
@@ -116,6 +128,26 @@ internal fun Record.toUserDataForAllResults(): UserNameSurnameForAllResults? =
             surname,
         ->
         UserNameSurnameForAllResults(
+            name = name,
+            surname = surname
+        )
+    }
+
+internal fun Record.toUserDataForUsersLIst(): UserDataForUsersList? =
+    safeLet(
+        this[USERS.ID],
+        this[USERS.LOGIN],
+        this[USERS.NAME],
+        this[USERS.SURNAME]
+    ) {
+            id,
+            login,
+            name,
+            surname,
+        ->
+        UserDataForUsersList(
+            id = id.toString(),
+            login = login,
             name = name,
             surname = surname
         )
