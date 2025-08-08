@@ -26,3 +26,10 @@ data class UserNameSurnameForAllResults(
     val name: String,
     val surname: String,
 )
+
+data class UserDataForUsersList(
+    val id: String,
+    val login: String,
+    val name: String,
+    val surname: String,
+)
