@@ -22,9 +22,7 @@ class DeleteTaskHandler(
         val user = userLens(request)
         val taskId = request.idOrNull() ?: return objectMapper.sendBadRequestError(DeleteTaskError.NO_ID_TO_DELETE_TASK)
         return when {
-            user == null || !user.isAdmin() -> objectMapper.sendBadRequestError(DeleteTaskError.USER_HAS_NOT_RIGHTS)
-
-            else ->
+            user?.isAdmin() == true ->
                 when (
                     val taskToDelete = fetchTask(
                         taskId = taskId,
@@ -38,6 +36,7 @@ class DeleteTaskHandler(
                         tasksOperations = tasksOperations
                     )
                 }
+            else -> objectMapper.sendBadRequestError(DeleteTaskError.USER_HAS_NOT_RIGHTS)
         }
     }
 }
