@@ -23,7 +23,7 @@ root.render(
                 <Route path='/solution/me' element={<ResultList/>}/>
                 <Route path='/solution/:checkId' element={<Result/>}/>
                 <Route path='/solution/all/:page' element={<History/>}/>
-                <Route path='/users' element={<UserList/>}/>
+                <Route path='/user/all' element={<UserList/>}/>
             </Route>
         </Routes>
     </BrowserRouter>

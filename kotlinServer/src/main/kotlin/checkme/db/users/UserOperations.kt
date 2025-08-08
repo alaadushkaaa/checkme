@@ -51,7 +51,7 @@ class UserOperations (
             .fetchOne()
             ?.let { record: Record -> record.toUserDataForAllResults() }
 
-    override fun selectAllUsersWithoutPassword(): UserDataForUsersList? =
+    override fun selectAllUsersWithoutPassword(): List<UserDataForUsersList> =
         jooqContext
             .select(
                 USERS.ID,
@@ -60,7 +60,7 @@ class UserOperations (
                 USERS.SURNAME
             ).from(USERS)
             .fetch()
-            .mapNotNull { record: Record -> record.toUserDataForAllResults() }
+            .mapNotNull { record: Record -> record.toUserDataForUsersLIst() }
 
     override fun insertUser(
         login: String,
@@ -133,16 +133,21 @@ internal fun Record.toUserDataForAllResults(): UserNameSurnameForAllResults? =
         )
     }
 
-
 internal fun Record.toUserDataForUsersLIst(): UserDataForUsersList? =
     safeLet(
+        this[USERS.ID],
+        this[USERS.LOGIN],
         this[USERS.NAME],
         this[USERS.SURNAME]
     ) {
+            id,
+            login,
             name,
             surname,
         ->
-        UserNameSurnameForAllResults(
+        UserDataForUsersList(
+            id = id.toString(),
+            login = login,
             name = name,
             surname = surname
         )

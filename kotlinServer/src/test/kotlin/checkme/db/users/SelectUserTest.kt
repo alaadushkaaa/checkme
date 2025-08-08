@@ -9,6 +9,7 @@ import checkme.db.validPass
 import checkme.db.validSurname
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
+import checkme.web.solution.forms.UserDataForUsersList
 import checkme.web.solution.forms.UserNameSurnameForAllResults
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -138,5 +139,13 @@ class SelectUserTest : TestcontainerSpec({ context ->
         userOperations
             .selectUserNameSurname(insertedUser.id + 2)
             .shouldBeNull()
+    }
+
+    test("Select user data without pass should return entity with this fields") {
+        val validUsers = listOf(insertedUser, insertedAdmin)
+        userOperations
+            .selectAllUsersWithoutPassword()
+            .shouldNotBeNull()
+            .shouldBe(validUsers.map { UserDataForUsersList(it.id.toString(), it.login, it.name, it.surname) })
     }
 })
