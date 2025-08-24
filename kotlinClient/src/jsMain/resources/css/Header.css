@@ -1,0 +1,30 @@
+.Header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Header div {
+    display: inline-block;
+}
+
+.username {
+    margin: 10px;
+}
+
+.app-title {
+    font-size: 33px;
+    margin-right: 100px;
+    font-weight: bold;
+    user-select: none;
+}
+
+.navigation {
+    list-style: none;
+    display: flex;
+}
+
+.signout {
+    margin-left: 15px;
+    font-size: 15px;
+}

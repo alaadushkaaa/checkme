@@ -16,9 +16,9 @@ import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
-import ru.yarsu.serializableClasses.FormSignUp
-import ru.yarsu.serializableClasses.RequestSignUp
-import ru.yarsu.serializableClasses.ResponseUnauthorized
+import ru.yarsu.serializableClasses.signUp.FormSignUp
+import ru.yarsu.serializableClasses.signUp.RequestSignUp
+import ru.yarsu.serializableClasses.ResponseError
 
 class SignUp(
     private val serverUrl: String,
@@ -65,7 +65,7 @@ class SignUp(
             }
         }
         formPanelSignUp.add(HPanel(className = "authorization-buttons-panel") {
-            button("Зарегистрироваться").onClick {
+            button("Зарегистрироваться", className = "usually-button").onClick {
                 val validateForm = formPanelSignUp.validate()
                 if (validateForm) {
                     val requestInit = RequestInit()
@@ -91,7 +91,7 @@ class SignUp(
                             response.json().then {
                                 val jsonString = JSON.stringify(it)
                                 val responseUnauthorized =
-                                    Json.Default.decodeFromString<ResponseUnauthorized>(jsonString)
+                                    Json.Default.decodeFromString<ResponseError>(jsonString)
                                 Toast.danger(responseUnauthorized.error,
                                     ToastOptions(
                                         duration = 3000,
@@ -110,7 +110,7 @@ class SignUp(
                     }
                 }
             }
-            button("Вход").onClick{
+            button("Вход", className = "navigation-button").onClick{
                 routing.navigate("/authorization/sign_in")
             }
         })

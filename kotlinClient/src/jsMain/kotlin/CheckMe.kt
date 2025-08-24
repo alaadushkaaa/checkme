@@ -9,7 +9,7 @@ import io.kvision.utils.useModule
 import ru.yarsu.authorization.SignIn
 import ru.yarsu.authorization.SignUp
 import ru.yarsu.localStorage.UserInformationStorage
-import ru.yarsu.pages.MainPage
+import ru.yarsu.contentPages.MainPage
 
 @JsModule("./css/App.css")
 external val cssApp: dynamic
@@ -20,11 +20,43 @@ external val cssAuthorization: dynamic
 @JsModule("./css/ErrorMessage.css")
 external val cssErrorMessage: dynamic
 
+@JsModule("./css/Header.css")
+external val cssHeader: dynamic
+
+@JsModule("./css/Footer.css")
+external val cssFooter: dynamic
+
+@JsModule("./css/TaskForm.css")
+external val cssTaskForm: dynamic
+
+@JsModule("./css/TasksList.css")
+external val cssTasksList: dynamic
+
+@JsModule("./css/Task.css")
+external val cssTask: dynamic
+
+@JsModule("./css/UserList.css")
+external val cssUserList: dynamic
+
+@JsModule("./css/Result.css")
+external val cssResult: dynamic
+
+@JsModule("./css/Loading.css")
+external val cssLoading: dynamic
+
 class CheckMe : Application() {
     init {
-        useModule(cssApp)
         useModule(cssAuthorization)
         useModule(cssErrorMessage)
+        useModule(cssHeader)
+        useModule(cssFooter)
+        useModule(cssApp)
+        useModule(cssTaskForm)
+        useModule(cssTasksList)
+        useModule(cssTask)
+        useModule(cssUserList)
+        useModule(cssResult)
+        useModule(cssLoading)
     }
     override fun start() {
         val serverUrl = "http://localhost:9999/"
@@ -46,10 +78,10 @@ class CheckMe : Application() {
                 val signUp = SignUp(serverUrl, routing)
                 applicationRoot.add(signUp)
             }
-        }).on("/", {
+        }).on("*", {
             applicationRoot.removeAll()
             if (UserInformationStorage.isAuthorized()){
-                val mainPage = MainPage(routing)
+                val mainPage = MainPage(serverUrl, routing)
                 applicationRoot.add(mainPage)
             }
             else {

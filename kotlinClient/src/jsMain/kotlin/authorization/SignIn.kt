@@ -6,7 +6,7 @@ import io.kvision.form.text.Text
 import io.kvision.html.button
 import io.kvision.panel.HPanel
 import io.kvision.panel.VPanel
-import ru.yarsu.serializableClasses.FormSignIn
+import ru.yarsu.serializableClasses.signIn.FormSignIn
 import io.kvision.html.h2
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
@@ -17,8 +17,8 @@ import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
-import ru.yarsu.serializableClasses.RequestSignIn
-import ru.yarsu.serializableClasses.ResponseUnauthorized
+import ru.yarsu.serializableClasses.signIn.RequestSignIn
+import ru.yarsu.serializableClasses.ResponseError
 
 class SignIn(
     private val serverUrl: String,
@@ -41,7 +41,7 @@ class SignIn(
             )
         }
         formPanelSignIn.add(HPanel(className = "authorization-buttons-panel") {
-            button("Войти").onClick {
+            button("Войти", className = "usually-button").onClick {
                 val validateForm = formPanelSignIn.validate()
                 if (validateForm) {
                     val requestInit = RequestInit()
@@ -65,7 +65,7 @@ class SignIn(
                             response.json().then {
                                 val jsonString = JSON.stringify(it)
                                 val responseUnauthorized =
-                                    Json.Default.decodeFromString<ResponseUnauthorized>(jsonString)
+                                    Json.Default.decodeFromString<ResponseError>(jsonString)
                                 Toast.danger(responseUnauthorized.error,
                                     ToastOptions(
                                         duration = 3000,
@@ -84,7 +84,7 @@ class SignIn(
                     }
                 }
             }
-            button("Регистрация").onClick{
+            button("Регистрация", className = "navigation-button").onClick{
                 routing.navigate("/authorization/sign_up")
             }
         })

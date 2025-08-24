@@ -39,5 +39,9 @@ kotlin {
         implementation("io.kvision:kvision-rest:${kvisionVersion}")
         implementation("io.kvision:kvision-routing-navigo-ng:${kvisionVersion}")
         implementation("io.kvision:kvision-toastify:${kvisionVersion}")
+        implementation("io.kvision:kvision-bootstrap:${kvisionVersion}")
+        implementation("io.kvision:kvision-richtext:${kvisionVersion}")
+        implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+        implementation("io.kvision:kvision-common-types:${kvisionVersion}")
     }
 }
