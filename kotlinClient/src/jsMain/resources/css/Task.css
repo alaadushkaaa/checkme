@@ -1,0 +1,30 @@
+.answers-list {
+    margin-bottom: 40px;
+}
+
+.answers-box {
+    display: flex;
+    margin: 0px;
+}
+
+.Task .block.answers-box .form-group.kv-mb-3 {
+    display: inline-block;
+}
+
+.Task .block.answers-box .form-group.kv-mb-3 .form-label.required-label {
+    flex: 3;
+    font-weight: bold;
+    margin-right: 200px;
+}
+
+.Task .block.answers-box .form-group.kv-mb-3 .form-control {
+    flex: 5;
+}
+
+.task-description {
+    white-space: pre-line;
+}
+
+.Task .usually-button {
+    width: 200px;
+}
