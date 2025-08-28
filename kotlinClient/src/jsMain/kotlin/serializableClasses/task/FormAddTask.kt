@@ -10,7 +10,7 @@ data class FormAddTask(
     val criterion: String,
     val answer: String,
     val format: String,
-    val files: List<KFile>
+    val files: List<KFile>? = null
 )
 
 @Serializable

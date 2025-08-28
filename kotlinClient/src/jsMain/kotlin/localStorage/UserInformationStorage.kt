@@ -22,5 +22,5 @@ object UserInformationStorage{
         }
     }
 
-    fun isAdmin() : Boolean = this.getUserInformation()?.username == "admin"
+    fun isAdmin() : Boolean = this.getUserInformation()?.role == "ADMIN"
 }

@@ -1,19 +1,23 @@
 package ru.yarsu.contentPages.content.addTaskPage
 
 import io.kvision.core.onChange
+import io.kvision.core.onChangeLaunch
 import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
 import io.kvision.form.FormPanel
 import io.kvision.form.check.RadioGroup
 import io.kvision.form.form
 import io.kvision.form.formPanel
-import io.kvision.form.getDataWithFileContent
 import io.kvision.form.select.Select
 import io.kvision.form.select.select
 import io.kvision.form.text.RichText
 import io.kvision.form.text.Text
 import io.kvision.form.text.TextArea
 import io.kvision.form.upload.Upload
+import io.kvision.form.upload.getFileWithContent
+import io.kvision.html.Button
+import io.kvision.html.Div
+import io.kvision.html.Label
 import io.kvision.html.button
 import io.kvision.html.h2
 import io.kvision.html.label
@@ -23,11 +27,13 @@ import io.kvision.routing.Routing
 import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
+import io.kvision.types.KFile
 import io.kvision.types.base64Encoded
 import io.kvision.types.contentType
 import kotlinx.browser.window
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import org.w3c.dom.events.InputEvent
 import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
@@ -47,22 +53,48 @@ class AddTask(
 ) : VPanel(className = "TaskAdd"){
     init {
         h2("Создание задачи")
+        val fileList = mutableListOf<KFile>()
         val formPanelAddTask = formPanel<FormAddTask>(className = "base-form") {
+            add(Label("Название", className = "separate-form-label"))
             add(
                 FormAddTask::name,
-                Text(label = "Название"),
+                Text(),
                 required = true,
                 requiredMessage = ""
             )
+            add(Label("Описание", className = "separate-form-label"))
             add(
                 FormAddTask::description,
-                RichText(label = "Описание"),
+                RichText(),
                 required = true,
                 requiredMessage = ""
+            )
+            add(Label("JSON с критериями задачи", className = "separate-form-label"))
+            val textArea = TextArea()
+            add(
+                Label("Выберите JSON файл", forId = "input-file-0", className = "file-upload")
+            )
+            add(
+                Upload(accept = listOf(".json")) {
+                    this.input.id = "input-file-0"
+                    onChangeLaunch {
+                        val file = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) }
+                        if (file != null){
+                            val encodedContent = file[0].base64Encoded
+                            textArea.value = if (encodedContent != null) {
+                                Base64.Default.decode(encodedContent).decodeToString()
+                            } else {
+                                ""
+                            }
+                            this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
+                            this@Upload.clearInput()
+                        }
+                    }
+                }
             )
             add(
                 FormAddTask::criterion,
-                TextArea(label = "JSON с критериями задачи"),
+                textArea,
                 required = true,
                 requiredMessage = "",
                 validatorMessage = { "Некорректный Json" }
@@ -77,30 +109,51 @@ class AddTask(
                     }
                 criterion != null
             }
+            add(Label("Вопрос", className = "separate-form-label"))
             add(
                 FormAddTask::answer,
-                Text(label = "Вопрос"),
+                TextArea(),
                 required = true,
-                requiredMessage = ""
+                requiredMessage = "",
             )
+            add(Label("Формат ответа", className = "separate-form-label"))
             add(
                 FormAddTask::format,
                 RadioGroup(
                     listOf(
 //                        "text" to "Текст", //если будет нужен функционал с текстовым ответом,
 //                        далее в клиенте пока не реализовано
-                        "file" to "Файл"),
-                    label = "Формат ответа"
+                        "file" to "Файл")
                 ),
                 required = true,
                 requiredMessage = ""
             )
+            add(Label("Файлы тестов", className = "separate-form-label"))
+            val addedFilesViewer = Div("Файлы не выбраны", className = "files-viewer")
+            add(
+                Label("Выберите файлы тестов", forId = "input-file-1", className = "file-upload")
+            )
             add(
                 FormAddTask::files,
-                Upload(label = "Файлы тестов", multiple = true),
-                required = true,
-                requiredMessage = ""
+                Upload(multiple = true) {
+                    this.input.id = "input-file-1"
+                    onChangeLaunch {
+                        val files = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
+                        fileList.addAll(files)
+                        updateFilesViewer(addedFilesViewer, fileList, this@formPanel)
+                        this@Upload.clearInput()
+                        this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
+                        this@formPanel.validate()
+                    }
+                },
+                validatorMessage = { "" }
+            ) {
+                fileList.isNotEmpty()
+            }
+            add(
+                addedFilesViewer
             )
+            this.validate()
         }
         val formPanelFileSelection = formPanel<FormAddTaskFileSelection>(className = "criterion-select")
         val formFileSelection: FormPanel<Map<String, Any?>> = form(className = "criterion-select")
@@ -112,7 +165,7 @@ class AddTask(
             fileSelectionData.clear()
             buttonSend.disabled = true
             if (formPanelAddTask.validate()) {
-                val nameFiles = formPanelAddTask.getData().files.map { it.name to it.name }
+                val nameFiles = fileList.map { it.name to it.name }
                 val criterionString = formPanelAddTask.getData().criterion
                 val criterion = Json.Default.decodeFromString<Map<String, Criterion>>(criterionString)
                 fileSelectionData["beforeEach"] = Select(
@@ -176,8 +229,7 @@ class AddTask(
             val afterEach = fileSelectionData["afterEach"]?.value
             val beforeAll = fileSelectionData["beforeAll"]?.value
             val afterAll = fileSelectionData["afterAll"]?.value
-            val content = formPanelAddTask.getDataWithFileContent()
-            val filesWithContent = content.files
+            val filesWithContent = fileList
             val formData = FormData().apply {
                 append("name", formPanelAddTask.getData().name)
                 append("description", formPanelAddTask.getData().description)
@@ -241,6 +293,28 @@ class AddTask(
                         )
                     )
                 }
+            }
+        }
+    }
+    fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormAddTask>) {
+        filesViewer.removeAll()
+        if (files.isEmpty()) {
+            filesViewer.content = "Файлы не выбраны"
+        } else {
+            files.forEach { kFile ->
+                filesViewer.content = ""
+                val fileViewer = Div().apply {
+                    add(Div(kFile.name))
+                    add(Button("Удалить файл", className = "delete-file-button"){
+                        onClick {
+                            files.remove(kFile)
+                            updateFilesViewer(filesViewer, files, form)
+                            form.getElement()?.dispatchEvent(InputEvent("input"))
+                            form.validate()
+                        }
+                    })
+                }
+                filesViewer.add(fileViewer)
             }
         }
     }
