@@ -37,6 +37,7 @@ class SignInHandler(
                             signInRequest.username,
                             signInResult.value.name,
                             signInResult.value.surname,
+                            signInResult.value.role.name,
                             tokenResult.value
                         )
                         objectMapper.sendStatusCreated(signInUserResponse)

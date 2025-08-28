@@ -38,6 +38,7 @@ class SignUpHandler(
                             signUpRequest.username,
                             signUpRequest.name,
                             signUpRequest.surname,
+                            userInsertResult.value.role.name,
                             tokenResult.value
                         )
                         objectMapper.sendStatusCreated(signUpUserResponse)

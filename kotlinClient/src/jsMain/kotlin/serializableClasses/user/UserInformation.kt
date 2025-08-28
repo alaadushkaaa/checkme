@@ -1,11 +1,12 @@
-package ru.yarsu.serializableClasses
+package ru.yarsu.serializableClasses.user
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RequestSignUp(
+data class UserInformation(
     val username: String,
     val name: String,
     val surname: String,
-    val password: String
+    val role: String,
+    val token: String
 )

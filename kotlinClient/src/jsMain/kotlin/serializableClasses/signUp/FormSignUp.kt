@@ -1,4 +1,4 @@
-package ru.yarsu.serializableClasses
+package ru.yarsu.serializableClasses.signUp
 
 import kotlinx.serialization.Serializable
 

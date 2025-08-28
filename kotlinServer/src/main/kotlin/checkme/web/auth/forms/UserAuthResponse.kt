@@ -4,5 +4,6 @@ data class UserAuthResponse (
     val username: String,
     val name: String,
     val surname: String,
+    val role: String,
     val token: String,
 )
