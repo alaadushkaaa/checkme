@@ -1,5 +1,6 @@
 package checkme.web.solution.handlers
 
+import checkme.config.CheckDatabaseConfig
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
 import checkme.domain.models.User
@@ -38,6 +39,7 @@ class CheckSolutionHandler(
     private val checkOperations: CheckOperationHolder,
     private val taskOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
+    private val checkDatabaseConfig: CheckDatabaseConfig,
 ) : HttpHandler {
     @Suppress("LongMethod", "NestedBlockDepth", "ReturnCount")
     override fun invoke(request: Request): Response {
@@ -84,7 +86,8 @@ class CheckSolutionHandler(
                                     task = task.value,
                                     checkId = newCheck.value.id,
                                     user = user,
-                                    answers = answers
+                                    answers = answers,
+                                    checkDatabaseConfig = checkDatabaseConfig
                                 )
                                 sendResponseWithChecksResult(
                                     checksResult,

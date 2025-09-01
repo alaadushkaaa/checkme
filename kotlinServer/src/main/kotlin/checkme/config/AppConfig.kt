@@ -5,6 +5,7 @@ import java.io.File
 
 data class AppConfig(
     val databaseConfig: DatabaseConfig,
+    val checkDatabaseConfig: CheckDatabaseConfig,
     val testsConfig: TestsConfig,
     val webConfig: WebConfig,
     val authConfig: AuthConfig,
@@ -19,6 +20,7 @@ data class AppConfig(
         fun fromEnvironment(environment: Environment = APP_ENV) =
             AppConfig(
                 DatabaseConfig.fromEnvironment(environment),
+                CheckDatabaseConfig.fromEnvironment(environment),
                 TestsConfig.fromEnvironment(environment),
                 WebConfig.fromEnvironment(environment),
                 AuthConfig.fromEnvironment(environment)

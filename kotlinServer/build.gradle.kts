@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.flywayPostgresql)
     implementation(libs.bundles.apachePoi)
     implementation(libs.bundles.scribeJava)
+    implementation(libs.mariaDb)
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.bundles.http4kTesting)
     testImplementation(libs.mockito)
