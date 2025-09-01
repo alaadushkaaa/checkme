@@ -22,6 +22,7 @@ shadowJar = "8.3.2"
 apachePoi = "5.3.0"
 slf4j = "2.0.16"
 scribeJava = "8.3.3"
+mariadb = "3.5.5"
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -123,3 +124,4 @@ apachePoiOoxml = { module = "org.apache.poi:poi-ooxml", version.ref = "apachePoi
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 scribeJavaApis = { module = "com.github.scribejava:scribejava-apis", version.ref = "scribeJava" }
 scribeJavaCore = { module = "com.github.scribejava:scribejava-core", version.ref = "scribeJava" }
+mariaDb = {module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb"}
