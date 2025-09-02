@@ -68,7 +68,7 @@ class SignInHandler(
 }
 
 enum class SignInError(val errorTest: String) {
-    INCORRECT_LOGIN_OR_PASS("Неверный логин или пароль"),
-    UNKNOWN_DATABASE_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
-    TOKEN_CREATION_ERROR("Что-то случилось. Пожалуйста, повторите попытку позднее или обратитесь за помощью"),
+    INCORRECT_LOGIN_OR_PASS("Invalid login or password"),
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
+    TOKEN_CREATION_ERROR("Something happened with token. Please try again later or ask for help"),
 }
