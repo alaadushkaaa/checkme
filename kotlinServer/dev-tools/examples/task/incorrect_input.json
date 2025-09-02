@@ -1,0 +1,5 @@
+{
+  "type": "console-check",
+  "command": "printf \"a\\n\" | python3 ./*.py",
+  "expected": "Incorrect input"
+}

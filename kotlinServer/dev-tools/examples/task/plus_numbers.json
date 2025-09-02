@@ -1,0 +1,5 @@
+{
+  "type": "console-check",
+  "command": "printf \"5\\n3\\n\" | python3 ./*.py",
+  "expected": "8.0"
+}
