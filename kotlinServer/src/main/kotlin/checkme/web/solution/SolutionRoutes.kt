@@ -4,6 +4,8 @@ import checkme.domain.operations.OperationHolder
 import checkme.web.context.ContextTools
 import checkme.web.solution.handlers.CheckSolutionHandler
 import checkme.web.solution.handlers.ListResultsHandler
+import checkme.web.solution.handlers.ListTaskResultsHandler
+import checkme.web.solution.handlers.ListUserResultsHandler
 import checkme.web.solution.handlers.ResultHandler
 import org.http4k.core.*
 import org.http4k.routing.*
@@ -30,6 +32,18 @@ fun solutionRouter(
             userLens = contextTools.userLens
         ),
         "/all/{page}" bind Method.GET to ListResultsHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
+        "/user/{id}" bind Method.GET to ListUserResultsHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
+        "/task/{id}" bind Method.GET to ListTaskResultsHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userOperations = operations.userOperations,

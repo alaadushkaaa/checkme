@@ -54,6 +54,17 @@ class SelectCheckTest : TestcontainerSpec({ context ->
             .shouldBeEmpty()
     }
 
+    test("Select checks by valid taskId should return this checks") {
+        val selectedChecks = checkOperations.selectChecksByTaskId(insertedChecks.first().taskId).shouldNotBeNull()
+        selectedChecks shouldContainExactlyInAnyOrder insertedChecks
+            .filter { it.taskId == insertedChecks.first().taskId }
+    }
+
+    test("Select checks by invalid taskId should return empty list") {
+        checkOperations.selectChecksByTaskId(insertedChecks.maxOf { it.taskId } + 1)
+            .shouldBeEmpty()
+    }
+
     test("Select all checks should return all of this inserted checks") {
         val selectedChecks = checkOperations.selectAllChecks().shouldNotBeNull()
         selectedChecks shouldContainExactlyInAnyOrder insertedChecks

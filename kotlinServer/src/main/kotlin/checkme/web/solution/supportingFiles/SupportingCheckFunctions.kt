@@ -173,3 +173,19 @@ internal fun fetchCheckByUserId(
         is Success -> Success(fetchedChecks.value)
     }
 }
+
+internal fun fetchCheckByTaskId(
+    taskId: Int,
+    checkOperations: CheckOperationHolder,
+): Result4k<List<Check>, FetchingCheckError> {
+    return when (
+        val fetchedChecks = checkOperations.fetchChecksByTaskId(taskId)
+    ) {
+        is Failure -> when (fetchedChecks.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        }
+
+        is Success -> Success(fetchedChecks.value)
+    }
+}

@@ -9,6 +9,8 @@ interface ChecksDatabase {
 
     fun selectChecksByUserId(userId: Int): List<Check>
 
+    fun selectChecksByTaskId(taskId: Int): List<Check>
+
     fun selectAllChecks(): List<Check>
 
     fun selectAllChecksPagination(page: Int): List<Check>

@@ -56,7 +56,7 @@ val validChecks: List<Check> = listOf(
     Check(validCheckId, validTaskId, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 1, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, null, validStatusError),
-    Check(validCheckId + 3, validTaskId, validUserId, validDate, null, validStatusProcess)
+    Check(validCheckId + 3, validTaskId + 1, validUserId, validDate, null, validStatusProcess)
 )
 
 val validChecksMany: List<Check> = listOf(
