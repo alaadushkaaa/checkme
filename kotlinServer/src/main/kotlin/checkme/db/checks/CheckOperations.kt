@@ -41,6 +41,15 @@ class CheckOperations(
                 record.toCheck()
             }
 
+    override fun selectChecksByTaskId(taskId: Int): List<Check> =
+        selectFromChecks()
+            .where(CHECKS.TASKID.eq(taskId))
+            .orderBy(CHECKS.ID)
+            .fetch()
+            .mapNotNull { record: Record ->
+                record.toCheck()
+            }
+
     override fun selectAllChecksPagination(page: Int): List<Check> =
         selectFromChecks()
             .orderBy(CHECKS.ID)

@@ -104,6 +104,8 @@ private fun tryFetchTaskAndSendResponse(
 enum class ViewCheckResultError(val errorText: String) {
     NO_CHECK_ID_ERROR("No check id for result"),
     USER_HAS_NOT_RIGHTS("You has not rights to see this result"),
+    NO_USER_ID_ERROR("No user id for check list"),
+    NO_TASK_ID_ERROR("No task id for check list"),
 }
 
 enum class FetchingCheckError(val errorText: String) {
