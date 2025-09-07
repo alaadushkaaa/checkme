@@ -26,8 +26,6 @@ class ListResultsHandler(
     private val userLens: RequestContextLens<User?>,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
-        // todo пока реализована возможность просмотра админом общих результатов и
-        // каждого пользователя своих
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
         val page = request.pageCountOrNull()
@@ -97,7 +95,7 @@ private fun tryFetchAllSolutionsByAdmin(
                 page = page
             )
     ) {
-        is Failure -> objectMapper.sendBadRequestError(mapOf("error" to checksWithData.reason.errorText))
+        is Failure -> objectMapper.sendBadRequestError(checksWithData.reason.errorText)
 
         is Success -> {
             val checksWithAllData = checksWithData.value.map { check ->

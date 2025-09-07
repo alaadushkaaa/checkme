@@ -46,7 +46,7 @@ class CheckSolutionHandler(
         val taskId =
             request.idOrNull() ?: return objectMapper.sendBadRequestError(ViewTaskError.NO_TASK_ID_ERROR.errorText)
         return when {
-            user == null -> objectMapper.sendBadRequestError(mapOf("error" to TokenError.DECODING_ERROR))
+            user == null -> objectMapper.sendBadRequestError(TokenError.DECODING_ERROR)
 
             else -> {
                 when (
