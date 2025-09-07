@@ -2,6 +2,7 @@ package checkme.web.solution.handlers
 
 import checkme.config.CheckDatabaseConfig
 import checkme.domain.forms.CheckResult
+import checkme.domain.models.AnswerType
 import checkme.domain.models.Check
 import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
@@ -43,6 +44,7 @@ class CheckSolutionHandler(
 ) : HttpHandler {
     @Suppress("LongMethod", "NestedBlockDepth", "ReturnCount")
     override fun invoke(request: Request): Response {
+        println("Я в хэндлере")
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
         val taskId =
@@ -51,6 +53,7 @@ class CheckSolutionHandler(
             user == null -> objectMapper.sendBadRequestError(TokenError.DECODING_ERROR)
 
             else -> {
+                println("Юзер есть")
                 when (
                     val task = fetchTask(
                         taskId = taskId,
@@ -60,10 +63,16 @@ class CheckSolutionHandler(
                     is Failure -> objectMapper.sendBadRequestError(ViewTaskError.NO_TASK_ID_ERROR.errorText)
 
                     is Success -> {
+                        println("Задание мы получили")
                         val filesField = MultipartFormFile.multi.required("ans")
+                        println(filesField.meta)
                         val filesLens = Body.Companion.multipartForm(Validator.Feedback, filesField).toLens()
                         val filesForm: MultipartForm = filesLens(request)
-                        if (filesForm.errors.isNotEmpty()) return Response(Status.BAD_REQUEST)
+                        if (filesForm.errors.isNotEmpty()
+                            && task.value.answerFormat.values.first() == AnswerType.FILE) {
+                            println(filesForm.errors)
+                            return Response(Status.BAD_REQUEST)
+                        }
 
                         return when (
                             val newCheck = createNewCheck(
@@ -82,6 +91,7 @@ class CheckSolutionHandler(
                                     user = user,
                                     task = task.value
                                 )
+                                println("Почти проверяем задание")
                                 val checksResult = Check.checkStudentAnswer(
                                     task = task.value,
                                     checkId = newCheck.value.id,

@@ -9,6 +9,7 @@ import checkme.service.SqlCheckService
 import checkme.web.tasks.handlers.TASKS_DIR
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.mapAllValues
 import java.io.File
 
 const val DB_NAME = "SqlDb"
@@ -26,8 +27,10 @@ data class CheckDataSQL(
             user: User,
             checkId: Int,
             criterion: Criterion,
-            config: CheckDatabaseConfig,
+            config: CheckDatabaseConfig
         ): CheckResult {
+            println("я тут в проверке sql")
+            val answerSql = answer.first().second.substringAfter("value=").substringBefore(", headers")
             val sqlScript = findCScriptFile(checkDataSQL.dbScript)
             if (sqlScript == null || !sqlScript.exists()) {
                 return CheckResult(
@@ -37,11 +40,12 @@ data class CheckDataSQL(
             }
 
             val setupSql = sqlScript.readText()
-            val studentQuery = answer.first { it.first == "field" }.second
+            println("Скрипт")
+            println(setupSql)
             return tryGetCheckResults(
                 task = task,
                 checkDataSQL = checkDataSQL,
-                studentQuery = studentQuery,
+                studentQuery = answerSql,
                 user = user,
                 checkId = checkId,
                 criterion = criterion,
@@ -51,7 +55,9 @@ data class CheckDataSQL(
         }
 
         private fun findCScriptFile(scriptName: String): File? {
-            val dir = File("..$TASKS_DIR")
+            //todo позже изменить путь к заданию
+            //val dir = File("..$TASKS_DIR")
+            val dir = File("../kotlinServer/dev-tools/examples/task/sql-task")
             if (!dir.isDirectory) return null
             return dir.listFiles()?.firstOrNull { it.name == scriptName }
         }
