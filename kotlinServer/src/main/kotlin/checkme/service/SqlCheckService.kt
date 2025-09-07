@@ -22,8 +22,9 @@ class SqlCheckService(
         checkId: Int,
         userId: Int,
     ): Result4k<Pair<String, String>, String> {
+        println("даже зашел в сервис!!")
         val studentUser = "student_${checkId}$userId"
-        val studentPass = "student_pass_${checkId}$userId}"
+        val studentPass = "student_pass_${checkId}$userId"
         val uniqueDatabaseName = "check${checkId}_user$userId"
         try {
             createDatabaseUser(

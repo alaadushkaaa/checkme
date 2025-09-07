@@ -68,6 +68,7 @@ internal fun createNewCheck(
             taskOperations = taskOperations
         )
     ) {
+        println("ЗАдание есть ")
         return when (
             val newCheck = checkOperations.createCheck(
                 taskId,
@@ -84,6 +85,7 @@ internal fun createNewCheck(
             is Success -> Success(newCheck.value)
         }
     } else {
+        println("задания нет")
         return Failure(CreationCheckError.NO_TASK_FOR_CHECK_IN_DB)
     }
 }

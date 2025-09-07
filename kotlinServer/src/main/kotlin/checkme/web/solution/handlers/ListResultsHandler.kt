@@ -97,7 +97,7 @@ private fun tryFetchAllSolutionsByAdmin(
                 page = page
             )
     ) {
-        is Failure -> objectMapper.sendBadRequestError(mapOf("error" to checksWithData.reason.errorText))
+        is Failure -> objectMapper.sendBadRequestError(checksWithData.reason.errorText)
 
         is Success -> {
             val checksWithAllData = checksWithData.value.map { check ->

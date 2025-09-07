@@ -29,6 +29,7 @@ data class Check(
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
         ): Map<String, CheckResult>? {
+            println("В функции проверки решения пользоветеля")
             val results = mutableMapOf<String, CheckResult>()
             beforeAllCriterionCheck(
                 task = task,
@@ -215,6 +216,7 @@ data class Check(
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
         ): CheckResult? {
+            println("Критерион чек")
             val objectMapper = jacksonObjectMapper()
             val checkFile = findCheckFile("../tasks/${task.name}", criterion.value.test)
             val jsonString = checkFile?.readText()
