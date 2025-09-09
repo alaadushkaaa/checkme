@@ -1,4 +1,4 @@
-package ru.yarsu.contentPages.content.allSolutionsPage
+package ru.yarsu.contentPages.content.solutionsPages
 
 import io.kvision.core.onClick
 import io.kvision.html.div
@@ -6,17 +6,21 @@ import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
 import kotlinx.datetime.LocalDateTime
-import ru.yarsu.serializableClasses.solution.SolutionFormatForAdminAllSolutionList
+import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 
 class AllSolutionsViewer(
-    solutionListForAdmin: List<SolutionFormatForAdminAllSolutionList>,
+    solutionListForAdmin: List<SolutionInAdminListsFormat>,
     private val routing: Routing
 ) : VPanel() {
     init {
         for (solution in solutionListForAdmin){
             vPanel(className = "block") {
-                div("Пользователь: ${solution.user.surname} ${solution.user.name}")
-                div("Задача: ${solution.task.name}")
+                if (solution.user != null){
+                    div("Пользователь: ${solution.user.surname} ${solution.user.name}")
+                }
+                if (solution.task != null) {
+                    div("Задача: ${solution.task.name}")
+                }
                 div("Статус: ${solution.status}")
                 if ((solution.status == "Проверено")) {
                     val score = solution.result?.values?.map { it.score }?.toList()?.sum()

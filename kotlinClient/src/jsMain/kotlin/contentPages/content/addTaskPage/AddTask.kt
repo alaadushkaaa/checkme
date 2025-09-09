@@ -30,10 +30,12 @@ import io.kvision.toast.ToastPosition
 import io.kvision.types.KFile
 import io.kvision.types.base64Encoded
 import io.kvision.types.contentType
+import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import org.w3c.dom.events.InputEvent
+import org.w3c.dom.events.KeyboardEvent
 import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
@@ -295,6 +297,13 @@ class AddTask(
                 }
             }
         }
+        document.addEventListener("keydown", {event ->
+            if (event is KeyboardEvent && event.keyCode == 13) {
+                if (document.activeElement == document.body) {
+                    buttonSend.getElement()?.click()
+                }
+            }
+        })
     }
     fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormAddTask>) {
         filesViewer.removeAll()
