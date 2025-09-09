@@ -1,5 +1,6 @@
 package ru.yarsu.contentPages.content.taskPage
 
+import io.kvision.core.onClick
 import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
 import io.kvision.form.formPanel
@@ -37,6 +38,11 @@ class TaskViewer(
 ) : VPanel(className = "Task") {
     init {
         h2(task.name)
+        if (UserInformationStorage.isAdmin()) {
+            div("Решения задачи", className = "task-link").onClick {
+                routing.navigate("solution-list/task/${task.id}")
+            }
+        }
         h3("Описание")
         div(task.description, className = "task-description", rich = true)
         h3("Ваш ответ")

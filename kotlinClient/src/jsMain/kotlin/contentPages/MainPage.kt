@@ -8,11 +8,12 @@ import ru.yarsu.contentPages.componentsPage.Footer
 import ru.yarsu.contentPages.componentsPage.Header
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
-import ru.yarsu.contentPages.content.allSolutionsPage.AllSolutions
+import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
 import ru.yarsu.contentPages.content.solutionPage.Solution
 import ru.yarsu.contentPages.content.taskPage.Task
 import ru.yarsu.contentPages.content.mySolutionListPage.MySolutionList
 import ru.yarsu.contentPages.content.taskListPage.TaskList
+import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
 import ru.yarsu.contentPages.content.userListPage.UserList
 
 class MainPage(
@@ -54,7 +55,7 @@ class MainPage(
         }).on("/user-list",{
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
-                content.add(UserList(serverUrl))
+                content.add(UserList(serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }
@@ -70,6 +71,22 @@ class MainPage(
                 content.removeAll()
                 val page = match.data.page.toString().toIntOrNull()
                 content.add(AllSolutions(page, serverUrl, routingMainPage))
+            } else {
+                routingMainPage.navigate("/")
+            }
+        }).on("/solution-list/user/:id", { match ->
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                val id = match.data.id.toString().toIntOrNull()
+                content.add(TaskOrUserSolutions(id, "user", serverUrl, routingMainPage))
+            } else {
+                routingMainPage.navigate("/")
+            }
+        }).on("/solution-list/task/:id", { match ->
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                val id = match.data.id.toString().toIntOrNull()
+                content.add(TaskOrUserSolutions(id, "task", serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }

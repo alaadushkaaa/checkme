@@ -1,6 +1,7 @@
 package ru.yarsu.contentPages.content.taskListPage
 
 import io.kvision.html.Div
+import io.kvision.html.button
 import io.kvision.html.h2
 import io.kvision.panel.SimplePanel
 import io.kvision.rest.HttpMethod
@@ -18,6 +19,12 @@ class TaskList(
 ) : SimplePanel(){
     init {
         h2("Список задач")
+        if (UserInformationStorage.isAdmin()) {
+            button(
+                "Cоздать задачу",
+                className = "usually-button"
+            ).onClick { routing.navigate("/add-task") }
+        }
         val requestInit = RequestInit()
         requestInit.method = HttpMethod.GET.name
         requestInit.headers = js("{}")

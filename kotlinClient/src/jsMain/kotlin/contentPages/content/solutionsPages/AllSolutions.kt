@@ -1,4 +1,4 @@
-package ru.yarsu.contentPages.content.allSolutionsPage
+package ru.yarsu.contentPages.content.solutionsPages
 
 import io.kvision.html.Div
 import io.kvision.html.button
@@ -9,12 +9,11 @@ import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.mySolutionListPage.MySolutionListViewer
-import ru.yarsu.serializableClasses.solution.SolutionFormatForAdminAllSolutionList
+import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.solution.SolutionInListFormat
 
@@ -46,7 +45,7 @@ class AllSolutions(
                     response.json().then {
                         val jsonString = JSON.stringify(it)
                         if (UserInformationStorage.isAdmin()) {
-                            val solutionList = Json.Default.decodeFromString<List<SolutionFormatForAdminAllSolutionList>>(jsonString)
+                            val solutionList = Json.Default.decodeFromString<List<SolutionInAdminListsFormat>>(jsonString)
                             if (solutionList.isEmpty()){
                                 this.add(Div("Решения не найдены"))
                             } else {
@@ -64,15 +63,8 @@ class AllSolutions(
                 } else if (response.status.toInt() == 400) {
                     response.json().then {
                         val jsonString = JSON.stringify(it)
-                        try {
-                            val responseError =
-                                Json.Default.decodeFromString<ResponseError>(jsonString)
-                            this.add(Div(responseError.error, className = "error-message"))
-                        } catch (_: SerializationException) {
-                            console.log(jsonString)
-                        } catch (_: IllegalArgumentException) {
-                            console.log(jsonString)
-                        }
+                        val responseError = Json.Default.decodeFromString<ResponseError>(jsonString)
+                        this.add(Div(responseError.error, className = "error-message"))
                     }
                 } else {
                     this.add(Div("Код ошибки ${response.status}: ${response.statusText}", className = "error-message"))
