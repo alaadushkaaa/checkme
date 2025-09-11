@@ -16,8 +16,8 @@ import checkme.db.validSurname
 import checkme.db.validTaskId
 import checkme.db.validTasks
 import checkme.db.validUrlDatabase
-import checkme.db.validUserName
 import checkme.db.validUserId
+import checkme.db.validUserName
 import checkme.domain.accounts.Role
 import checkme.domain.models.Check
 import checkme.domain.models.User
