@@ -22,17 +22,16 @@ class SqlCheckService(
         checkId: Int,
         userId: Int,
     ): Result4k<Pair<String, String>, String> {
-        println("даже зашел в сервис!!")
         val studentUser = "student_${checkId}$userId"
         val studentPass = "student_pass_${checkId}$userId"
         val uniqueDatabaseName = "check${checkId}_user$userId"
         try {
+            createTempDatabase(uniqueDatabaseName)
             createDatabaseUser(
                 user = studentUser,
                 pass = studentPass,
                 databaseName = uniqueDatabaseName
             )
-            createTempDatabase(uniqueDatabaseName)
             executeFirstScript(
                 script = firstScript,
                 databaseName = uniqueDatabaseName,
@@ -51,7 +50,6 @@ class SqlCheckService(
                 user = studentUser,
                 pass = studentPass
             )
-
             return Success(Pair(studentResult, referenceResult))
         } catch (e: Exception) {
             println("Error: ${e.message}")
@@ -61,6 +59,7 @@ class SqlCheckService(
                 name = uniqueDatabaseName,
                 user = studentUser
             )
+            println("Drop completed")
         }
     }
 
@@ -72,10 +71,11 @@ class SqlCheckService(
     ) {
         val connection = createRootConnection()
         connection.use {
-            it.createStatement().execute(
-                "CREATE USER $user@localhost IDENTIFIED BY $pass;\n" +
-                        "GRANT ALL PRIVILEGES ON *$databaseName.* TO $user@localhost;"
-            )
+            val statement = it.createStatement()
+            statement.execute("CREATE USER '$user'@'%' IDENTIFIED BY '$pass'")
+            statement.execute("GRANT ALL PRIVILEGES ON `$databaseName`.* TO '$user'@'%'")
+            statement.execute("FLUSH PRIVILEGES")
+            println("User $user created with access to database $databaseName")
         }
     }
 
@@ -84,8 +84,9 @@ class SqlCheckService(
         val connection = createRootConnection()
         connection.use {
             it.createStatement().execute(
-                "CREATE DATABASE $name;"
+                "CREATE DATABASE `$name`;"
             )
+            println("Database $name created")
         }
     }
 
@@ -129,8 +130,7 @@ class SqlCheckService(
         }
     }
 
-    private fun createRootConnection(): Connection =
-        DriverManager.getConnection(config.jdbc, config.user, config.password)
+    private fun createRootConnection(): Connection = DriverManager.getConnection(config.jdbc, config.user, config.password)
 
     private fun createDatabaseConnection(
         name: String,
@@ -160,8 +160,8 @@ class SqlCheckService(
     ) {
         val connection = createRootConnection()
         connection.use {
-            it.createStatement().execute("DROP DATABASE IF EXISTS $name;")
-            it.createStatement().execute("DROP USER IF EXISTS $user@localhost;")
+            it.createStatement().execute("DROP DATABASE IF EXISTS `$name`;")
+            it.createStatement().execute("DROP USER IF EXISTS '$user'@'%';")
         }
     }
 }
