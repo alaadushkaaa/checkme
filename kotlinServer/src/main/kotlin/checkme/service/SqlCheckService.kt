@@ -4,13 +4,14 @@ import checkme.config.CheckDatabaseConfig
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
+import net.sf.jsqlparser.parser.CCJSqlParserUtil
+import net.sf.jsqlparser.statement.Statements
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 
-// Сервис для работы с временными базами данных, которые создаются для каждого решения для проверки
-// SQL-запросов
-// При каждом новом решении создаются необходимые таблицы для задания с уникальными именами
+const val QUERY_TIMEOUT = 7
+// Сервис для работы с временными базами данных, которые создаются для каждой проверки задания с SQL-запросами
 
 class SqlCheckService(
     private val config: CheckDatabaseConfig,
@@ -52,14 +53,13 @@ class SqlCheckService(
             )
             return Success(Pair(studentResult, referenceResult))
         } catch (e: Exception) {
-            println("Error: ${e.message}")
             return Failure("Error: ${e.message}")
         } finally {
             dropDatabaseAndUserForCheck(
                 name = uniqueDatabaseName,
                 user = studentUser
             )
-            println("Drop completed")
+            println("Database dropped")
         }
     }
 
@@ -79,7 +79,7 @@ class SqlCheckService(
         }
     }
 
-    // для каждого решения создается временная база данных внутри контейнера
+    // для каждого решения создается временная база данных
     private fun createTempDatabase(name: String) {
         val connection = createRootConnection()
         connection.use {
@@ -97,19 +97,17 @@ class SqlCheckService(
         user: String,
         pass: String,
     ) {
-        script.split(";")
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
-            .forEach { sql ->
-                if (sql.isNotBlank()) {
-                    val connection = createDatabaseConnection(
-                        name = databaseName,
-                        user = user,
-                        pass = pass
-                    )
-                    connection.use { it.createStatement().execute(sql) }
-                }
+        val statements: Statements = CCJSqlParserUtil.parseStatements(script)
+        val connection = createDatabaseConnection(
+            name = databaseName,
+            user = user,
+            pass = pass
+        )
+        connection.use {
+            statements.forEach { statement ->
+                it.createStatement().execute(statement.toString())
             }
+        }
     }
 
     // получаем результат по запросу
@@ -126,11 +124,14 @@ class SqlCheckService(
         )
         connection.use {
             val statement = it.createStatement()
+            statement.queryTimeout = QUERY_TIMEOUT
             return statement.executeQuery(query).convertToString()
         }
     }
 
-    private fun createRootConnection(): Connection = DriverManager.getConnection(config.jdbc, config.user, config.password)
+    private fun createRootConnection(): Connection =
+        DriverManager
+            .getConnection(config.jdbc, config.user, config.password)
 
     private fun createDatabaseConnection(
         name: String,
@@ -149,11 +150,11 @@ class SqlCheckService(
             rows.add(row)
         }
 
-        val sortedRows = rows.sortedBy { it.joinToString("|") }
-        return sortedRows.joinToString("\n").trim()
+        val rowsWithSeparator = rows.map { it.joinToString("|") }
+        return rowsWithSeparator.joinToString("\n").trim()
     }
 
-    // удаление базы для решения
+    // удаление базы и пользователя для решения
     private fun dropDatabaseAndUserForCheck(
         name: String,
         user: String,

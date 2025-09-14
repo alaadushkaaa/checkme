@@ -13,6 +13,7 @@ import java.io.File
 
 const val DB_NAME = "SqlDb"
 
+@Suppress("LongParameterList")
 data class CheckDataSQL(
     val type: CheckType,
     val dbScript: String,
@@ -35,7 +36,10 @@ data class CheckDataSQL(
                 checkId = checkId,
                 answer = answerSql
             )
-            val sqlScript = findCScriptFile(checkDataSQL.dbScript)
+            val sqlScript = findCScriptFile(
+                scriptName = checkDataSQL.dbScript,
+                taskName = task.name
+            )
             if (sqlScript == null || !sqlScript.exists()) {
                 return CheckResult(
                     0,
@@ -56,10 +60,11 @@ data class CheckDataSQL(
             )
         }
 
-        private fun findCScriptFile(scriptName: String): File? {
-            // todo позже изменить путь к заданию
-            // val dir = File("..$TASKS_DIR")
-            val dir = File("../kotlinServer/dev-tools/examples/task/sql-task")
+        private fun findCScriptFile(
+            scriptName: String,
+            taskName: String,
+        ): File? {
+            val dir = File("../tasks/$taskName")
             if (!dir.isDirectory) return null
             return dir.listFiles()?.firstOrNull { it.name == scriptName }
         }

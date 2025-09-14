@@ -11,6 +11,7 @@ import org.http4k.core.*
 import java.io.File
 import java.time.LocalDateTime
 
+@Suppress("LongParameterList")
 data class Check(
     val id: Int,
     val taskId: Int,
@@ -205,8 +206,6 @@ data class Check(
             return Pair(specialCriterion.key, allResult)
         }
 
-        @Suppress("UnusedParameter")
-        // todo answers будут нужны, когда будут реализованы другие типы проверок
         private fun criterionCheck(
             criterion: Map.Entry<String, Criterion>,
             task: Task,
