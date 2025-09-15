@@ -16,6 +16,7 @@ const val QUERY_TIMEOUT = 7
 class SqlCheckService(
     private val config: CheckDatabaseConfig,
 ) {
+    //todo журнал
     fun getSqlResults(
         firstScript: String,
         referenceQuery: String,
