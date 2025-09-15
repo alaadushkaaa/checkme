@@ -123,7 +123,7 @@ data class CheckDataSQL(
             if (!solutionDir.exists()) {
                 solutionDir.mkdirs()
             }
-            val filePath = File(solutionDir, "$checkId.txt")
+            val filePath = File(solutionDir, "$checkId.sql")
             filePath.writeBytes(answer.toByteArray())
         }
     }
