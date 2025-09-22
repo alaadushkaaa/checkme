@@ -23,41 +23,35 @@ data class CheckDataSQL(
         fun sqlCheck(
             task: Task,
             checkDataSQL: CheckDataSQL,
-            answer: List<Pair<String, String>>,
             user: User,
             checkId: Int,
             criterion: Criterion,
             config: CheckDatabaseConfig,
         ): CheckResult {
-            val answerSql = answer.first().second.substringAfter("value=").substringBefore(", headers")
-            addUserAnswerSqlToDir(
-                user = user,
-                taskName = task.name,
-                checkId = checkId,
-                answer = answerSql
-            )
-            val sqlScript = findCScriptFile(
-                scriptName = checkDataSQL.dbScript,
-                taskName = task.name
-            )
-            if (sqlScript == null || !sqlScript.exists()) {
-                return CheckResult(
-                    0,
-                    "Check failed: Setup SQL script ${checkDataSQL.dbScript} not found."
-                )
+            val directoryPath = "..$SOLUTIONS_DIR" +
+                "/${user.name}-${user.surname}-${user.login}" +
+                "/${task.name}" +
+                "/$checkId"
+            if (!File(directoryPath).exists()) {
+                return CheckResult(0, "Check failed, file for solution check not found")
             }
+            val answerFile = File(directoryPath).listFiles()?.firstOrNull { it.extension == "sql" }
+            return when {
+                answerFile == null ->
+                    CheckResult(0, "Check failed, file for solution check is not a sql-file")
 
-            val setupSql = sqlScript.readText()
-            return tryGetCheckResults(
-                task = task,
-                checkDataSQL = checkDataSQL,
-                studentQuery = answerSql,
-                user = user,
-                checkId = checkId,
-                criterion = criterion,
-                config = config,
-                setupSql = setupSql
-            )
+                else -> {
+                    tryGetSQLDataAndCheckResults(
+                        answerFile = answerFile,
+                        checkDataSQL = checkDataSQL,
+                        task = task,
+                        user = user,
+                        checkId = checkId,
+                        criterion = criterion,
+                        config = config
+                    )
+                }
+            }
         }
 
         private fun findCScriptFile(
@@ -69,7 +63,43 @@ data class CheckDataSQL(
             return dir.listFiles()?.firstOrNull { it.name == scriptName }
         }
 
-        private fun tryGetCheckResults(
+        private fun tryGetSQLDataAndCheckResults(
+            answerFile: File,
+            checkDataSQL: CheckDataSQL,
+            task: Task,
+            user: User,
+            checkId: Int,
+            criterion: Criterion,
+            config: CheckDatabaseConfig,
+        ): CheckResult {
+            val answerSQl = answerFile.readText()
+            val sqlScript = findCScriptFile(
+                scriptName = checkDataSQL.dbScript,
+                taskName = task.name
+            )
+            return when {
+                sqlScript == null || !sqlScript.exists() -> CheckResult(
+                    0,
+                    "Check failed: Setup SQL script ${checkDataSQL.dbScript} not found."
+                )
+
+                else -> {
+                    val setupSql = sqlScript.readText()
+                    getCheckResults(
+                        task = task,
+                        checkDataSQL = checkDataSQL,
+                        studentQuery = answerSQl,
+                        user = user,
+                        checkId = checkId,
+                        criterion = criterion,
+                        config = config,
+                        setupSql = setupSql
+                    )
+                }
+            }
+        }
+
+        private fun getCheckResults(
             task: Task,
             checkDataSQL: CheckDataSQL,
             studentQuery: String,
@@ -106,25 +136,6 @@ data class CheckDataSQL(
                     }
                 }
             }
-        }
-
-        private fun addUserAnswerSqlToDir(
-            user: User,
-            taskName: String,
-            checkId: Int,
-            answer: String,
-        ) {
-            val solutionDir = File(
-                "..$SOLUTIONS_DIR" +
-                    "/${user.name}-${user.surname}-${user.login}" +
-                    "/$taskName" +
-                    "/$checkId"
-            )
-            if (!solutionDir.exists()) {
-                solutionDir.mkdirs()
-            }
-            val filePath = File(solutionDir, "$checkId.sql")
-            filePath.writeBytes(answer.toByteArray())
         }
     }
 }

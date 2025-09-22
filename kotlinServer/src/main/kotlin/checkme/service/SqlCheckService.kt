@@ -8,7 +8,7 @@ import net.sf.jsqlparser.parser.CCJSqlParserUtil
 import net.sf.jsqlparser.statement.Statements
 import java.sql.Connection
 import java.sql.DriverManager
-import java.sql.ResultSet
+import java.sql.Statement
 
 const val QUERY_TIMEOUT = 7
 // Сервис для работы с временными базами данных, которые создаются для каждой проверки задания с SQL-запросами
@@ -16,7 +16,8 @@ const val QUERY_TIMEOUT = 7
 class SqlCheckService(
     private val config: CheckDatabaseConfig,
 ) {
-    //todo журнал
+    // todo журнал
+    @Suppress("TooGenericExceptionCaught")
     fun getSqlResults(
         firstScript: String,
         referenceQuery: String,
@@ -64,7 +65,6 @@ class SqlCheckService(
         }
     }
 
-    // создание пользователя с любыми правами, но только в одной базе данных
     private fun createDatabaseUser(
         user: String,
         pass: String,
@@ -80,7 +80,6 @@ class SqlCheckService(
         }
     }
 
-    // для каждого решения создается временная база данных
     private fun createTempDatabase(name: String) {
         val connection = createRootConnection()
         connection.use {
@@ -91,7 +90,6 @@ class SqlCheckService(
         }
     }
 
-    // выполнение скрипта с созданием таблиц и их заполнением
     private fun executeFirstScript(
         script: String,
         databaseName: String,
@@ -111,7 +109,6 @@ class SqlCheckService(
         }
     }
 
-    // получаем результат по запросу
     private fun getQueryResult(
         query: String,
         databaseName: String,
@@ -123,10 +120,70 @@ class SqlCheckService(
             user = user,
             pass = pass
         )
+        connection.autoCommit = false
         connection.use {
             val statement = it.createStatement()
             statement.queryTimeout = QUERY_TIMEOUT
-            return statement.executeQuery(query).convertToString()
+            val isResultSet = statement.execute(query)
+
+            return when {
+                isResultSet -> {
+                    val result = statement.resultSet.convertToString()
+                    connection.rollback()
+                    result
+                }
+
+                else -> getChangesInTables(
+                    statement = statement,
+                    connection = connection
+                )
+            }
+        }
+    }
+
+    private fun getChangesInTables(
+        statement: Statement,
+        connection: Connection,
+    ): String {
+        val allTablesList = statement.executeQuery("SHOW TABLES;").getAllTablesNames().sorted()
+        val result = mutableListOf<String>()
+        for (table in allTablesList) {
+            val tableResult = statement.executeQuery("SELECT * FROM `$table`;")
+            result.add(tableResult.convertToString())
+        }
+        connection.rollback()
+        changeAutoIncrementValues(
+            allTablesList = allTablesList,
+            statement = statement
+        )
+        return result.joinToString("||")
+    }
+
+    private fun changeAutoIncrementValues(
+        allTablesList: List<String>,
+        statement: Statement,
+    ) {
+        for (table in allTablesList) {
+            val autoIncrementColumns = statement.executeQuery(
+                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+                    "WHERE TABLE_SCHEMA = DATABASE() " +
+                    "AND TABLE_NAME = '$table'" +
+                    "AND EXTRA LIKE '%auto_increment%';"
+            )
+            while (autoIncrementColumns.next()) {
+                val autoIncrementColumn = autoIncrementColumns.getString("COLUMN_NAME")
+                val maxIdResult = statement.executeQuery(
+                    "SELECT COALESCE(MAX(`$autoIncrementColumn`), 0) as max_id FROM `$table`;"
+                )
+                if (maxIdResult.next()) {
+                    val maxId = maxIdResult.getLong(1)
+                    val newAutoIncrementValue = maxId + 1
+                    statement.executeUpdate(
+                        "ALTER TABLE `$table` AUTO_INCREMENT = $newAutoIncrementValue;"
+                    )
+                    println("В таблице $table AUTO_INCREMENT установлен в $newAutoIncrementValue")
+                }
+            }
         }
     }
 
@@ -140,22 +197,6 @@ class SqlCheckService(
         pass: String,
     ): Connection = DriverManager.getConnection("${config.jdbc}/$name", user, pass)
 
-    private fun ResultSet.convertToString(): String {
-        val data = this.metaData
-        val countColumns = data.columnCount
-        val rows = mutableListOf<List<String>>()
-        while (this.next()) {
-            val row = (1..countColumns).map { index ->
-                this.getString(index) ?: "NULL"
-            }
-            rows.add(row)
-        }
-
-        val rowsWithSeparator = rows.map { it.joinToString("|") }
-        return rowsWithSeparator.joinToString("\n").trim()
-    }
-
-    // удаление базы и пользователя для решения
     private fun dropDatabaseAndUserForCheck(
         name: String,
         user: String,

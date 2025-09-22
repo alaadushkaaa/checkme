@@ -206,6 +206,7 @@ data class Check(
             return Pair(specialCriterion.key, allResult)
         }
 
+        @Suppress("UnusedParameter")
         private fun criterionCheck(
             criterion: Map.Entry<String, Criterion>,
             task: Task,
@@ -214,6 +215,7 @@ data class Check(
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
         ): CheckResult? {
+            // todo answers могут понадобиться для следующих проверок
             val objectMapper = jacksonObjectMapper()
             val checkFile = findCheckFile("../tasks/${task.name}", criterion.value.test)
             val jsonString = checkFile?.readText()
@@ -238,7 +240,7 @@ data class Check(
                             dbScript = jsonWithCheck.get("dbScript").asText().toString(),
                             referenceQuery = jsonWithCheck.get("referenceQuery").asText().toString()
                         )
-                        CheckDataSQL.sqlCheck(task, check, answers, user, checkId, criterion.value, checkDatabaseConfig)
+                        CheckDataSQL.sqlCheck(task, check, user, checkId, criterion.value, checkDatabaseConfig)
                     }
 
                     else -> {
