@@ -6,6 +6,8 @@ import checkme.domain.checks.CheckDataSQL
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check.Companion.tryCheckSpecialCriterionEach
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.core.*
 import java.io.File
@@ -244,7 +246,12 @@ data class Check(
                     }
 
                     else -> {
-                        println("Неизвестный тип проверки")
+                        ServerLogger.log(
+                            user = user,
+                            action = "Add task warnings",
+                            message = "Unknown check type",
+                            type = LoggerType.WARNING
+                        )
                         null
                     }
                 }

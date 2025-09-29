@@ -84,7 +84,7 @@ class UserOperations(
                 ServerLogger.log(
                     user = it,
                     action = "Registration",
-                    message = "New user in system",
+                    message = "New user registered in system",
                     type = LoggerType.INFO
                 )
                 it

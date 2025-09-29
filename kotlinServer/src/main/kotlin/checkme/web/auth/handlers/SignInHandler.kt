@@ -6,6 +6,8 @@ import checkme.domain.models.User
 import checkme.domain.operations.users.UserFetchingError
 import checkme.domain.operations.users.UserOperationHolder
 import checkme.domain.tools.JWTTools
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.auth.forms.SignInRequest
 import checkme.web.auth.forms.UserAuthResponse
 import checkme.web.commonExtensions.sendStatusCreated
@@ -33,6 +35,12 @@ class SignInHandler(
                     is Failure -> objectMapper.sendStatusUnauthorized(SignInError.TOKEN_CREATION_ERROR.errorTest)
 
                     is Success -> {
+                        ServerLogger.log(
+                            user = signInResult.value,
+                            action = "Login",
+                            message = "The user is logged in",
+                            type = LoggerType.INFO
+                        )
                         val signInUserResponse = UserAuthResponse(
                             signInRequest.username,
                             signInResult.value.name,

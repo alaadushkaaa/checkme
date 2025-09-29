@@ -8,6 +8,8 @@ import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.tools.TokenError
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.solution.supportingFiles.createNewCheck
@@ -81,6 +83,12 @@ class CheckSolutionHandler(
                             is Failure -> objectMapper.sendBadRequestError(newCheck.reason.errorText)
 
                             is Success -> {
+                                ServerLogger.log(
+                                    user = user,
+                                    action = "New check creation",
+                                    message = "User is created new check ${newCheck.value.id}",
+                                    type = LoggerType.INFO
+                                )
                                 val answers = tryGetFieldsAndFilesFromForm(
                                     filesForm = filesForm,
                                     newCheck = newCheck.value,

@@ -3,6 +3,8 @@ package checkme.web.tasks.handlers
 import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
@@ -38,6 +40,7 @@ class AddTaskHandler(
 
                     is Success -> {
                         tryAddTaskAndFiles(
+                            user = user,
                             validatedNewTask = validatedNewTask.value,
                             taskOperations = tasksOperations,
                             objectMapper = objectMapper,
@@ -51,12 +54,14 @@ class AddTaskHandler(
 }
 
 private fun tryAddTaskAndFiles(
+    user: User,
     validatedNewTask: Task,
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
     form: MultipartForm,
 ): Response {
     val updatedCriterions = validatedNewTask.addTaskFilesToDirectory(
+        user = user,
         files = form.files,
         fields = form.fields,
         criterions = validatedNewTask.criterions
@@ -68,7 +73,15 @@ private fun tryAddTaskAndFiles(
                 taskOperations = taskOperations
             )
     ) {
-        is Success -> objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
+        is Success -> {
+            ServerLogger.log(
+                user = user,
+                action = "New task addition",
+                message = "User is created new task ${newTask.value.id}-${newTask.value.name}",
+                type = LoggerType.INFO
+            )
+            objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
+        }
 
         is Failure -> objectMapper.sendBadRequestError(newTask.reason.errorText)
     }

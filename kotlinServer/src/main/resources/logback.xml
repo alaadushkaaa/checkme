@@ -1,5 +1,7 @@
 ﻿<configuration>
-    <property name="LOG_DIR" value="/logs"/> <!-- TODO установить нормальный путь для журналов (log/app.log) -->
+    <property name="LOG_DIR" value="/logs"/>
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
     <appender name="DB_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_DIR}/app.log</file>

@@ -4,6 +4,8 @@ import checkme.domain.forms.CheckResult
 import checkme.domain.models.CheckType
 import checkme.domain.models.Task
 import checkme.domain.models.User
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.solution.handlers.SOLUTIONS_DIR
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
@@ -32,18 +34,18 @@ data class CheckDataConsole(
         ): CheckResult {
             val command = checkDataConsole.command
             val directoryPath = "..$SOLUTIONS_DIR" +
-                "/${user.name}-${user.surname}-${user.login}" +
-                "/${task.name}" +
-                "/$checkId"
+                    "/${user.name}-${user.surname}-${user.login}" +
+                    "/${task.name}" +
+                    "/$checkId"
             if (!File(directoryPath).exists()) {
                 return CheckResult(0, "Check failed, file for solution check not found")
             }
             return when (
                 val output = runCommandInDirectory(
                     "..$SOLUTIONS_DIR" +
-                        "/${user.name}-${user.surname}-${user.login}" +
-                        "/${task.name}" +
-                        "/$checkId",
+                            "/${user.name}-${user.surname}-${user.login}" +
+                            "/${task.name}" +
+                            "/$checkId",
                     command
                 )
             ) {
@@ -54,11 +56,14 @@ data class CheckDataConsole(
                         CheckResult(criterion.score, criterion.description)
                     }
                 }
+
                 is Failure -> {
-                    // todo заменить на журнал
-                    println(
-                        "При выполнении теста ${criterion.test} задания " +
-                            "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}"
+                    ServerLogger.log(
+                        user = user,
+                        action = "Check task warnings",
+                        message = "При выполнении теста ${criterion.test} задания " +
+                                "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}",
+                        type = LoggerType.WARNING
                     )
                     CheckResult(
                         0,
