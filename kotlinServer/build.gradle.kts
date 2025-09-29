@@ -39,6 +39,12 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
 }
