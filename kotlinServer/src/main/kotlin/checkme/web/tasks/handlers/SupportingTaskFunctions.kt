@@ -153,7 +153,6 @@ fun Task.addTaskFilesToDirectory(
     if (!tasksDir.exists()) {
         tasksDir.mkdirs()
     }
-    val scriptFile = files["script"]?.firstOrNull()
     for (file in files.values.flatten()) {
         val filePath = File(tasksDir, file.filename)
         val fileBytes = file.content.use { it.readAllBytes() }
@@ -163,7 +162,6 @@ fun Task.addTaskFilesToDirectory(
         criterions = criterions,
         fields = fields,
         tasksDir = tasksDir,
-        scriptFile = scriptFile
     )
 }
 
@@ -176,15 +174,7 @@ fun tryRenameFileAndUpdateCriterions(
     criterions: Map<String, Criterion>,
     fields: Map<String, List<MultipartFormField>>,
     tasksDir: File,
-    scriptFile: MultipartFormFile?,
 ): Map<String, Criterion> {
-    if (scriptFile != null) {
-        val originalFileScript = File(tasksDir, scriptFile.filename)
-        val newScriptFile = File(tasksDir, "script.sql")
-        originalFileScript.renameTo(newScriptFile)
-        println("Renamed ${scriptFile.filename} to ${newScriptFile.name}")
-    }
-
     val updatedCriterions = criterions.toMutableMap()
     val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
     for (criteria in specialCriteria) {
