@@ -10,6 +10,7 @@ data class FormAddTask(
     val criterion: String,
     val answer: String,
     val format: String,
+    val script: List<KFile>? = null,
     val files: List<KFile>? = null
 )
 

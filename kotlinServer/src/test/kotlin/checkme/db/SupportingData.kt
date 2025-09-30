@@ -120,5 +120,11 @@ val validTasks: List<Task> = listOf(
     ),
 )
 
+val validPort = 3206
+val validHost = "localhost"
+val validUserName = "root"
+val validPassword = "password"
+val validUrlDatabase = "jdbc:mariadb://"
+
 val appConfig = AppConfig.fromEnvironment()
 val appConfiguredPasswordHasher = PasswordHasher(appConfig.authConfig)

@@ -1,6 +1,8 @@
 package checkme.web.solution.handlers
 
+import checkme.config.CheckDatabaseConfig
 import checkme.domain.forms.CheckResult
+import checkme.domain.models.AnswerType
 import checkme.domain.models.Check
 import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
@@ -38,6 +40,7 @@ class CheckSolutionHandler(
     private val checkOperations: CheckOperationHolder,
     private val taskOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
+    private val checkDatabaseConfig: CheckDatabaseConfig,
 ) : HttpHandler {
     @Suppress("LongMethod", "NestedBlockDepth", "ReturnCount")
     override fun invoke(request: Request): Response {
@@ -61,7 +64,11 @@ class CheckSolutionHandler(
                         val filesField = MultipartFormFile.multi.required("ans")
                         val filesLens = Body.Companion.multipartForm(Validator.Feedback, filesField).toLens()
                         val filesForm: MultipartForm = filesLens(request)
-                        if (filesForm.errors.isNotEmpty()) return Response(Status.BAD_REQUEST)
+                        if (filesForm.errors.isNotEmpty() &&
+                            task.value.answerFormat.values.first() == AnswerType.FILE
+                        ) {
+                            return Response(Status.BAD_REQUEST)
+                        }
 
                         return when (
                             val newCheck = createNewCheck(
@@ -84,7 +91,8 @@ class CheckSolutionHandler(
                                     task = task.value,
                                     checkId = newCheck.value.id,
                                     user = user,
-                                    answers = answers
+                                    answers = answers,
+                                    checkDatabaseConfig = checkDatabaseConfig
                                 )
                                 sendResponseWithChecksResult(
                                     checksResult,

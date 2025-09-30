@@ -27,7 +27,11 @@ private fun createMainRouter(
         jwtTools = jwtTools,
         contextTools = contextTools
     ),
-    SOLUTION_SEGMENT bind solutionRouter(operations = operations, contextTools = contextTools),
+    SOLUTION_SEGMENT bind solutionRouter(
+        operations = operations,
+        contextTools = contextTools,
+        config = config
+    ),
     TASK_SEGMENT bind taskRouter(operations = operations, contextTools = contextTools),
 )
 

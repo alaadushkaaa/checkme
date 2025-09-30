@@ -16,6 +16,7 @@ private fun chooseFileExtension(extension: String): String =
         "text/x-c" -> ".c"
         "text/javascript" -> ".js"
         "application/json" -> ".json"
+        "application/sql", "text/x-sql" -> ".sql"
         else -> ".txt"
     }
 

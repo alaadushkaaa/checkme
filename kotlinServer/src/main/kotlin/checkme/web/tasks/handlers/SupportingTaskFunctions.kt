@@ -161,7 +161,7 @@ fun Task.addTaskFilesToDirectory(
     return tryRenameFileAndUpdateCriterions(
         criterions = criterions,
         fields = fields,
-        tasksDir = tasksDir
+        tasksDir = tasksDir,
     )
 }
 

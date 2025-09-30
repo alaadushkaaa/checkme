@@ -1,5 +1,6 @@
 package checkme.web.solution
 
+import checkme.config.AppConfig
 import checkme.domain.operations.OperationHolder
 import checkme.web.context.ContextTools
 import checkme.web.solution.handlers.CheckSolutionHandler
@@ -13,12 +14,14 @@ import org.http4k.routing.*
 fun solutionRouter(
     operations: OperationHolder,
     contextTools: ContextTools,
+    config: AppConfig,
 ): RoutingHttpHandler =
     routes(
         "$NEW_SOLUTION/{id}" bind Method.POST to CheckSolutionHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
-            userLens = contextTools.userLens
+            userLens = contextTools.userLens,
+            checkDatabaseConfig = config.checkDatabaseConfig
         ),
         "/me" bind Method.GET to ListResultsHandler(
             checkOperations = operations.checkOperations,

@@ -39,6 +39,12 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
 }
@@ -62,6 +68,8 @@ dependencies {
     implementation(libs.flywayPostgresql)
     implementation(libs.bundles.apachePoi)
     implementation(libs.bundles.scribeJava)
+    implementation(libs.mariaDb)
+    implementation(libs.jsqlParser)
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.bundles.http4kTesting)
     testImplementation(libs.mockito)

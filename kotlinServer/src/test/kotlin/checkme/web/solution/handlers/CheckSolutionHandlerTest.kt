@@ -1,17 +1,23 @@
 package checkme.web.solution.handlers
 
+import checkme.config.CheckDatabaseConfig
 import checkme.db.appConfiguredPasswordHasher
 import checkme.db.validCheckId
 import checkme.db.validDate
+import checkme.db.validHost
 import checkme.db.validLogin
 import checkme.db.validName
 import checkme.db.validPass
+import checkme.db.validPassword
+import checkme.db.validPort
 import checkme.db.validResult
 import checkme.db.validStatusCorrect
 import checkme.db.validSurname
 import checkme.db.validTaskId
 import checkme.db.validTasks
+import checkme.db.validUrlDatabase
 import checkme.db.validUserId
+import checkme.db.validUserName
 import checkme.domain.accounts.Role
 import checkme.domain.models.Check
 import checkme.domain.models.User
@@ -64,6 +70,13 @@ class CheckSolutionHandlerTest : FunSpec({
         appConfiguredPasswordHasher.hash(validPass),
         Role.STUDENT
     )
+    val checkDatabaseConfig = CheckDatabaseConfig(
+        validHost,
+        validPort,
+        validUserName,
+        validPassword,
+        validUrlDatabase
+    )
     val userLens: RequestContextLens<User?> = mock()
 
     beforeTest {
@@ -88,14 +101,15 @@ class CheckSolutionHandlerTest : FunSpec({
                 CheckSolutionHandler(
                     checkOperations = checkOperations,
                     taskOperations = taskOperations,
-                    userLens = userLens
+                    userLens = userLens,
+                    checkDatabaseConfig = checkDatabaseConfig
                 )
         )
         handler = ServerFilters.InitialiseRequestContext(contexts).then(router)
     }
 
     test(
-        "check solution by valid task id should return OK with check id "
+        "console check solution by valid task id should return OK with check id "
     ) {
         whenever(checkOperations.fetchCheckById(validCheckResult.id)).thenReturn(Success(validCheckResult))
         whenever(checkOperations.createCheck(any(), any(), any(), anyOrNull(), any()))

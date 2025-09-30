@@ -1,0 +1,5 @@
+{
+  "type": "sql-check",
+  "dbScript" : "script.sql",
+  "referenceQuery": "UPDATE books\nSET title = \"Талисман\", publication_year = 1984\nWHERE id= 9;"
+}

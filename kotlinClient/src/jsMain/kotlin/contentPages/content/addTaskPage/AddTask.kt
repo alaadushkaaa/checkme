@@ -56,6 +56,7 @@ class AddTask(
     init {
         h2("Создание задачи")
         val fileList = mutableListOf<KFile>()
+        val scriptFile = mutableListOf<KFile>()
         val formPanelAddTask = formPanel<FormAddTask>(className = "base-form") {
             add(Label("Название", className = "separate-form-label"))
             add(
@@ -130,15 +131,38 @@ class AddTask(
                 required = true,
                 requiredMessage = ""
             )
+            add(Label("Скрипт", className = "separate-form-label"))
+            val addedScriptFileViewer = Div("Файл не выбран", className = "files-viewer")
+            add(
+                Label("Выберите файл", forId = "input-file-1", className = "file-upload")
+            )
+            add(
+                FormAddTask::script,
+                Upload(accept = listOf(".sql")) {
+                    this.input.id = "input-file-1"
+                    onChangeLaunch {
+                        val scriptListFile = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
+                        scriptFile.clear()
+                        scriptFile.addAll(scriptListFile)
+                        updateFileViewer(addedScriptFileViewer, scriptFile, this@formPanel)
+                        this@Upload.clearInput()
+                        this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
+                        this@formPanel.validate()
+                    }
+                }
+            )
+            add(
+                addedScriptFileViewer
+            )
             add(Label("Файлы тестов", className = "separate-form-label"))
             val addedFilesViewer = Div("Файлы не выбраны", className = "files-viewer")
             add(
-                Label("Выберите файлы тестов", forId = "input-file-1", className = "file-upload")
+                Label("Выберите файлы тестов", forId = "input-file-2", className = "file-upload")
             )
             add(
                 FormAddTask::files,
                 Upload(multiple = true) {
-                    this.input.id = "input-file-1"
+                    this.input.id = "input-file-2"
                     onChangeLaunch {
                         val files = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
                         fileList.addAll(files)
@@ -232,22 +256,40 @@ class AddTask(
             val beforeAll = fileSelectionData["beforeAll"]?.value
             val afterAll = fileSelectionData["afterAll"]?.value
             val filesWithContent = fileList
+            val scriptFileWithContent = if (scriptFile.isEmpty()) null else scriptFile[0]
             val formData = FormData().apply {
                 append("name", formPanelAddTask.getData().name)
                 append("description", formPanelAddTask.getData().description)
                 append("criterions", Json.Default.encodeToString(newCriterion))
                 append("answerFormat", Json.Default.encodeToString(answerFormat))
-                if(beforeEach != null){
+                if (beforeEach != null){
                     append("beforeEach", beforeEach)
                 }
-                if(afterEach != null){
+                if (afterEach != null){
                     append("afterEach", afterEach)
                 }
-                if(beforeAll != null){
+                if (beforeAll != null){
                     append("beforeAll", beforeAll)
                 }
-                if(afterAll != null){
+                if (afterAll != null){
                     append("afterAll", afterAll)
+                }
+                if (scriptFileWithContent != null) {
+                    val scriptEncodedContent = scriptFileWithContent.base64Encoded
+                    val scriptDecodedContent = if (scriptEncodedContent != null) {
+                        Base64.Default.decode(scriptEncodedContent).decodeToString()
+                    } else {
+                        ""
+                    }
+                    val scriptContentType = scriptFileWithContent.contentType
+                    append(
+                        name = "script",
+                        value = File(
+                            arrayOf(scriptDecodedContent),
+                            scriptFileWithContent.name,
+                            FilePropertyBag(type = scriptContentType)
+                        )
+                    )
                 }
                 filesWithContent.forEach { kFile ->
                     val encodedContent = kFile.base64Encoded
@@ -259,7 +301,11 @@ class AddTask(
                     val contentType = kFile.contentType
                     append(
                         name = "file",
-                        value = File(arrayOf(decodedContent), kFile.name, FilePropertyBag(type = contentType)),
+                        value = File(
+                            arrayOf(decodedContent),
+                            kFile.name,
+                            FilePropertyBag(type = contentType)
+                        ),
                     )
                 }
             }
@@ -305,6 +351,28 @@ class AddTask(
             }
         })
     }
+
+    fun updateFileViewer(fileViewer: Div, fileList: MutableList<KFile>, form: FormPanel<FormAddTask>) {
+        fileViewer.removeAll()
+        if (fileList.isEmpty()) {
+            fileViewer.content = "Файл не выбран"
+        } else {
+            fileViewer.content = ""
+            val file = Div().apply {
+                add(Div(fileList[0].name))
+                add(Button("Удалить файл", className = "delete-file-button") {
+                    onClick {
+                        fileList.clear()
+                        updateFileViewer(fileViewer, fileList, form)
+                        form.getElement()?.dispatchEvent(InputEvent("input"))
+                        form.validate()
+                    }
+                })
+            }
+            fileViewer.add(file)
+        }
+    }
+
     fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormAddTask>) {
         filesViewer.removeAll()
         if (files.isEmpty()) {

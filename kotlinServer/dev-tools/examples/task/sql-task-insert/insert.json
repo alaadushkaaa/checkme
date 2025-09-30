@@ -1,0 +1,5 @@
+{
+  "type": "sql-check",
+  "dbScript" : "script.sql",
+  "referenceQuery": "INSERT INTO books (title, author_id, publication_year)\nVALUES ('Талисман', 2, 1984);"
+}

@@ -1,6 +1,8 @@
 package checkme.domain.models
 
+import checkme.config.CheckDatabaseConfig
 import checkme.domain.checks.CheckDataConsole
+import checkme.domain.checks.CheckDataSQL
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check.Companion.tryCheckSpecialCriterionEach
@@ -9,6 +11,7 @@ import org.http4k.core.*
 import java.io.File
 import java.time.LocalDateTime
 
+@Suppress("LongParameterList")
 data class Check(
     val id: Int,
     val taskId: Int,
@@ -25,6 +28,7 @@ data class Check(
             checkId: Int,
             user: User,
             answers: List<Pair<String, String>>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ): Map<String, CheckResult>? {
             val results = mutableMapOf<String, CheckResult>()
             beforeAllCriterionCheck(
@@ -32,7 +36,8 @@ data class Check(
                 checkId = checkId,
                 user = user,
                 answers = answers,
-                results = results
+                results = results,
+                checkDatabaseConfig = checkDatabaseConfig
             )
             for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.test) }) {
                 beforeEachCriterionCheck(
@@ -40,10 +45,18 @@ data class Check(
                     checkId = checkId,
                     user = user,
                     answers = answers,
-                    results = results
+                    results = results,
+                    checkDatabaseConfig = checkDatabaseConfig
                 )
                 if (!specialCriteria.contains(criterion.value.test)) {
-                    val checkResult = criterionCheck(criterion, task, checkId, user, answers) ?: return null
+                    val checkResult = criterionCheck(
+                        criterion = criterion,
+                        task = task,
+                        checkId = checkId,
+                        user = user,
+                        answers = answers,
+                        checkDatabaseConfig = checkDatabaseConfig
+                    ) ?: return null
                     results[criterion.key] = checkResult
                 }
                 afterEachCriterionCheck(
@@ -51,10 +64,18 @@ data class Check(
                     checkId = checkId,
                     user = user,
                     answers = answers,
-                    results = results
+                    results = results,
+                    checkDatabaseConfig = checkDatabaseConfig
                 )
             }
-            afterAllCriterionCheck(task, checkId, user, answers, results)
+            afterAllCriterionCheck(
+                task = task,
+                checkId = checkId,
+                user = user,
+                answers = answers,
+                results = results,
+                checkDatabaseConfig = checkDatabaseConfig
+            )
             return results
         }
 
@@ -64,13 +85,15 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ) {
             val specialResultBeforeAll = tryCheckSpecialCriterionAll(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeAll.json" },
                 task = task,
                 checkId = checkId,
                 user = user,
-                answers = answers
+                answers = answers,
+                checkDatabaseConfig = checkDatabaseConfig
             )
             if (specialResultBeforeAll != null) {
                 results[specialResultBeforeAll.first] = specialResultBeforeAll.second
@@ -83,13 +106,15 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ) {
             val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeEach.json" },
                 task = task,
                 checkId = checkId,
                 user = user,
-                answers = answers
+                answers = answers,
+                checkDatabaseConfig = checkDatabaseConfig
             )
 
             if (specialResultBeforeEach != null) {
@@ -103,13 +128,15 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ) {
             val specialResultAfterAll = tryCheckSpecialCriterionAll(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterAll.json" },
                 task = task,
                 checkId = checkId,
                 user = user,
-                answers = answers
+                answers = answers,
+                checkDatabaseConfig = checkDatabaseConfig
             )
             if (specialResultAfterAll != null) {
                 results[specialResultAfterAll.first] = specialResultAfterAll.second
@@ -122,13 +149,15 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ) {
             val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterEach.json" },
                 task = task,
                 checkId = checkId,
                 user = user,
-                answers = answers
+                answers = answers,
+                checkDatabaseConfig = checkDatabaseConfig
             )
 
             if (specialResultAfterEach != null) {
@@ -142,6 +171,7 @@ data class Check(
             checkId: Int,
             user: User,
             answers: List<Pair<String, String>>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ): Pair<String, CheckResult>? {
             return if (
                 (
@@ -150,7 +180,10 @@ data class Check(
                 ) &&
                 specialCriterion != null
             ) {
-                when (val eachResult = criterionCheck(specialCriterion, task, checkId, user, answers)) {
+                when (
+                    val eachResult =
+                        criterionCheck(specialCriterion, task, checkId, user, answers, checkDatabaseConfig)
+                ) {
                     is CheckResult -> Pair(specialCriterion.key, eachResult)
                     else -> null
                 }
@@ -165,22 +198,24 @@ data class Check(
             checkId: Int,
             user: User,
             answers: List<Pair<String, String>>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ): Pair<String, CheckResult>? {
             val allResult = specialCriterion
-                ?.let { criterionCheck(it, task, checkId, user, answers) }
+                ?.let { criterionCheck(it, task, checkId, user, answers, checkDatabaseConfig) }
                 ?: return null
             return Pair(specialCriterion.key, allResult)
         }
 
         @Suppress("UnusedParameter")
-        // todo answers будут нужны, когда будут реализованы другие типы проверок
         private fun criterionCheck(
             criterion: Map.Entry<String, Criterion>,
             task: Task,
             checkId: Int,
             user: User,
             answers: List<Pair<String, String>>,
+            checkDatabaseConfig: CheckDatabaseConfig,
         ): CheckResult? {
+            // todo answers могут понадобиться для следующих проверок
             val objectMapper = jacksonObjectMapper()
             val checkFile = findCheckFile("../tasks/${task.name}", criterion.value.test)
             val jsonString = checkFile?.readText()
@@ -197,6 +232,15 @@ data class Check(
                             expected = jsonWithCheck.get("expected").asText().toString()
                         )
                         CheckDataConsole.consoleCheck(task, check, user, checkId, criterion.value)
+                    }
+
+                    CheckType.SQL_CHECK.code -> {
+                        val check = CheckDataSQL(
+                            type = CheckType.SQL_CHECK,
+                            dbScript = jsonWithCheck.get("dbScript").asText().toString(),
+                            referenceQuery = jsonWithCheck.get("referenceQuery").asText().toString()
+                        )
+                        CheckDataSQL.sqlCheck(task, check, user, checkId, criterion.value, checkDatabaseConfig)
                     }
 
                     else -> {
@@ -223,4 +267,5 @@ private fun MutableMap<String, CheckResult>.criterionAlreadyChecked(specialCrite
 
 enum class CheckType(val code: String) {
     CONSOLE_CHECK("console-check"),
+    SQL_CHECK("sql-check"),
 }

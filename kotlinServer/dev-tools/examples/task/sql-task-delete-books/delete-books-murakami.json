@@ -1,0 +1,5 @@
+{
+  "type": "sql-check",
+  "dbScript" : "script.sql",
+  "referenceQuery": "DELETE FROM books \nWHERE author_id = (SELECT id FROM authors WHERE name = 'Харуки Мураками');"
+}
