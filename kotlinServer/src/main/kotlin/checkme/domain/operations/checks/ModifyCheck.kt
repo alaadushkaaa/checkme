@@ -1,4 +1,4 @@
-package checkme.domain.operations.users
+package checkme.domain.operations.checks
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
