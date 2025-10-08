@@ -31,7 +31,7 @@ class SignInHandler(
             is Failure -> {
                 ServerLogger.log(
                     action = "Login",
-                    message = "",
+                    message = "User try to sign in",
                     type = LoggerType.WARN
                 )
                 objectMapper.sendStatusUnauthorized(signInResult.reason.errorTest)
