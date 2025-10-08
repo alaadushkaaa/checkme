@@ -69,7 +69,6 @@ dependencies {
     implementation(libs.bundles.apachePoi)
     implementation(libs.bundles.scribeJava)
     implementation(libs.mariaDb)
-    implementation(libs.jsqlParser)
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.bundles.http4kTesting)
     testImplementation(libs.mockito)

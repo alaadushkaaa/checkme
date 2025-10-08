@@ -84,7 +84,6 @@ data class CheckDataSQL(
                 )
 
                 else -> {
-                    val setupSql = sqlScript.readText()
                     getCheckResults(
                         task = task,
                         checkDataSQL = checkDataSQL,
@@ -93,7 +92,7 @@ data class CheckDataSQL(
                         checkId = checkId,
                         criterion = criterion,
                         config = config,
-                        setupSql = setupSql
+                        setupSql = sqlScript
                     )
                 }
             }
@@ -107,7 +106,7 @@ data class CheckDataSQL(
             checkId: Int,
             criterion: Criterion,
             config: CheckDatabaseConfig,
-            setupSql: String,
+            setupSql: File,
         ): CheckResult {
             return when (
                 val queriesResults = SqlCheckService(config).getSqlResults(
