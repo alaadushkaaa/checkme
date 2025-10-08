@@ -40,7 +40,7 @@ class ListResultsHandler(
                     userOperations = userOperations,
                     taskOperations = taskOperations
                 )
-            
+
             else -> tryFetchUserSolutions(
                 userId = user.id,
                 objectMapper = objectMapper,

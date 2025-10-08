@@ -1,6 +1,7 @@
 package checkme.domain.models
 
 import checkme.config.CheckDatabaseConfig
+import checkme.config.LoggingConfig
 import checkme.domain.checks.CheckDataConsole
 import checkme.domain.checks.CheckDataSQL
 import checkme.domain.checks.Criterion
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.core.*
 import java.io.File
 import java.time.LocalDateTime
+import kotlin.math.log
 
 @Suppress("LongParameterList")
 data class Check(
@@ -31,6 +33,7 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ): Map<String, CheckResult>? {
             val results = mutableMapOf<String, CheckResult>()
             beforeAllCriterionCheck(
@@ -39,7 +42,8 @@ data class Check(
                 user = user,
                 answers = answers,
                 results = results,
-                checkDatabaseConfig = checkDatabaseConfig
+                checkDatabaseConfig = checkDatabaseConfig,
+                loggingConfig = loggingConfig
             )
             for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.test) }) {
                 beforeEachCriterionCheck(
@@ -48,7 +52,8 @@ data class Check(
                     user = user,
                     answers = answers,
                     results = results,
-                    checkDatabaseConfig = checkDatabaseConfig
+                    checkDatabaseConfig = checkDatabaseConfig,
+                    loggingConfig = loggingConfig
                 )
                 if (!specialCriteria.contains(criterion.value.test)) {
                     val checkResult = criterionCheck(
@@ -57,7 +62,8 @@ data class Check(
                         checkId = checkId,
                         user = user,
                         answers = answers,
-                        checkDatabaseConfig = checkDatabaseConfig
+                        checkDatabaseConfig = checkDatabaseConfig,
+                        loggingConfig = loggingConfig
                     ) ?: return null
                     results[criterion.key] = checkResult
                 }
@@ -67,7 +73,8 @@ data class Check(
                     user = user,
                     answers = answers,
                     results = results,
-                    checkDatabaseConfig = checkDatabaseConfig
+                    checkDatabaseConfig = checkDatabaseConfig,
+                    loggingConfig = loggingConfig
                 )
             }
             afterAllCriterionCheck(
@@ -76,7 +83,8 @@ data class Check(
                 user = user,
                 answers = answers,
                 results = results,
-                checkDatabaseConfig = checkDatabaseConfig
+                checkDatabaseConfig = checkDatabaseConfig,
+                loggingConfig = loggingConfig
             )
             return results
         }
@@ -88,6 +96,7 @@ data class Check(
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeAll = tryCheckSpecialCriterionAll(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeAll.json" },
@@ -95,7 +104,8 @@ data class Check(
                 checkId = checkId,
                 user = user,
                 answers = answers,
-                checkDatabaseConfig = checkDatabaseConfig
+                checkDatabaseConfig = checkDatabaseConfig,
+                loggingConfig = loggingConfig
             )
             if (specialResultBeforeAll != null) {
                 results[specialResultBeforeAll.first] = specialResultBeforeAll.second
@@ -109,6 +119,7 @@ data class Check(
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeEach.json" },
@@ -116,7 +127,8 @@ data class Check(
                 checkId = checkId,
                 user = user,
                 answers = answers,
-                checkDatabaseConfig = checkDatabaseConfig
+                checkDatabaseConfig = checkDatabaseConfig,
+                loggingConfig = loggingConfig
             )
 
             if (specialResultBeforeEach != null) {
@@ -131,6 +143,7 @@ data class Check(
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterAll = tryCheckSpecialCriterionAll(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterAll.json" },
@@ -138,7 +151,8 @@ data class Check(
                 checkId = checkId,
                 user = user,
                 answers = answers,
-                checkDatabaseConfig = checkDatabaseConfig
+                checkDatabaseConfig = checkDatabaseConfig,
+                loggingConfig = loggingConfig
             )
             if (specialResultAfterAll != null) {
                 results[specialResultAfterAll.first] = specialResultAfterAll.second
@@ -152,6 +166,7 @@ data class Check(
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
                 specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterEach.json" },
@@ -159,7 +174,8 @@ data class Check(
                 checkId = checkId,
                 user = user,
                 answers = answers,
-                checkDatabaseConfig = checkDatabaseConfig
+                checkDatabaseConfig = checkDatabaseConfig,
+                loggingConfig = loggingConfig
             )
 
             if (specialResultAfterEach != null) {
@@ -174,6 +190,7 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ): Pair<String, CheckResult>? {
             return if (
                 (
@@ -184,7 +201,15 @@ data class Check(
             ) {
                 when (
                     val eachResult =
-                        criterionCheck(specialCriterion, task, checkId, user, answers, checkDatabaseConfig)
+                        criterionCheck(
+                            criterion = specialCriterion,
+                            task = task,
+                            checkId = checkId,
+                            user = user,
+                            answers = answers,
+                            checkDatabaseConfig = checkDatabaseConfig,
+                            loggingConfig = loggingConfig
+                        )
                 ) {
                     is CheckResult -> Pair(specialCriterion.key, eachResult)
                     else -> null
@@ -201,9 +226,20 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ): Pair<String, CheckResult>? {
             val allResult = specialCriterion
-                ?.let { criterionCheck(it, task, checkId, user, answers, checkDatabaseConfig) }
+                ?.let {
+                    criterionCheck(
+                        criterion = it,
+                        task = task,
+                        checkId = checkId,
+                        user = user,
+                        answers = answers,
+                        checkDatabaseConfig = checkDatabaseConfig,
+                        loggingConfig = loggingConfig
+                    )
+                }
                 ?: return null
             return Pair(specialCriterion.key, allResult)
         }
@@ -216,6 +252,7 @@ data class Check(
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
+            loggingConfig: LoggingConfig,
         ): CheckResult? {
             // todo answers могут понадобиться для следующих проверок
             val objectMapper = jacksonObjectMapper()
@@ -225,7 +262,8 @@ data class Check(
                 ServerLogger.log(
                     user = user,
                     action = "Check task warnings",
-                    message = "Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} not found",
+                    message = "Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} " +
+                        "not found",
                     type = LoggerType.WARN
                 )
                 return null
@@ -248,14 +286,22 @@ data class Check(
                             dbScript = jsonWithCheck.get("dbScript").asText().toString(),
                             referenceQuery = jsonWithCheck.get("referenceQuery").asText().toString()
                         )
-                        CheckDataSQL.sqlCheck(task, check, user, checkId, criterion.value, checkDatabaseConfig)
+                        CheckDataSQL.sqlCheck(
+                            task = task,
+                            checkDataSQL = check,
+                            user = user,
+                            checkId = checkId,
+                            criterion = criterion.value,
+                            overall = loggingConfig.overall,
+                            config = checkDatabaseConfig
+                        )
                     }
 
                     else -> {
                         ServerLogger.log(
                             user = user,
                             action = "Add task warnings",
-                            message = "Unknown check type task ${task.id}-${task.name} criterion ${criterion.value.test}",
+                            message = "Unknown check type ${task.id}-${task.name} criterion ${criterion.value.test}",
                             type = LoggerType.WARN
                         )
                         null

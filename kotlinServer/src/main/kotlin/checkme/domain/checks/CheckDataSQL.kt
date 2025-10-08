@@ -26,6 +26,7 @@ data class CheckDataSQL(
             user: User,
             checkId: Int,
             criterion: Criterion,
+            overall: Boolean,
             config: CheckDatabaseConfig,
         ): CheckResult {
             val directoryPath = "..$SOLUTIONS_DIR" +
@@ -54,6 +55,7 @@ data class CheckDataSQL(
                         user = user,
                         checkId = checkId,
                         criterion = criterion,
+                        overall = overall,
                         config = config
                     )
                 }
@@ -76,6 +78,7 @@ data class CheckDataSQL(
             user: User,
             checkId: Int,
             criterion: Criterion,
+            overall: Boolean,
             config: CheckDatabaseConfig,
         ): CheckResult {
             val answerSQl = answerFile.readText()
@@ -88,7 +91,8 @@ data class CheckDataSQL(
                     ServerLogger.log(
                         user = user,
                         action = "Check task warnings",
-                        message = "Check failed: Setup SQL script ${checkDataSQL.dbScript} for task ${task.id}-${task.name} not found",
+                        message = "Check failed: Setup SQL script ${checkDataSQL.dbScript} for " +
+                            "task ${task.id}-${task.name} not found",
                         type = LoggerType.WARN
                     )
                     CheckResult(
@@ -105,6 +109,7 @@ data class CheckDataSQL(
                         user = user,
                         checkId = checkId,
                         criterion = criterion,
+                        overall = overall,
                         config = config,
                         setupSql = sqlScript
                     )
@@ -119,11 +124,12 @@ data class CheckDataSQL(
             user: User,
             checkId: Int,
             criterion: Criterion,
+            overall: Boolean,
             config: CheckDatabaseConfig,
             setupSql: File,
         ): CheckResult {
             return when (
-                val queriesResults = SqlCheckService(config, user).getSqlResults(
+                val queriesResults = SqlCheckService(config, user, overall).getSqlResults(
                     firstScript = setupSql,
                     referenceQuery = checkDataSQL.referenceQuery,
                     studentQuery = studentQuery,
@@ -135,7 +141,7 @@ data class CheckDataSQL(
                         user = user,
                         action = "Check task warnings",
                         message = "An error occurred while running check ${criterion.test} for task \" +\n" +
-                                "\"${task.name}-${task.id}: ${queriesResults.reason.trim()}",
+                            "\"${task.name}-${task.id}: ${queriesResults.reason.trim()}",
                         type = LoggerType.WARN
                     )
                     CheckResult(0, "Something was wrong with check. Ask for help")

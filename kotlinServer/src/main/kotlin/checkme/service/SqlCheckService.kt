@@ -11,16 +11,18 @@ import dev.forkhandles.result4k.Success
 import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.ResultSet
 import java.sql.Statement
 import java.util.concurrent.TimeUnit
 
 const val QUERY_TIMEOUT = 7
 // Сервис для работы с временными базами данных, которые создаются для каждой проверки задания с SQL-запросами
 
+@Suppress("TooManyFunctions")
 class SqlCheckService(
     private val config: CheckDatabaseConfig,
     private val user: User,
-    private val overall: Boolean
+    private val overall: Boolean,
 ) {
     // todo журнал
     @Suppress("TooGenericExceptionCaught")
@@ -72,12 +74,14 @@ class SqlCheckService(
                 name = uniqueDatabaseName,
                 user = studentUser
             )
-            if (overall) ServerLogger.log(
-                user = user,
-                action = "Check database actions",
-                message = "Database for check dropped",
-                type = LoggerType.INFO
-            )
+            if (overall) {
+                ServerLogger.log(
+                    user = user,
+                    action = "Check database actions",
+                    message = "Database for check dropped",
+                    type = LoggerType.INFO
+                )
+            }
         }
     }
 
@@ -92,12 +96,14 @@ class SqlCheckService(
             statement.execute("CREATE USER '$userName'@'%' IDENTIFIED BY '$pass'")
             statement.execute("GRANT ALL PRIVILEGES ON `$databaseName`.* TO '$userName'@'%'")
             statement.execute("FLUSH PRIVILEGES")
-            if (overall) ServerLogger.log(
-                user = user,
-                action = "Check database actions",
-                message = "User $userName created with access to database $databaseName",
-                type = LoggerType.INFO
-            )
+            if (overall) {
+                ServerLogger.log(
+                    user = user,
+                    action = "Check database actions",
+                    message = "User $userName created with access to database $databaseName",
+                    type = LoggerType.INFO
+                )
+            }
         }
     }
 
@@ -107,12 +113,14 @@ class SqlCheckService(
             it.createStatement().execute(
                 "CREATE DATABASE `$name`;"
             )
-            if (overall) ServerLogger.log(
-                user = user,
-                action = "Check database actions",
-                message = "Database $name created",
-                type = LoggerType.INFO
-            )
+            if (overall) {
+                ServerLogger.log(
+                    user = user,
+                    action = "Check database actions",
+                    message = "Database $name created",
+                    type = LoggerType.INFO
+                )
+            }
         }
     }
 
@@ -141,7 +149,7 @@ class SqlCheckService(
                 user = user,
                 action = "First script execute",
                 message = "Error: The time for the process has expired",
-                type = LoggerType.INFO
+                type = LoggerType.WARN
             )
             process.destroy()
         }
@@ -152,7 +160,7 @@ class SqlCheckService(
                 user = user,
                 action = "First script execute",
                 message = "MySQL execution failed: $exitCode: $error",
-                type = LoggerType.INFO
+                type = LoggerType.WARN
             )
         }
     }
@@ -224,19 +232,33 @@ class SqlCheckService(
                     "SELECT COALESCE(MAX(`$autoIncrementColumn`), 0) as max_id FROM `$table`;"
                 )
                 if (maxIdResult.next()) {
-                    val maxId = maxIdResult.getLong(1)
-                    val newAutoIncrementValue = maxId + 1
-                    statement.executeUpdate(
-                        "ALTER TABLE `$table` AUTO_INCREMENT = $newAutoIncrementValue;"
-                    )
-                    if (overall) ServerLogger.log(
-                        user = user,
-                        action = "Check database actions",
-                        message = "В таблице $table AUTO_INCREMENT установлен в $newAutoIncrementValue",
-                        type = LoggerType.INFO
+                    setAutoIncrementValue(
+                        maxIdResult = maxIdResult,
+                        table = table,
+                        statement = statement
                     )
                 }
             }
+        }
+    }
+
+    private fun setAutoIncrementValue(
+        maxIdResult: ResultSet,
+        table: String,
+        statement: Statement,
+    ) {
+        val maxId = maxIdResult.getLong(1)
+        val newAutoIncrementValue = maxId + 1
+        statement.executeUpdate(
+            "ALTER TABLE `$table` AUTO_INCREMENT = $newAutoIncrementValue;"
+        )
+        if (overall) {
+            ServerLogger.log(
+                user = user,
+                action = "Check database actions",
+                message = "В таблице $table AUTO_INCREMENT установлен в $newAutoIncrementValue",
+                type = LoggerType.INFO
+            )
         }
     }
 

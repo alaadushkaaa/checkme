@@ -23,7 +23,7 @@ const val TASKS_DIR = "/tasks"
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
-    private val loggingConfig: LoggingConfig
+    private val loggingConfig: LoggingConfig,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
@@ -64,6 +64,7 @@ class AddTaskHandler(
     }
 }
 
+@Suppress("LongParameterList")
 private fun tryAddTaskAndFiles(
     user: User,
     validatedNewTask: Task,

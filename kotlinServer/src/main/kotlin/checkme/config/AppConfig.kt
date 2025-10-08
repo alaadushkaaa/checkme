@@ -9,7 +9,7 @@ data class AppConfig(
     val testsConfig: TestsConfig,
     val webConfig: WebConfig,
     val authConfig: AuthConfig,
-    val loggingConfig: LoggingConfig
+    val loggingConfig: LoggingConfig,
 ) {
     companion object {
         private const val CONFIG = "app.properties"

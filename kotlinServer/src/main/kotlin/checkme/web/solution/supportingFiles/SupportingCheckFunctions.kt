@@ -46,7 +46,7 @@ internal fun setStatusChecked(
     user: User,
     check: Check,
     checkOperations: CheckOperationHolder,
-    overall: Boolean
+    overall: Boolean,
 ): Response {
     val objectMapper = jacksonObjectMapper()
     return when (
@@ -59,12 +59,14 @@ internal fun setStatusChecked(
         is Failure -> objectMapper.sendBadRequestError(updatedCheckStatus.reason.errorText)
 
         is Success -> {
-            if (overall) ServerLogger.log(
-                user = user,
-                action = "Check task actions",
-                message = "Check ${check.id} was successful and result updated",
-                type = LoggerType.INFO
-            )
+            if (overall) {
+                ServerLogger.log(
+                    user = user,
+                    action = "Check task actions",
+                    message = "Check ${check.id} was successful and result updated",
+                    type = LoggerType.INFO
+                )
+            }
             objectMapper.sendOKResponse(mapOf("checkId" to check.id))
         }
     }

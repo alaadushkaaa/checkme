@@ -34,9 +34,9 @@ data class CheckDataConsole(
         ): CheckResult {
             val command = checkDataConsole.command
             val directoryPath = "..$SOLUTIONS_DIR" +
-                    "/${user.name}-${user.surname}-${user.login}" +
-                    "/${task.name}" +
-                    "/$checkId"
+                "/${user.name}-${user.surname}-${user.login}" +
+                "/${task.name}" +
+                "/$checkId"
             if (!File(directoryPath).exists()) {
                 ServerLogger.log(
                     user = user,
@@ -49,9 +49,9 @@ data class CheckDataConsole(
             return when (
                 val output = runCommandInDirectory(
                     "..$SOLUTIONS_DIR" +
-                            "/${user.name}-${user.surname}-${user.login}" +
-                            "/${task.name}" +
-                            "/$checkId",
+                        "/${user.name}-${user.surname}-${user.login}" +
+                        "/${task.name}" +
+                        "/$checkId",
                     command
                 )
             ) {
@@ -68,7 +68,7 @@ data class CheckDataConsole(
                         user = user,
                         action = "Check task warnings",
                         message = "An error occurred while running check ${criterion.test} for task \" +\n" +
-                                "\"${task.name}-${task.id}: ${output.reason.trim()}",
+                            "\"${task.name}-${task.id}: ${output.reason.trim()}",
                         type = LoggerType.WARN
                     )
                     CheckResult(

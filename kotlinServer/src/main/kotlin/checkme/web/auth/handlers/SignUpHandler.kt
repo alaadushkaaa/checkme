@@ -5,7 +5,6 @@ import checkme.domain.models.User
 import checkme.domain.operations.users.UserCreationError
 import checkme.domain.operations.users.UserOperationHolder
 import checkme.domain.tools.JWTTools
-import checkme.logging.ServerLogger
 import checkme.web.auth.forms.SignUpRequest
 import checkme.web.auth.forms.UserAuthResponse
 import checkme.web.commonExtensions.sendBadRequestError

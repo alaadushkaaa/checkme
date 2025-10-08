@@ -149,7 +149,7 @@ fun Task.addTaskFilesToDirectory(
     files: Map<String, List<MultipartFormFile>>,
     fields: Map<String, List<MultipartFormField>>,
     criterions: Map<String, Criterion>,
-    overall: Boolean
+    overall: Boolean,
 ): Map<String, Criterion> {
     val tasksDir = File(
         "..$TASKS_DIR" +
@@ -182,7 +182,7 @@ fun tryRenameFileAndUpdateCriterions(
     criterions: Map<String, Criterion>,
     fields: Map<String, List<MultipartFormField>>,
     tasksDir: File,
-    overall: Boolean
+    overall: Boolean,
 ): Map<String, Criterion> {
     val updatedCriterions = criterions.toMutableMap()
     val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
@@ -193,12 +193,14 @@ fun tryRenameFileAndUpdateCriterions(
             if (originalFile.exists()) {
                 val newFile = File(tasksDir, "$criteria.json")
                 originalFile.renameTo(newFile)
-                if (overall) ServerLogger.log(
-                    user = user,
-                    action = "Working with task files",
-                    message = "Renamed $originalFileName to ${newFile.name} for criteria $criteria",
-                    type = LoggerType.INFO
-                )
+                if (overall) {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Working with task files",
+                        message = "Renamed $originalFileName to ${newFile.name} for criteria $criteria",
+                        type = LoggerType.INFO
+                    )
+                }
 
                 updatedCriterions.forEach { (key, value) ->
                     if (value.test == originalFileName) {

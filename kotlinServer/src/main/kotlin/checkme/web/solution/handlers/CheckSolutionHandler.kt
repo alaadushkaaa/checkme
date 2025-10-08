@@ -102,7 +102,8 @@ class CheckSolutionHandler(
                                     checkId = newCheck.value.id,
                                     user = user,
                                     answers = answers,
-                                    checkDatabaseConfig = checkDatabaseConfig
+                                    checkDatabaseConfig = checkDatabaseConfig,
+                                    loggingConfig = loggingConfig
                                 )
                                 sendResponseWithChecksResult(
                                     user = user,

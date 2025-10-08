@@ -32,7 +32,11 @@ private fun createMainRouter(
         contextTools = contextTools,
         config = config
     ),
-    TASK_SEGMENT bind taskRouter(operations = operations, contextTools = contextTools),
+    TASK_SEGMENT bind taskRouter(
+        operations = operations,
+        contextTools = contextTools,
+        config = config
+    ),
 )
 
 fun createApp(

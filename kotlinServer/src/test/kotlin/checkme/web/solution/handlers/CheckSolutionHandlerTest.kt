@@ -1,12 +1,14 @@
 package checkme.web.solution.handlers
 
 import checkme.config.CheckDatabaseConfig
+import checkme.config.LoggingConfig
 import checkme.db.appConfiguredPasswordHasher
 import checkme.db.validCheckId
 import checkme.db.validDate
 import checkme.db.validHost
 import checkme.db.validLogin
 import checkme.db.validName
+import checkme.db.validOverall
 import checkme.db.validPass
 import checkme.db.validPassword
 import checkme.db.validPort
@@ -77,6 +79,9 @@ class CheckSolutionHandlerTest : FunSpec({
         validPassword,
         validUrlDatabase
     )
+    val loggingConfig = LoggingConfig(
+        validOverall
+    )
     val userLens: RequestContextLens<User?> = mock()
 
     beforeTest {
@@ -102,7 +107,8 @@ class CheckSolutionHandlerTest : FunSpec({
                     checkOperations = checkOperations,
                     taskOperations = taskOperations,
                     userLens = userLens,
-                    checkDatabaseConfig = checkDatabaseConfig
+                    checkDatabaseConfig = checkDatabaseConfig,
+                    loggingConfig = loggingConfig
                 )
         )
         handler = ServerFilters.InitialiseRequestContext(contexts).then(router)

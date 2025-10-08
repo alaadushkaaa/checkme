@@ -12,7 +12,7 @@ object ServerLogger {
     private val objectMapper = jacksonObjectMapper()
 
     fun log(
-        user: User,
+        user: User? = null,
         action: String,
         message: String,
         type: LoggerType,
@@ -20,9 +20,9 @@ object ServerLogger {
         val logObject = LogObject(
             level = type.code,
             date = LocalDateTime.now().format(dateFormatter),
-            userId = user.id,
-            userName = user.name,
-            userSurname = user.surname,
+            userId = user?.id ?: -404,
+            userName = user?.name ?: "unknown",
+            userSurname = user?.surname ?: "unknown",
             action = action,
             message = message
         )
