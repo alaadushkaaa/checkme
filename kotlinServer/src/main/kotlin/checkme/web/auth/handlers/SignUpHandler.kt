@@ -53,10 +53,10 @@ class SignUpHandler(
         form: SignUpRequest,
         userOperations: UserOperationHolder,
     ): Result<User, SignUpError> {
-        val login = form.username
+        val login = form.username.trim()
         val name = form.name
         val surname = form.surname
-        val password = form.password
+        val password = form.password.trim()
         return when (
             val result = userOperations
                 .createUser(login, name, surname, password, Role.STUDENT)
