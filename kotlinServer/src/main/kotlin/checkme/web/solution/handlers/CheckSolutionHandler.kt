@@ -1,6 +1,7 @@
 package checkme.web.solution.handlers
 
 import checkme.config.CheckDatabaseConfig
+import checkme.config.LoggingConfig
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Check
@@ -8,6 +9,8 @@ import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.tools.TokenError
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.solution.supportingFiles.createNewCheck
@@ -41,6 +44,7 @@ class CheckSolutionHandler(
     private val taskOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
     private val checkDatabaseConfig: CheckDatabaseConfig,
+    private val loggingConfig: LoggingConfig,
 ) : HttpHandler {
     @Suppress("LongMethod", "NestedBlockDepth", "ReturnCount")
     override fun invoke(request: Request): Response {
@@ -81,6 +85,12 @@ class CheckSolutionHandler(
                             is Failure -> objectMapper.sendBadRequestError(newCheck.reason.errorText)
 
                             is Success -> {
+                                ServerLogger.log(
+                                    user = user,
+                                    action = "New check creation",
+                                    message = "User is created new check ${newCheck.value.id}",
+                                    type = LoggerType.INFO
+                                )
                                 val answers = tryGetFieldsAndFilesFromForm(
                                     filesForm = filesForm,
                                     newCheck = newCheck.value,
@@ -92,12 +102,14 @@ class CheckSolutionHandler(
                                     checkId = newCheck.value.id,
                                     user = user,
                                     answers = answers,
-                                    checkDatabaseConfig = checkDatabaseConfig
+                                    checkDatabaseConfig = checkDatabaseConfig,
+                                    loggingConfig = loggingConfig
                                 )
                                 sendResponseWithChecksResult(
-                                    checksResult,
-                                    newCheck.value,
-                                    objectMapper
+                                    user = user,
+                                    checksResult = checksResult,
+                                    newCheck = newCheck.value,
+                                    objectMapper = objectMapper
                                 )
                             }
                         }
@@ -108,16 +120,31 @@ class CheckSolutionHandler(
     }
 
     private fun sendResponseWithChecksResult(
+        user: User,
         checksResult: Map<String, CheckResult>?,
         newCheck: Check,
         objectMapper: ObjectMapper,
     ): Response {
         return when {
-            checksResult == null -> setStatusError(newCheck, checkOperations)
+            checksResult == null -> {
+                ServerLogger.log(
+                    user = user,
+                    action = "Check task warnings",
+                    message = "Check ${newCheck.id} failed with an error",
+                    type = LoggerType.WARN
+                )
+                setStatusError(newCheck, checkOperations)
+            }
+
             else -> when (val updatedCheck = updateCheckResult(newCheck.id, checksResult, checkOperations)) {
                 is Failure -> objectMapper.sendBadRequestError(updatedCheck.reason.errorText)
 
-                is Success -> setStatusChecked(updatedCheck.value, checkOperations)
+                is Success -> setStatusChecked(
+                    user = user,
+                    check = updatedCheck.value,
+                    checkOperations = checkOperations,
+                    overall = loggingConfig.overall
+                )
             }
         }
     }

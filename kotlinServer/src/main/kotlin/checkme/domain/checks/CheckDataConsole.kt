@@ -4,6 +4,8 @@ import checkme.domain.forms.CheckResult
 import checkme.domain.models.CheckType
 import checkme.domain.models.Task
 import checkme.domain.models.User
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.solution.handlers.SOLUTIONS_DIR
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
@@ -36,7 +38,13 @@ data class CheckDataConsole(
                 "/${task.name}" +
                 "/$checkId"
             if (!File(directoryPath).exists()) {
-                return CheckResult(0, "Check failed, file for solution check not found")
+                ServerLogger.log(
+                    user = user,
+                    action = "Check task warnings",
+                    message = "Check failed, file for solution (check $checkId) not found",
+                    type = LoggerType.WARN
+                )
+                return CheckResult(0, "Check failed, file for solution check $checkId not found")
             }
             return when (
                 val output = runCommandInDirectory(
@@ -54,11 +62,14 @@ data class CheckDataConsole(
                         CheckResult(criterion.score, criterion.description)
                     }
                 }
+
                 is Failure -> {
-                    // todo заменить на журнал
-                    println(
-                        "При выполнении теста ${criterion.test} задания " +
-                            "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}"
+                    ServerLogger.log(
+                        user = user,
+                        action = "Check task warnings",
+                        message = "An error occurred while running check ${criterion.test} for task \" +\n" +
+                            "\"${task.name}-${task.id}: ${output.reason.trim()}",
+                        type = LoggerType.WARN
                     )
                     CheckResult(
                         0,

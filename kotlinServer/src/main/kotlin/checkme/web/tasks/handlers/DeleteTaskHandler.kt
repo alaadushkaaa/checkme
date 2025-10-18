@@ -3,9 +3,12 @@ package checkme.web.tasks.handlers
 import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
+import checkme.web.solution.supportingFiles.task
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
@@ -32,6 +35,7 @@ class DeleteTaskHandler(
                 ) {
                     is Failure -> objectMapper.sendBadRequestError(DeleteTaskError.TASK_NOT_EXISTS.errorText)
                     is Success -> tryDeleteTask(
+                        user = user,
                         taskToDelete = taskToDelete.value,
                         objectMapper = objectMapper,
                         tasksOperations = tasksOperations
@@ -44,6 +48,7 @@ class DeleteTaskHandler(
 }
 
 private fun tryDeleteTask(
+    user: User,
     taskToDelete: Task,
     objectMapper: ObjectMapper,
     tasksOperations: TaskOperationsHolder,
@@ -56,7 +61,15 @@ private fun tryDeleteTask(
     ) {
         is Failure -> objectMapper.sendBadRequestError(deleteFlag.reason.errorText)
 
-        is Success -> objectMapper.sendOKResponse(mapOf("status" to "complete"))
+        is Success -> {
+            ServerLogger.log(
+                user = user,
+                action = "Task deletion",
+                message = "User delete task ${taskToDelete.id}-${taskToDelete.name}",
+                type = LoggerType.INFO
+            )
+            objectMapper.sendOKResponse(mapOf("status" to "complete"))
+        }
     }
 }
 

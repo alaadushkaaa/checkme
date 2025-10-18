@@ -6,12 +6,14 @@ import checkme.db.utils.safeLet
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import checkme.domain.operations.dependencies.users.UsersDatabase
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.solution.forms.UserDataForUsersList
 import checkme.web.solution.forms.UserNameSurnameForAllResults
 import org.jooq.DSLContext
 import org.jooq.Record
 
-class UserOperations (
+class UserOperations(
     private val jooqContext: DSLContext,
 ) : UsersDatabase {
     override fun selectAllUsers(): List<User> =
@@ -78,6 +80,15 @@ class UserOperations (
             .returningResult()
             .fetchOne()
             ?.toUser()
+            ?.let {
+                ServerLogger.log(
+                    user = it,
+                    action = "Registration",
+                    message = "New user registered in system",
+                    type = LoggerType.INFO
+                )
+                it
+            }
 
     private fun selectFromUsers(jooqContext: DSLContext) =
         jooqContext
@@ -100,8 +111,7 @@ internal fun Record.toUser(): User? =
         this[USERS.SURNAME],
         this[USERS.PASSWORD],
         this[USERS.ROLE],
-    ) {
-            id, login, name, surname, password, role ->
+    ) { id, login, name, surname, password, role ->
         User(
             id,
             login,

@@ -4,10 +4,13 @@ import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
+import checkme.domain.models.User
 import checkme.domain.operations.tasks.CreateTaskError
 import checkme.domain.operations.tasks.TaskFetchingError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.tasks.TaskRemovingError
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.lenses.TaskLenses
 import checkme.web.tasks.forms.TasksListData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -142,9 +145,11 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
 // первоначально функция добавляет все файлы с проверками, относящиеся к заданию, в соответствующую директорию,
 // затем вызывается функция tryRenameFileAndUpdateCriterions для обновления имен файлов-проверок с особыми критериями
 fun Task.addTaskFilesToDirectory(
+    user: User,
     files: Map<String, List<MultipartFormFile>>,
     fields: Map<String, List<MultipartFormField>>,
     criterions: Map<String, Criterion>,
+    overall: Boolean,
 ): Map<String, Criterion> {
     val tasksDir = File(
         "..$TASKS_DIR" +
@@ -159,9 +164,11 @@ fun Task.addTaskFilesToDirectory(
         filePath.writeBytes(fileBytes)
     }
     return tryRenameFileAndUpdateCriterions(
+        user = user,
         criterions = criterions,
         fields = fields,
         tasksDir = tasksDir,
+        overall = overall
     )
 }
 
@@ -171,9 +178,11 @@ fun Task.addTaskFilesToDirectory(
 // Если имя было изменено, фиксируем это в критериях задания для последующего исполнения.
 @Suppress("NestedBlockDepth")
 fun tryRenameFileAndUpdateCriterions(
+    user: User,
     criterions: Map<String, Criterion>,
     fields: Map<String, List<MultipartFormField>>,
     tasksDir: File,
+    overall: Boolean,
 ): Map<String, Criterion> {
     val updatedCriterions = criterions.toMutableMap()
     val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
@@ -184,7 +193,14 @@ fun tryRenameFileAndUpdateCriterions(
             if (originalFile.exists()) {
                 val newFile = File(tasksDir, "$criteria.json")
                 originalFile.renameTo(newFile)
-                println("Renamed $originalFileName to ${newFile.name} for criteria $criteria")
+                if (overall) {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Working with task files",
+                        message = "Renamed $originalFileName to ${newFile.name} for criteria $criteria",
+                        type = LoggerType.INFO
+                    )
+                }
 
                 updatedCriterions.forEach { (key, value) ->
                     if (value.test == originalFileName) {
@@ -192,7 +208,12 @@ fun tryRenameFileAndUpdateCriterions(
                     }
                 }
             } else {
-                println("Warning: file $originalFileName not found for criteria $criteria")
+                ServerLogger.log(
+                    user = user,
+                    action = "Add task warnings",
+                    message = "Warning: file $originalFileName not found for criteria $criteria",
+                    type = LoggerType.WARN
+                )
             }
         }
     }

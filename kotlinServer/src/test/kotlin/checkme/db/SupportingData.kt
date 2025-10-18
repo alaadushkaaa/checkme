@@ -125,6 +125,7 @@ val validHost = "localhost"
 val validUserName = "root"
 val validPassword = "password"
 val validUrlDatabase = "jdbc:mariadb://"
+val validOverall = true
 
 val appConfig = AppConfig.fromEnvironment()
 val appConfiguredPasswordHasher = PasswordHasher(appConfig.authConfig)

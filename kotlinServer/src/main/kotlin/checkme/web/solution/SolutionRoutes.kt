@@ -21,7 +21,8 @@ fun solutionRouter(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens,
-            checkDatabaseConfig = config.checkDatabaseConfig
+            checkDatabaseConfig = config.checkDatabaseConfig,
+            loggingConfig = config.loggingConfig
         ),
         "/me" bind Method.GET to ListResultsHandler(
             checkOperations = operations.checkOperations,

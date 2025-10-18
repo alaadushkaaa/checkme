@@ -2,11 +2,14 @@ package checkme.web.solution.supportingFiles
 
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
+import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckFetchingError
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.users.ModifyCheckError
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.solution.handlers.CreationCheckError
@@ -40,8 +43,10 @@ internal fun setStatusError(
 }
 
 internal fun setStatusChecked(
+    user: User,
     check: Check,
     checkOperations: CheckOperationHolder,
+    overall: Boolean,
 ): Response {
     val objectMapper = jacksonObjectMapper()
     return when (
@@ -53,7 +58,17 @@ internal fun setStatusChecked(
     ) {
         is Failure -> objectMapper.sendBadRequestError(updatedCheckStatus.reason.errorText)
 
-        is Success -> objectMapper.sendOKResponse(mapOf("checkId" to check.id))
+        is Success -> {
+            if (overall) {
+                ServerLogger.log(
+                    user = user,
+                    action = "Check task actions",
+                    message = "Check ${check.id} was successful and result updated",
+                    type = LoggerType.INFO
+                )
+            }
+            objectMapper.sendOKResponse(mapOf("checkId" to check.id))
+        }
     }
 }
 

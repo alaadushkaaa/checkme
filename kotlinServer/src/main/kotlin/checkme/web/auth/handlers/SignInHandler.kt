@@ -6,6 +6,8 @@ import checkme.domain.models.User
 import checkme.domain.operations.users.UserFetchingError
 import checkme.domain.operations.users.UserOperationHolder
 import checkme.domain.tools.JWTTools
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.auth.forms.SignInRequest
 import checkme.web.auth.forms.UserAuthResponse
 import checkme.web.commonExtensions.sendStatusCreated
@@ -26,13 +28,26 @@ class SignInHandler(
         val objectMapper = jacksonObjectMapper()
         val signInRequest = objectMapper.readValue<SignInRequest>(request.bodyString())
         return when (val signInResult = checkLoginPass(signInRequest, userOperations, config)) {
-            is Failure -> objectMapper.sendStatusUnauthorized(signInResult.reason.errorTest)
+            is Failure -> {
+                ServerLogger.log(
+                    action = "Login",
+                    message = "User try to sign in",
+                    type = LoggerType.WARN
+                )
+                objectMapper.sendStatusUnauthorized(signInResult.reason.errorTest)
+            }
 
             is Success -> {
                 when (val tokenResult = jwtTools.createUserJwt(signInResult.value.id)) {
                     is Failure -> objectMapper.sendStatusUnauthorized(SignInError.TOKEN_CREATION_ERROR.errorTest)
 
                     is Success -> {
+                        ServerLogger.log(
+                            user = signInResult.value,
+                            action = "Login",
+                            message = "The user is logged in",
+                            type = LoggerType.INFO
+                        )
                         val signInUserResponse = UserAuthResponse(
                             signInRequest.username,
                             signInResult.value.name,
