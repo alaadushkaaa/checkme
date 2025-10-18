@@ -52,13 +52,13 @@ class SignInHandler(
         userOperations: UserOperationHolder,
         config: AuthConfig,
     ): Result<User, SignInError> {
-        return when (val result = userOperations.fetchUserByLogin(signInRequest.username)) {
+        return when (val result = userOperations.fetchUserByLogin(signInRequest.username.trim())) {
             is Failure -> when (result.reason) {
                 UserFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(SignInError.UNKNOWN_DATABASE_ERROR)
                 UserFetchingError.NO_SUCH_USER -> Failure(SignInError.INCORRECT_LOGIN_OR_PASS)
             }
 
-            is Success -> if (result.value.password == PasswordHasher(config).hash(signInRequest.password)) {
+            is Success -> if (result.value.password == PasswordHasher(config).hash(signInRequest.password.trim())) {
                 Success(result.value)
             } else {
                 Failure(SignInError.INCORRECT_LOGIN_OR_PASS)
