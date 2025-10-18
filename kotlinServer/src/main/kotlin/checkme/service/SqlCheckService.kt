@@ -222,9 +222,9 @@ class SqlCheckService(
         for (table in allTablesList) {
             val autoIncrementColumns = statement.executeQuery(
                 "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE TABLE_SCHEMA = DATABASE() " +
-                        "AND TABLE_NAME = '$table'" +
-                        "AND EXTRA LIKE '%auto_increment%';"
+                    "WHERE TABLE_SCHEMA = DATABASE() " +
+                    "AND TABLE_NAME = '$table'" +
+                    "AND EXTRA LIKE '%auto_increment%';"
             )
             while (autoIncrementColumns.next()) {
                 val autoIncrementColumn = autoIncrementColumns.getString("COLUMN_NAME")
