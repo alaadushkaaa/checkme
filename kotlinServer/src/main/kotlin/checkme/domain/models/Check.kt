@@ -222,6 +222,12 @@ data class Check(
             val checkFile = findCheckFile("../tasks/${task.name}", criterion.value.test)
             val jsonString = checkFile?.readText()
             if (jsonString == null) {
+                ServerLogger.log(
+                    user = user,
+                    action = "Check task warnings",
+                    message = "Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} not found",
+                    type = LoggerType.WARN
+                )
                 return null
             } else {
                 val jsonWithCheck = objectMapper.readTree(jsonString)
@@ -249,8 +255,8 @@ data class Check(
                         ServerLogger.log(
                             user = user,
                             action = "Add task warnings",
-                            message = "Unknown check type",
-                            type = LoggerType.WARNING
+                            message = "Unknown check type task ${task.id}-${task.name} criterion ${criterion.value.test}",
+                            type = LoggerType.WARN
                         )
                         null
                     }

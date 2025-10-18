@@ -38,7 +38,13 @@ data class CheckDataConsole(
                     "/${task.name}" +
                     "/$checkId"
             if (!File(directoryPath).exists()) {
-                return CheckResult(0, "Check failed, file for solution check not found")
+                ServerLogger.log(
+                    user = user,
+                    action = "Check task warnings",
+                    message = "Check failed, file for solution (check $checkId) not found",
+                    type = LoggerType.WARN
+                )
+                return CheckResult(0, "Check failed, file for solution check $checkId not found")
             }
             return when (
                 val output = runCommandInDirectory(
@@ -61,9 +67,9 @@ data class CheckDataConsole(
                     ServerLogger.log(
                         user = user,
                         action = "Check task warnings",
-                        message = "При выполнении теста ${criterion.test} задания " +
-                                "${task.name}-${task.id} произошла ошибка: ${output.reason.trim()}",
-                        type = LoggerType.WARNING
+                        message = "An error occurred while running check ${criterion.test} for task \" +\n" +
+                                "\"${task.name}-${task.id}: ${output.reason.trim()}",
+                        type = LoggerType.WARN
                     )
                     CheckResult(
                         0,

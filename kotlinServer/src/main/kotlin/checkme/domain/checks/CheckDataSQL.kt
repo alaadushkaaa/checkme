@@ -5,13 +5,13 @@ import checkme.domain.forms.CheckResult
 import checkme.domain.models.CheckType
 import checkme.domain.models.Task
 import checkme.domain.models.User
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.service.SqlCheckService
 import checkme.web.solution.handlers.SOLUTIONS_DIR
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import java.io.File
-
-const val DB_NAME = "SqlDb"
 
 @Suppress("LongParameterList")
 data class CheckDataSQL(
@@ -33,7 +33,13 @@ data class CheckDataSQL(
                 "/${task.name}" +
                 "/$checkId"
             if (!File(directoryPath).exists()) {
-                return CheckResult(0, "Check failed, file for solution check not found")
+                ServerLogger.log(
+                    user = user,
+                    action = "Check task warnings",
+                    message = "Check failed, file for solution (check $checkId) not found",
+                    type = LoggerType.WARN
+                )
+                return CheckResult(0, "Check failed, file for solution check $checkId not found")
             }
             val answerFile = File(directoryPath).listFiles()?.firstOrNull { it.extension == "sql" }
             return when {
@@ -78,10 +84,18 @@ data class CheckDataSQL(
                 taskName = task.name
             )
             return when {
-                sqlScript == null || !sqlScript.exists() -> CheckResult(
-                    0,
-                    "Check failed: Setup SQL script ${checkDataSQL.dbScript} not found."
-                )
+                sqlScript == null || !sqlScript.exists() -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Check task warnings",
+                        message = "Check failed: Setup SQL script ${checkDataSQL.dbScript} for task ${task.id}-${task.name} not found",
+                        type = LoggerType.WARN
+                    )
+                    CheckResult(
+                        0,
+                        "Check failed: Setup SQL script ${checkDataSQL.dbScript} not found."
+                    )
+                }
 
                 else -> {
                     getCheckResults(
@@ -109,18 +123,20 @@ data class CheckDataSQL(
             setupSql: File,
         ): CheckResult {
             return when (
-                val queriesResults = SqlCheckService(config).getSqlResults(
+                val queriesResults = SqlCheckService(config, user).getSqlResults(
                     firstScript = setupSql,
                     referenceQuery = checkDataSQL.referenceQuery,
                     studentQuery = studentQuery,
                     checkId = checkId,
-                    userId = user.id
                 )
             ) {
                 is Failure -> {
-                    println(
-                        "При выполнении теста ${criterion.test} задания " +
-                            "${task.name}-${task.id} произошла ошибка: ${queriesResults.reason.trim()}"
+                    ServerLogger.log(
+                        user = user,
+                        action = "Check task warnings",
+                        message = "An error occurred while running check ${criterion.test} for task \" +\n" +
+                                "\"${task.name}-${task.id}: ${queriesResults.reason.trim()}",
+                        type = LoggerType.WARN
                     )
                     CheckResult(0, "Something was wrong with check. Ask for help")
                 }

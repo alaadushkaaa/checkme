@@ -18,6 +18,7 @@ object ServerLogger {
         type: LoggerType,
     ) {
         val logObject = LogObject(
+            level = type.code,
             date = LocalDateTime.now().format(dateFormatter),
             userId = user.id,
             userName = user.name,
@@ -28,12 +29,13 @@ object ServerLogger {
 
         when (type.code) {
             LoggerType.INFO.code -> logger.info(objectMapper.writeValueAsString(logObject))
-            LoggerType.WARNING.code -> logger.warn(objectMapper.writeValueAsString(logObject))
+            LoggerType.WARN.code -> logger.warn(objectMapper.writeValueAsString(logObject))
         }
     }
 }
 
 data class LogObject(
+    val level: String,
     val date: String,
     val userId: Int,
     val userName: String,
@@ -43,6 +45,6 @@ data class LogObject(
 )
 
 enum class LoggerType (val code: String) {
-    INFO("file"),
-    WARNING("text"),
+    INFO("INFO"),
+    WARN("WARN"),
 }

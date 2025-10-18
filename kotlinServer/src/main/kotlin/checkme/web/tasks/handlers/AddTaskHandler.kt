@@ -1,5 +1,6 @@
 package checkme.web.tasks.handlers
 
+import checkme.config.LoggingConfig
 import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
@@ -22,6 +23,7 @@ const val TASKS_DIR = "/tasks"
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
+    private val loggingConfig: LoggingConfig
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
@@ -36,7 +38,15 @@ class AddTaskHandler(
                 when (
                     val validatedNewTask = form.validateForm(taskId)
                 ) {
-                    is Failure -> objectMapper.sendBadRequestError(validatedNewTask.reason.errorText)
+                    is Failure -> {
+                        ServerLogger.log(
+                            user = user,
+                            action = "New task addition warnings",
+                            message = "Something wrong with task data. Error: ${validatedNewTask.reason.errorText}",
+                            type = LoggerType.WARN
+                        )
+                        objectMapper.sendBadRequestError(validatedNewTask.reason.errorText)
+                    }
 
                     is Success -> {
                         tryAddTaskAndFiles(
@@ -44,6 +54,7 @@ class AddTaskHandler(
                             validatedNewTask = validatedNewTask.value,
                             taskOperations = tasksOperations,
                             objectMapper = objectMapper,
+                            overall = loggingConfig.overall,
                             form = form
                         )
                     }
@@ -58,13 +69,15 @@ private fun tryAddTaskAndFiles(
     validatedNewTask: Task,
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
+    overall: Boolean,
     form: MultipartForm,
 ): Response {
     val updatedCriterions = validatedNewTask.addTaskFilesToDirectory(
         user = user,
         files = form.files,
         fields = form.fields,
-        criterions = validatedNewTask.criterions
+        criterions = validatedNewTask.criterions,
+        overall = overall
     )
     return when (
         val newTask =
@@ -83,6 +96,14 @@ private fun tryAddTaskAndFiles(
             objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
         }
 
-        is Failure -> objectMapper.sendBadRequestError(newTask.reason.errorText)
+        is Failure -> {
+            ServerLogger.log(
+                user = user,
+                action = "New task addition warnings",
+                message = "Something wrong when try add task. Error: ${newTask.reason.errorText}",
+                type = LoggerType.WARN
+            )
+            objectMapper.sendBadRequestError(newTask.reason.errorText)
+        }
     }
 }

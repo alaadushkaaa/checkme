@@ -1,6 +1,7 @@
 package checkme.web.auth.handlers
 
 import checkme.config.AuthConfig
+import checkme.config.LoggingConfig
 import checkme.domain.accounts.PasswordHasher
 import checkme.domain.models.User
 import checkme.domain.operations.users.UserFetchingError
@@ -22,13 +23,22 @@ import org.http4k.core.*
 class SignInHandler(
     private val userOperations: UserOperationHolder,
     private val config: AuthConfig,
+    private val loggingConfig: LoggingConfig,
     private val jwtTools: JWTTools,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
         val signInRequest = objectMapper.readValue<SignInRequest>(request.bodyString())
         return when (val signInResult = checkLoginPass(signInRequest, userOperations, config)) {
-            is Failure -> objectMapper.sendStatusUnauthorized(signInResult.reason.errorTest)
+            is Failure -> {
+                ServerLogger.log(
+                    user = signInResult.value,
+                    action = "Login",
+                    message = "",
+                    type = LoggerType.WARN
+                )
+                objectMapper.sendStatusUnauthorized(signInResult.reason.errorTest)
+            }
 
             is Success -> {
                 when (val tokenResult = jwtTools.createUserJwt(signInResult.value.id)) {

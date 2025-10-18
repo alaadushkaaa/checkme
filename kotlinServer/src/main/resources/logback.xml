@@ -1,7 +1,5 @@
 ﻿<configuration>
-    <property name="LOG_DIR" value="/logs"/>
-
-    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <property name="LOG_DIR" value="logs"/>
 
     <appender name="DB_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_DIR}/app.log</file>

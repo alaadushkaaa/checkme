@@ -2,6 +2,9 @@ package checkme.service
 
 import checkme.config.CheckDatabaseConfig
 import checkme.domain.checks.MINUTE_TIMEOUT
+import checkme.domain.models.User
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -16,6 +19,8 @@ const val QUERY_TIMEOUT = 7
 
 class SqlCheckService(
     private val config: CheckDatabaseConfig,
+    private val user: User,
+    private val overall: Boolean
 ) {
     // todo журнал
     @Suppress("TooGenericExceptionCaught")
@@ -24,22 +29,21 @@ class SqlCheckService(
         referenceQuery: String,
         studentQuery: String,
         checkId: Int,
-        userId: Int,
     ): Result4k<Pair<String, String>, String> {
-        val studentUser = "student_${checkId}$userId"
-        val studentPass = "student_pass_${checkId}$userId"
-        val uniqueDatabaseName = "check${checkId}_user$userId"
+        val studentUser = "student_${checkId}${user.id}"
+        val studentPass = "student_pass_${checkId}${user.id}"
+        val uniqueDatabaseName = "check${checkId}_user${user.id}"
         try {
             createTempDatabase(uniqueDatabaseName)
             createDatabaseUser(
-                user = studentUser,
+                userName = studentUser,
                 pass = studentPass,
                 databaseName = uniqueDatabaseName
             )
             executeFirstScript(
                 script = firstScript,
                 databaseName = uniqueDatabaseName,
-                user = studentUser,
+                userName = studentUser,
                 pass = studentPass
             )
             val studentResult = getQueryResult(
@@ -56,28 +60,44 @@ class SqlCheckService(
             )
             return Success(Pair(studentResult, referenceResult))
         } catch (e: Exception) {
+            ServerLogger.log(
+                user = user,
+                action = "Check database warnings",
+                message = "Error: ${e.message} when try to check student answer",
+                type = LoggerType.WARN
+            )
             return Failure("Error: ${e.message}")
         } finally {
             dropDatabaseAndUserForCheck(
                 name = uniqueDatabaseName,
                 user = studentUser
             )
-            println("Database dropped")
+            if (overall) ServerLogger.log(
+                user = user,
+                action = "Check database actions",
+                message = "Database for check dropped",
+                type = LoggerType.INFO
+            )
         }
     }
 
     private fun createDatabaseUser(
-        user: String,
+        userName: String,
         pass: String,
         databaseName: String,
     ) {
         val connection = createRootConnection()
         connection.use {
             val statement = it.createStatement()
-            statement.execute("CREATE USER '$user'@'%' IDENTIFIED BY '$pass'")
-            statement.execute("GRANT ALL PRIVILEGES ON `$databaseName`.* TO '$user'@'%'")
+            statement.execute("CREATE USER '$userName'@'%' IDENTIFIED BY '$pass'")
+            statement.execute("GRANT ALL PRIVILEGES ON `$databaseName`.* TO '$userName'@'%'")
             statement.execute("FLUSH PRIVILEGES")
-            println("User $user created with access to database $databaseName")
+            if (overall) ServerLogger.log(
+                user = user,
+                action = "Check database actions",
+                message = "User $userName created with access to database $databaseName",
+                type = LoggerType.INFO
+            )
         }
     }
 
@@ -87,20 +107,25 @@ class SqlCheckService(
             it.createStatement().execute(
                 "CREATE DATABASE `$name`;"
             )
-            println("Database $name created")
+            if (overall) ServerLogger.log(
+                user = user,
+                action = "Check database actions",
+                message = "Database $name created",
+                type = LoggerType.INFO
+            )
         }
     }
 
     private fun executeFirstScript(
         script: File,
         databaseName: String,
-        user: String,
+        userName: String,
         pass: String,
     ) {
         val process = ProcessBuilder(
             "mysql",
             "-u",
-            user,
+            userName,
             "-p$pass",
             "-h",
             "localhost",
@@ -112,13 +137,23 @@ class SqlCheckService(
             "source ${script.absolutePath}"
         ).start()
         if (!process.waitFor(MINUTE_TIMEOUT.toLong(), TimeUnit.SECONDS)) {
-            println("Error: The time for the process has expired")
+            ServerLogger.log(
+                user = user,
+                action = "First script execute",
+                message = "Error: The time for the process has expired",
+                type = LoggerType.INFO
+            )
             process.destroy()
         }
         val exitCode = process.exitValue()
         if (exitCode != 0) {
             val error = process.errorStream.bufferedReader().readText()
-            println("MySQL execution failed: $exitCode: $error")
+            ServerLogger.log(
+                user = user,
+                action = "First script execute",
+                message = "MySQL execution failed: $exitCode: $error",
+                type = LoggerType.INFO
+            )
         }
     }
 
@@ -179,9 +214,9 @@ class SqlCheckService(
         for (table in allTablesList) {
             val autoIncrementColumns = statement.executeQuery(
                 "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
-                    "WHERE TABLE_SCHEMA = DATABASE() " +
-                    "AND TABLE_NAME = '$table'" +
-                    "AND EXTRA LIKE '%auto_increment%';"
+                        "WHERE TABLE_SCHEMA = DATABASE() " +
+                        "AND TABLE_NAME = '$table'" +
+                        "AND EXTRA LIKE '%auto_increment%';"
             )
             while (autoIncrementColumns.next()) {
                 val autoIncrementColumn = autoIncrementColumns.getString("COLUMN_NAME")
@@ -194,7 +229,12 @@ class SqlCheckService(
                     statement.executeUpdate(
                         "ALTER TABLE `$table` AUTO_INCREMENT = $newAutoIncrementValue;"
                     )
-                    println("В таблице $table AUTO_INCREMENT установлен в $newAutoIncrementValue")
+                    if (overall) ServerLogger.log(
+                        user = user,
+                        action = "Check database actions",
+                        message = "В таблице $table AUTO_INCREMENT установлен в $newAutoIncrementValue",
+                        type = LoggerType.INFO
+                    )
                 }
             }
         }

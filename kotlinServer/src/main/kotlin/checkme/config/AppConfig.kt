@@ -9,6 +9,7 @@ data class AppConfig(
     val testsConfig: TestsConfig,
     val webConfig: WebConfig,
     val authConfig: AuthConfig,
+    val loggingConfig: LoggingConfig
 ) {
     companion object {
         private const val CONFIG = "app.properties"
@@ -23,7 +24,8 @@ data class AppConfig(
                 CheckDatabaseConfig.fromEnvironment(environment),
                 TestsConfig.fromEnvironment(environment),
                 WebConfig.fromEnvironment(environment),
-                AuthConfig.fromEnvironment(environment)
+                AuthConfig.fromEnvironment(environment),
+                LoggingConfig.fromEnvironment(environment)
             )
 
         private fun fromProperties() =
