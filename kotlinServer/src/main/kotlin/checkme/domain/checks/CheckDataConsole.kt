@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit
 // Результат команды сравнивается с ожидаемым expected CheckDataConsole, после чего присваиваются баллы.
 // В случае некорректного теста студенту по данному критерию присваивается 0 баллов, а в сообщение записывается ошибка
 
+const val MINUTE_TIMEOUT = 60
+
 data class CheckDataConsole(
     val type: CheckType,
     val command: String,
@@ -86,5 +88,3 @@ data class CheckDataConsole(
         }
     }
 }
-
-const val MINUTE_TIMEOUT = 60

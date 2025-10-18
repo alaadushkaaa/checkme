@@ -1,14 +1,15 @@
 package checkme.service
 
 import checkme.config.CheckDatabaseConfig
+import checkme.domain.checks.MINUTE_TIMEOUT
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
-import net.sf.jsqlparser.parser.CCJSqlParserUtil
-import net.sf.jsqlparser.statement.Statements
+import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.Statement
+import java.util.concurrent.TimeUnit
 
 const val QUERY_TIMEOUT = 7
 // Сервис для работы с временными базами данных, которые создаются для каждой проверки задания с SQL-запросами
@@ -19,7 +20,7 @@ class SqlCheckService(
     // todo журнал
     @Suppress("TooGenericExceptionCaught")
     fun getSqlResults(
-        firstScript: String,
+        firstScript: File,
         referenceQuery: String,
         studentQuery: String,
         checkId: Int,
@@ -91,21 +92,33 @@ class SqlCheckService(
     }
 
     private fun executeFirstScript(
-        script: String,
+        script: File,
         databaseName: String,
         user: String,
         pass: String,
     ) {
-        val statements: Statements = CCJSqlParserUtil.parseStatements(script)
-        val connection = createDatabaseConnection(
-            name = databaseName,
-            user = user,
-            pass = pass
-        )
-        connection.use {
-            statements.forEach { statement ->
-                it.createStatement().execute(statement.toString())
-            }
+        val process = ProcessBuilder(
+            "mysql",
+            "-u",
+            user,
+            "-p$pass",
+            "-h",
+            "localhost",
+            "-P",
+            "3306",
+            "-D",
+            databaseName,
+            "-e",
+            "source ${script.absolutePath}"
+        ).start()
+        if (!process.waitFor(MINUTE_TIMEOUT.toLong(), TimeUnit.SECONDS)) {
+            println("Error: The time for the process has expired")
+            process.destroy()
+        }
+        val exitCode = process.exitValue()
+        if (exitCode != 0) {
+            val error = process.errorStream.bufferedReader().readText()
+            println("MySQL execution failed: $exitCode: $error")
         }
     }
 
