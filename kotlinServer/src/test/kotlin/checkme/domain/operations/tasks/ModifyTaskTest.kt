@@ -1,14 +1,11 @@
 package checkme.domain.operations.tasks
 
 import checkme.db.validTasks
-import checkme.domain.checks.Criterion
-import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import dev.forkhandles.result4k.kotest.shouldBeFailure
 import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.shouldBe
 
 class ModifyTaskTest : FunSpec({
     isolationMode = IsolationMode.InstancePerTest
@@ -31,7 +28,8 @@ class ModifyTaskTest : FunSpec({
     test("Task cant be deleted if task doesn't exists") {
         deleteTaskIdNotExist(
             validTasks.first()
-                .copy(id = validTasks.maxOf { it.id } + 1)).shouldBeFailure(TaskRemovingError.TASK_NOT_EXISTS)
+                .copy(id = validTasks.maxOf { it.id } + 1)
+        ).shouldBeFailure(TaskRemovingError.TASK_NOT_EXISTS)
     }
 
     test("Task cant be deleted if operations remove task returns null") {

@@ -9,7 +9,6 @@ import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 
-
 class CreateTaskTest : FunSpec({
     val tasks = mutableListOf<Task>()
     isolationMode = IsolationMode.InstancePerTest
@@ -18,12 +17,12 @@ class CreateTaskTest : FunSpec({
         name: String,
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
-        description: String
+        description: String,
     ) -> Task? = {
             name,
             criterions,
             answerFormat,
-            description
+            description,
         ->
         val task =
             Task(
@@ -41,7 +40,7 @@ class CreateTaskTest : FunSpec({
                 criterions = criterions,
                 answerFormat = answerFormat,
                 description = description
-                )
+            )
         )
         task
     }
@@ -49,8 +48,8 @@ class CreateTaskTest : FunSpec({
         name: String,
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
-        description: String
-    ) -> Task? = { _, _, _, _-> null }
+        description: String,
+    ) -> Task? = { _, _, _, _ -> null }
 
     val createTask = CreateTask(insertTaskMock)
 
@@ -70,7 +69,6 @@ class CreateTaskTest : FunSpec({
         }
     }
 
-
     test("Unknown db error test for insert task in bd") {
         val validTask = validTasks.first()
         createNullTask(
@@ -80,6 +78,4 @@ class CreateTaskTest : FunSpec({
             validTask.description
         ).shouldBeFailure(CreateTaskError.UNKNOWN_DATABASE_ERROR)
     }
-
-
 })

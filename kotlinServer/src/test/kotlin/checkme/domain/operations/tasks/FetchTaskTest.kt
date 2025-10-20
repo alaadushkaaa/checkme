@@ -13,15 +13,17 @@ import io.kotest.matchers.shouldBe
 class FetchTaskTest : FunSpec({
     val tasks = validTasks
     val task = validTasks.first()
-    val tasksListData : List<TasksListData> = validTasks.map {TasksListData(it.id.toString(), it.name)}
+    val tasksListData: List<TasksListData> = validTasks.map { TasksListData(it.id.toString(), it.name) }
     val taskName = TaskNameForAllResults(task.name)
 
     val fetchAllTasksMock: () -> List<Task> = { tasks }
     val fetchOneTaskMock: () -> List<Task> = { listOf(task) }
-    val fetchTaskByIdMock: (Int) -> Task? = {id -> tasks.firstOrNull { it.id == id }}
-    val fetchAllTasksIdNameMock: () -> List<TasksListData> = {tasksListData}
-    val fetchTaskNameMock: (Int) -> TaskNameForAllResults? = { id -> tasks.firstOrNull { it.id == id }
-        ?.let { TaskNameForAllResults(it.name ) } }
+    val fetchTaskByIdMock: (Int) -> Task? = { id -> tasks.firstOrNull { it.id == id } }
+    val fetchAllTasksIdNameMock: () -> List<TasksListData> = { tasksListData }
+    val fetchTaskNameMock: (Int) -> TaskNameForAllResults? = { id ->
+        tasks.firstOrNull { it.id == id }
+            ?.let { TaskNameForAllResults(it.name ) }
+    }
 
     val fetchAllTasks = FetchAllTasks(fetchAllTasksMock)
     val fetchOneTaskAsList = FetchAllTasks(fetchOneTaskMock)

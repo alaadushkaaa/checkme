@@ -1,53 +1,80 @@
 package checkme.domain.operations.checks
-import checkme.db.validChecks
+
+import checkme.db.validChecksMany
+import checkme.domain.models.Check
 import dev.forkhandles.result4k.kotest.shouldBeFailure
 import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 
-class FetchTaskTest : FunSpec({
-    val checks = validChecks
-    val check = validChecks.first()
+const val PAGE = 1
+const val PAGECOUNT = 10
 
-    val fetchAllTasksMock: () -> List<Task> = { tasks }
-    val fetchOneTaskMock: () -> List<Task> = { listOf(task) }
-    val fetchTaskByIdMock: (Int) -> Task? = {id -> tasks.firstOrNull { it.id == id }}
-    val fetchAllTasksIdNameMock: () -> List<TasksListData> = {tasksListData}
-    val fetchTaskNameMock: (Int) -> TaskNameForAllResults? = { id -> tasks.firstOrNull { it.id == id }
-        ?.let { TaskNameForAllResults(it.name ) } }
+class FetchCheckTest : FunSpec({
+    val checks = validChecksMany
+    val check = validChecksMany[1]
 
-    val fetchAllTasks = FetchAllTasks(fetchAllTasksMock)
-    val fetchOneTaskAsList = FetchAllTasks(fetchOneTaskMock)
-    val fetchTaskById = FetchTaskById(fetchTaskByIdMock)
-    val fetchAllTasksIdAndName = FetchAllTasksIdAndName(fetchAllTasksIdNameMock)
-    val fetchTaskName = FetchTaskName(fetchTaskNameMock)
+    val fetchAllChecksMock: () -> List<Check> = { checks }
+    val fetchCheckByIdMock: (Int) -> Check? = { id -> checks.firstOrNull { it.id == id } }
+    val fetchCheckByIdNullMock: (Int) -> Check? = { null }
+    val fetchChecksByUserIdMock: (Int) -> List<Check>? = { id -> checks.filter { it.userId == id } }
+    val fetchChecksByUserIdNullMock: (Int) -> List<Check>? = { null }
+    val fetchChecksByTaskIdMock: (Int) -> List<Check>? = { id -> checks.filter { it.taskId == id } }
+    val fetchChecksByTaskIdNullMock: (Int) -> List<Check>? = { null }
+    val fetchAllChecksPaginationMock: (Int) -> List<Check>? =
+        { page ->
+            if (checks.size > 9 + (page - 1) * 10) {
+                checks.slice(0 + (page - 1) * 10..9 + (page - 1) * 10)
+            } else {
+                null
+            }
+        }
 
-    test("Fetch all tasks should return list of tasks and list have size more than one") {
-        fetchAllTasks().shouldBeSuccess().shouldHaveSize(tasks.size)
+    val fetchAllChecks = FetchAllChecks(fetchAllChecksMock)
+    val fetchCheckById = FetchCheckById(fetchCheckByIdMock)
+    val fetchChecksByUserId = FetchChecksByUserId(fetchChecksByUserIdMock)
+    val fetchChecksByUserIdNull = FetchChecksByUserId(fetchChecksByUserIdNullMock)
+    val fetchChecksByTaskId = FetchChecksByTaskId(fetchChecksByTaskIdMock)
+    val fetchChecksByTaskIdNull = FetchChecksByTaskId(fetchChecksByTaskIdNullMock)
+    val fetchAllChecksPagination = FetchAllChecksPagination(fetchAllChecksPaginationMock)
+
+    test("Fetch all checks should return list of checks and list have size more than one") {
+        fetchAllChecks().shouldBeSuccess().shouldHaveSize(checks.size)
     }
 
-    test("Fetch all tasks but only one task exists should return list of tasks and list have size one") {
-        fetchOneTaskAsList().shouldBeSuccess().shouldHaveSize(1)
+    test("Fetch check by valid check id") {
+        fetchCheckById(check.id).shouldBeSuccess() shouldBe check
     }
 
-    test("Fetch Task by valid task id") {
-        fetchTaskById(task.id).shouldBeSuccess() shouldBe task
+    test("Fetch check by id should return an error if id is not valid") {
+        fetchCheckById(checks.maxOf { it.id } + 1).shouldBeFailure(CheckFetchingError.NO_SUCH_CHECK)
     }
 
-    test("Fetch Task by id should return an error if id is not valid") {
-        fetchTaskById(tasks.maxOf { it.id } + 1).shouldBeFailure(TaskFetchingError.NO_SUCH_TASK)
+    test("Fetch check by user id should return checks if user id is valid") {
+        fetchChecksByUserId(check.userId).shouldBeSuccess()
+            .shouldHaveSize(checks.filter { it.userId == check.userId }.size) shouldBe checks.filter { it.userId == check.userId }
     }
 
-    test("Fetch all tasks ids and names should return list with ids and names with size of tasks") {
-        fetchAllTasksIdAndName().shouldBeSuccess().shouldHaveSize(validTasks.size) shouldBe tasksListData
+    test("Fetch check by user id should return an error if user id is not valid") {
+        fetchChecksByUserIdNull(checks.maxOf { it.userId } + 1).shouldBeFailure(CheckFetchingError.NO_SUCH_CHECK)
     }
 
-    test("Fetch task name by task id should return task name if id is valid") {
-        fetchTaskName(task.id).shouldBeSuccess() shouldBe taskName
+    test("Fetch check by task id should return checks if task id is valid") {
+        fetchChecksByTaskId(check.taskId).shouldBeSuccess()
+            .shouldHaveSize(checks.filter { it.taskId == check.taskId }.size)
     }
 
-    test("Fetch task name by task id should return an error if id is not valid") {
-        fetchTaskName(tasks.maxOf { it.id } + 1).shouldBeFailure(TaskFetchingError.NO_SUCH_TASK)
+    test("Fetch check by task id should return return an error if check id is not valid") {
+        fetchChecksByTaskIdNull(checks.maxOf { it.taskId } + 1).shouldBeFailure(CheckFetchingError.NO_SUCH_CHECK)
+    }
+
+    test("Fetch all check pagination should return checks if page is is valid") {
+        fetchAllChecksPagination(PAGE).shouldBeSuccess()
+            .shouldHaveSize(PAGE * PAGECOUNT)
+    }
+
+    test("Fetch all check pagination should return an error if page number is is not valid") {
+        fetchAllChecksPagination(checks.size / 10 + 1).shouldBeFailure(CheckFetchingError.NO_SUCH_CHECK)
     }
 })
