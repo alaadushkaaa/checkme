@@ -17,7 +17,6 @@ class FetchCheckTest : FunSpec({
 
     val fetchAllChecksMock: () -> List<Check> = { checks }
     val fetchCheckByIdMock: (Int) -> Check? = { id -> checks.firstOrNull { it.id == id } }
-    val fetchCheckByIdNullMock: (Int) -> Check? = { null }
     val fetchChecksByUserIdMock: (Int) -> List<Check>? = { id -> checks.filter { it.userId == id } }
     val fetchChecksByUserIdNullMock: (Int) -> List<Check>? = { null }
     val fetchChecksByTaskIdMock: (Int) -> List<Check>? = { id -> checks.filter { it.taskId == id } }
@@ -53,7 +52,11 @@ class FetchCheckTest : FunSpec({
 
     test("Fetch check by user id should return checks if user id is valid") {
         fetchChecksByUserId(check.userId).shouldBeSuccess()
-            .shouldHaveSize(checks.filter { it.userId == check.userId }.size) shouldBe checks.filter { it.userId == check.userId }
+            .shouldHaveSize(
+                checks.filter {
+                    it.userId == check.userId
+                }.size
+            ) shouldBe checks.filter { it.userId == check.userId }
     }
 
     test("Fetch check by user id should return an error if user id is not valid") {
