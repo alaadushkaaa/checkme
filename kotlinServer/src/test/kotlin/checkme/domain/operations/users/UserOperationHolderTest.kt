@@ -6,7 +6,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.kotlin.mock
 
-class UserOperationsHolderTest : FunSpec({
+class UserOperationHolderTest : FunSpec({
     val usersOperations: UsersDatabase = mock()
     val userOperationsHolder = UserOperationHolder(usersOperations, config)
 
