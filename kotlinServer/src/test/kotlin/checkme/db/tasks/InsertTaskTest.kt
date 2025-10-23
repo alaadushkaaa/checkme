@@ -16,7 +16,8 @@ class InsertTaskTest : TestcontainerSpec ({ context ->
                 taskForInsert.name,
                 taskForInsert.criterions,
                 taskForInsert.answerFormat,
-                taskForInsert.description
+                taskForInsert.description,
+                taskForInsert.isActual
             ).shouldNotBeNull()
 
         insertedTask.name.shouldBe(taskForInsert.name)
@@ -33,7 +34,8 @@ class InsertTaskTest : TestcontainerSpec ({ context ->
                     taskForInsert.name,
                     taskForInsert.criterions,
                     mapOf(type.code to type),
-                    taskForInsert.description
+                    taskForInsert.description,
+                    taskForInsert.isActual
                 ).shouldNotBeNull()
 
             insertedTask.name.shouldBe(taskForInsert.name)

@@ -20,6 +20,7 @@ interface TasksDatabase {
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
+        isActual: Boolean,
     ): Task?
 
     fun deleteTask(taskId: Int): Int
