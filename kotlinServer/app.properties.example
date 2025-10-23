@@ -12,3 +12,4 @@ check_db.user = root
 check_db.password = password
 check_db.url = jdbc:mariadb://
 web.hotReloadTemplates = true
+logging.overall = true

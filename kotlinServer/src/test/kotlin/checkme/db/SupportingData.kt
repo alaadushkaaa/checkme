@@ -4,6 +4,7 @@ package checkme.db
 
 import checkme.config.AppConfig
 import checkme.domain.accounts.PasswordHasher
+import checkme.domain.accounts.Role
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.AnswerType
@@ -28,7 +29,13 @@ val validTaskId = 1
 
 val validUserId = 1
 
+val validRole = Role.STUDENT
+
+val validAdminRole = Role.ADMIN
+
 val validDate = LocalDateTime.parse("2025-05-06T11:48:54.613093")
+
+val config = AppConfig.fromEnvironment()
 
 val validResult = mapOf(
     "check1" to CheckResult(10, "Проверка пройдена"),
@@ -60,6 +67,10 @@ val validChecks: List<Check> = listOf(
 )
 
 val validChecksMany: List<Check> = listOf(
+    Check(validCheckId, validTaskId, validUserId, validDate, validResult, validStatusCorrect),
+    Check(validCheckId + 1, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
+    Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, null, validStatusError),
+    Check(validCheckId + 3, validTaskId + 1, validUserId, validDate, null, validStatusProcess),
     Check(validCheckId + 4, validTaskId, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 5, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 6, validTaskId, validUserId + 1, validDate, null, validStatusError),

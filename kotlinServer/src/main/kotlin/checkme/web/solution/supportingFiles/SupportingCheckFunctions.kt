@@ -6,8 +6,8 @@ import checkme.domain.models.User
 import checkme.domain.operations.checks.CheckFetchingError
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.checks.CreateCheckError
+import checkme.domain.operations.checks.ModifyCheckError
 import checkme.domain.operations.tasks.TaskOperationsHolder
-import checkme.domain.operations.users.ModifyCheckError
 import checkme.logging.LoggerType
 import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
