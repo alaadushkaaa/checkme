@@ -48,6 +48,12 @@ open class TasksRecord() : UpdatableRecordImpl<TasksRecord>(Tasks.TASKS) {
         set(value): Unit = set(4, value)
         get(): String? = get(4) as String?
 
+    @Suppress("INAPPLICABLE_JVM_NAME")
+    @set:JvmName("setIsActual")
+    open var isActual: Boolean?
+        set(value): Unit = set(5, value)
+        get(): Boolean? = get(5) as Boolean?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -57,12 +63,13 @@ open class TasksRecord() : UpdatableRecordImpl<TasksRecord>(Tasks.TASKS) {
     /**
      * Create a detached, initialised TasksRecord
      */
-    constructor(id: Int? = null, name: String? = null, criterions: JSONB? = null, answerformat: JSONB? = null, description: String? = null): this() {
+    constructor(id: Int? = null, name: String? = null, criterions: JSONB? = null, answerformat: JSONB? = null, description: String? = null, isActual: Boolean? = null): this() {
         this.id = id
         this.name = name
         this.criterions = criterions
         this.answerformat = answerformat
         this.description = description
+        this.isActual = isActual
         resetChangedOnNotNull()
     }
 }
