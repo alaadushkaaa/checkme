@@ -45,18 +45,21 @@ class TaskOperationsHolder (
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
+        isActual: Boolean,
     ) -> Result<Task, CreateTaskError> =
         CreateTask {
                 name: String,
                 criterions: Map<String, Criterion>,
                 answerFormat: Map<String, AnswerType>,
                 description: String,
+                isActual: Boolean,
             ->
             tasksDatabase.insertTask(
                 name,
                 criterions,
                 answerFormat,
-                description
+                description,
+                isActual
             )
         }
 }

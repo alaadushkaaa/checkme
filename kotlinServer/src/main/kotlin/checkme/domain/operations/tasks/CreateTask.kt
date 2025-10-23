@@ -13,25 +13,29 @@ class CreateTask(
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
+        isActual: Boolean,
     ) -> Task?,
 ) : (
         String,
         Map<String, Criterion>,
         Map<String, AnswerType>,
         String,
+        Boolean,
     ) -> Result4k<Task, CreateTaskError> {
     override fun invoke(
         name: String,
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
+        isActual: Boolean,
     ): Result4k<Task, CreateTaskError> =
         when (
             val newTask = insertTask(
                 name,
                 criterions,
                 answerFormat,
-                description
+                description,
+                isActual
             )
         ) {
             is Task -> Success(newTask)

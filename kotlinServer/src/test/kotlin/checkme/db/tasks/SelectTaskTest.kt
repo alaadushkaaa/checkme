@@ -17,7 +17,8 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
                 task.name,
                 task.criterions,
                 task.answerFormat,
-                task.description
+                task.description,
+                task.isActual
             ).shouldNotBeNull()
         }
     }
@@ -25,7 +26,7 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
     test("Select all tasks from db") {
         taskOperations
             .selectAllTask()
-            .shouldBe(validTasks)
+            .shouldBe(validTasks.filter { it.isActual == true })
     }
 
     test("Select task by valid id") {
@@ -63,6 +64,6 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
         taskOperations
             .selectAllTasksIdAndName()
             .shouldNotBeNull()
-            .shouldBe(validTasks.map { TasksListData(it.id.toString(), it.name) })
+            .shouldBe(validTasks.filter { it.isActual }.map { TasksListData(it.id.toString(), it.name) })
     }
 })

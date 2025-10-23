@@ -8,6 +8,7 @@ data class Task(
     val criterions: Map<String, Criterion>,
     val answerFormat: Map<String, AnswerType>,
     val description: String,
+    val isActual: Boolean,
 )
 
 enum class AnswerType(val code: String) {

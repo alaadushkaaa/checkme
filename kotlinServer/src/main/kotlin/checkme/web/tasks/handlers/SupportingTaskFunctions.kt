@@ -33,6 +33,7 @@ internal fun addTask(
             task.criterions,
             task.answerFormat,
             task.description,
+            task.isActual
         )
     ) {
         is Success -> Success(newTask.value)
@@ -137,7 +138,8 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
             name = taskName,
             criterions = criterions,
             answerFormat = answerFormatBd,
-            description = description
+            description = description,
+            isActual = true
         )
     )
 }

@@ -14,7 +14,8 @@ class RemoveTaskTest : TestcontainerSpec ({ context ->
                 task.name,
                 task.criterions,
                 task.answerFormat,
-                task.description
+                task.description,
+                task.isActual
             ).shouldNotBeNull()
         }
     }
@@ -27,7 +28,7 @@ class RemoveTaskTest : TestcontainerSpec ({ context ->
     test("Only one task can be deleted") {
         val taskForRemove = validTasks.first()
         taskOperations.deleteTask(taskForRemove.id).shouldBe(1)
-        taskOperations.selectAllTask().shouldBe(validTasks.subList(1, validTasks.size))
+        taskOperations.selectAllTask().shouldBe(validTasks.subList(2, validTasks.size))
         taskOperations.deleteTask(validTasks[1].id).shouldBe(1)
         taskOperations.selectAllTask().shouldBe(validTasks.subList(2, validTasks.size))
     }

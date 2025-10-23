@@ -18,11 +18,13 @@ class CreateTaskTest : FunSpec({
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
+        isActual: Boolean,
     ) -> Task? = {
             name,
             criterions,
             answerFormat,
             description,
+            isActual,
         ->
         val task =
             Task(
@@ -30,7 +32,8 @@ class CreateTaskTest : FunSpec({
                 name = name,
                 criterions = criterions,
                 answerFormat = answerFormat,
-                description = description
+                description = description,
+                isActual = isActual
             )
 
         tasks.add(
@@ -39,7 +42,8 @@ class CreateTaskTest : FunSpec({
                 name = name,
                 criterions = criterions,
                 answerFormat = answerFormat,
-                description = description
+                description = description,
+                isActual = true
             )
         )
         task
@@ -49,7 +53,8 @@ class CreateTaskTest : FunSpec({
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
-    ) -> Task? = { _, _, _, _ -> null }
+        isActual: Boolean,
+    ) -> Task? = { _, _, _, _, _ -> null }
 
     val createTask = CreateTask(insertTaskMock)
 
@@ -64,7 +69,8 @@ class CreateTaskTest : FunSpec({
                 validTask.name,
                 validTask.criterions,
                 mapOf(answerType.code to answerType),
-                validTask.description
+                validTask.description,
+                validTask.isActual
             ).shouldBeSuccess()
         }
     }
@@ -75,7 +81,8 @@ class CreateTaskTest : FunSpec({
             validTask.name,
             validTask.criterions,
             validTask.answerFormat,
-            validTask.description
+            validTask.description,
+            validTask.isActual
         ).shouldBeFailure(CreateTaskError.UNKNOWN_DATABASE_ERROR)
     }
 })

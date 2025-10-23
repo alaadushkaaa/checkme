@@ -13,16 +13,18 @@ import io.kotest.matchers.shouldBe
 class FetchTaskTest : FunSpec({
     val tasks = validTasks
     val task = validTasks.first()
-    val tasksListData: List<TasksListData> = validTasks.map { TasksListData(it.id.toString(), it.name) }
+    val tasksListData: List<TasksListData> = validTasks
+        .filter { it.isActual }
+        .map { TasksListData(it.id.toString(), it.name) }
     val taskName = TaskNameForAllResults(task.name)
 
-    val fetchAllTasksMock: () -> List<Task> = { tasks }
+    val fetchAllTasksMock: () -> List<Task> = { tasks.filter { it.isActual } }
     val fetchOneTaskMock: () -> List<Task> = { listOf(task) }
     val fetchTaskByIdMock: (Int) -> Task? = { id -> tasks.firstOrNull { it.id == id } }
     val fetchAllTasksIdNameMock: () -> List<TasksListData> = { tasksListData }
     val fetchTaskNameMock: (Int) -> TaskNameForAllResults? = { id ->
         tasks.firstOrNull { it.id == id }
-            ?.let { TaskNameForAllResults(it.name ) }
+            ?.let { TaskNameForAllResults(it.name) }
     }
 
     val fetchAllTasks = FetchAllTasks(fetchAllTasksMock)
@@ -32,7 +34,7 @@ class FetchTaskTest : FunSpec({
     val fetchTaskName = FetchTaskName(fetchTaskNameMock)
 
     test("Fetch all tasks should return list of tasks and list have size more than one") {
-        fetchAllTasks().shouldBeSuccess().shouldHaveSize(tasks.size)
+        fetchAllTasks().shouldBeSuccess().shouldHaveSize(tasks.filter { it.isActual }.size)
     }
 
     test("Fetch all tasks but only one task exists should return list of tasks and list have size one") {
@@ -48,7 +50,8 @@ class FetchTaskTest : FunSpec({
     }
 
     test("Fetch all tasks ids and names should return list with ids and names with size of tasks") {
-        fetchAllTasksIdAndName().shouldBeSuccess().shouldHaveSize(validTasks.size) shouldBe tasksListData
+        fetchAllTasksIdAndName().shouldBeSuccess()
+            .shouldHaveSize(validTasks.filter { it.isActual }.size) shouldBe tasksListData
     }
 
     test("Fetch task name by task id should return task name if id is valid") {
