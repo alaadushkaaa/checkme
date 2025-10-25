@@ -4,6 +4,7 @@ import checkme.config.AppConfig
 import checkme.domain.operations.OperationHolder
 import checkme.web.context.ContextTools
 import checkme.web.tasks.handlers.AddTaskHandler
+import checkme.web.tasks.handlers.ChangeTaskActualityHandler
 import checkme.web.tasks.handlers.DeleteTaskHandler
 import checkme.web.tasks.handlers.TaskHandler
 import checkme.web.tasks.handlers.TasksListHandler
@@ -25,6 +26,10 @@ fun taskRouter(
             tasksOperations = operations.taskOperations,
             userLens = contextTools.userLens
         ),
+        "$CHANGE_ACTUALITY/{id}" bind Method.POST to ChangeTaskActualityHandler(
+            tasksOperations = operations.taskOperations,
+            userLens = contextTools.userLens
+        ),
         "/all" bind Method.GET to TasksListHandler(
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens
@@ -35,3 +40,4 @@ fun taskRouter(
 const val TASK_SEGMENT = "/task"
 const val NEW_TASK = "/new"
 const val DELETE_TASK = "/delete"
+const val CHANGE_ACTUALITY = "/change-actuality"

@@ -15,6 +15,8 @@ interface TasksDatabase {
 
     fun selectAllTasksIdAndName(): List<TasksListData>
 
+    fun updateTaskActuality(task: Task): Task?
+
     fun insertTask(
         name: String,
         criterions: Map<String, Criterion>,

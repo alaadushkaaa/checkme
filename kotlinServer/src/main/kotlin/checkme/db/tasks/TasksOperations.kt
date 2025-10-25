@@ -89,6 +89,15 @@ class TasksOperations(
         return deleteTaskFlag
     }
 
+    override fun updateTaskActuality(task: Task): Task? {
+        return jooqContext.update(TASKS)
+            .set(TASKS.IS_ACTUAL, task.isActual)
+            .where(TASKS.ID.eq(task.id))
+            .returningResult()
+            .fetchOne()
+            ?.toTask()
+    }
+
     private fun deleteSolutions(taskId: Int): Int =
         jooqContext.delete(CHECKS)
             .where(CHECKS.TASKID.eq(taskId))

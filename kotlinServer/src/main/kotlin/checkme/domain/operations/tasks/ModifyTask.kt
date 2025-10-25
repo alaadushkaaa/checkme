@@ -31,8 +31,30 @@ class RemoveTask(
         }
 }
 
+class ModifyTaskActuality (
+    private val updateTaskActuality: (
+        task: Task,
+    ) -> Task?,
+) : (Task) -> Result<Task, ModifyTaskError> {
+    override operator fun invoke(task: Task): Result<Task, ModifyTaskError> =
+        when (
+            val editedTask = updateTaskActuality(
+                task
+            )
+        ) {
+            is Task -> Success(editedTask)
+            else -> {
+                Failure(ModifyTaskError.UNKNOWN_DATABASE_ERROR)
+            }
+        }
+}
+
 enum class TaskRemovingError {
     UNKNOWN_DATABASE_ERROR,
     UNKNOWN_DELETE_ERROR,
     TASK_NOT_EXISTS,
+}
+
+enum class ModifyTaskError {
+    UNKNOWN_DATABASE_ERROR,
 }
