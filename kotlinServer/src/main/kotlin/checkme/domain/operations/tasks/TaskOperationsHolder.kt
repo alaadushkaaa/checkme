@@ -40,6 +40,15 @@ class TaskOperationsHolder (
             removeTask = tasksDatabase::deleteTask
         )
 
+    val updateTaskActuality: (
+        task: Task,
+    ) -> Result<Task, ModifyTaskError> =
+        ModifyTaskActuality {
+                task,
+            ->
+            tasksDatabase.updateTaskActuality(task)
+        }
+
     val createTask: (
         name: String,
         criterions: Map<String, Criterion>,
