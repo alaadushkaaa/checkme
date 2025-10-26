@@ -2,6 +2,7 @@ package ru.yarsu
 
 import io.kvision.Application
 import io.kvision.Hot
+import io.kvision.TabulatorCssBootstrapModule
 import io.kvision.panel.root
 import io.kvision.routing.Routing
 import io.kvision.startApplication
@@ -44,6 +45,9 @@ external val cssResult: dynamic
 @JsModule("./css/Loading.css")
 external val cssLoading: dynamic
 
+@JsModule("./css/Table.css")
+external val cssTable: dynamic
+
 class CheckMe : Application() {
     init {
         useModule(cssAuthorization)
@@ -57,9 +61,10 @@ class CheckMe : Application() {
         useModule(cssUserList)
         useModule(cssResult)
         useModule(cssLoading)
+        useModule(cssTable)
     }
     override fun start() {
-        val serverUrl = "http://localhost:9999/"
+        val serverUrl = js("SERVER_URL").toString()
         val routing = Routing.init("/")
         val applicationRoot = root("checkMe") { }
         routing.on("/authorization/sign_in", {
@@ -94,6 +99,7 @@ class CheckMe : Application() {
 fun main() {
     startApplication(
         ::CheckMe,
-        js("import.meta.webpackHot").unsafeCast<Hot?>()
+        js("import.meta.webpackHot").unsafeCast<Hot?>(),
+        TabulatorCssBootstrapModule,
     )
 }

@@ -25,6 +25,7 @@ fun solutionRouter(
             loggingConfig = config.loggingConfig
         ),
         "/me" bind Method.GET to ListResultsHandler(
+            forTable = false,
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userOperations = operations.userOperations,
@@ -36,6 +37,14 @@ fun solutionRouter(
             userLens = contextTools.userLens
         ),
         "/all/{page}" bind Method.GET to ListResultsHandler(
+            forTable = true,
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
+        "/all/" bind Method.GET to ListResultsHandler(
+            forTable = true,
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userOperations = operations.userOperations,

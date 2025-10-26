@@ -9,6 +9,7 @@ import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.pageCountOrNull
 import checkme.web.solution.forms.CheckWithAllData
 import checkme.web.solution.forms.CheckWithTaskData
+import checkme.web.solution.supportingFiles.fetchAllChecks
 import checkme.web.solution.supportingFiles.fetchAllChecksPagination
 import checkme.web.solution.supportingFiles.fetchCheckByUserId
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -20,6 +21,7 @@ import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
 
 class ListResultsHandler(
+    private val forTable: Boolean,
     private val checkOperations: CheckOperationHolder,
     private val taskOperations: TaskOperationsHolder,
     private val userOperations: UserOperationHolder,
@@ -32,7 +34,7 @@ class ListResultsHandler(
         return when {
             user == null -> objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
 
-            user.isAdmin() && page != null ->
+            user.isAdmin() && forTable ->
                 tryFetchAllSolutionsByAdmin(
                     page = page,
                     objectMapper = objectMapper,
@@ -82,18 +84,23 @@ private fun tryFetchUserSolutions(
 }
 
 private fun tryFetchAllSolutionsByAdmin(
-    page: Int,
+    page: Int?,
     objectMapper: ObjectMapper,
     checkOperations: CheckOperationHolder,
     taskOperations: TaskOperationsHolder,
     userOperations: UserOperationHolder,
 ): Response {
     return when (
-        val checksWithData =
+        val checksWithData = if (page == null) {
+            fetchAllChecks(
+                checkOperations = checkOperations
+            )
+        } else {
             fetchAllChecksPagination(
                 checkOperations = checkOperations,
                 page = page
             )
+        }
     ) {
         is Failure -> objectMapper.sendBadRequestError(checksWithData.reason.errorText)
 

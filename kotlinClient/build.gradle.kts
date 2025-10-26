@@ -44,5 +44,6 @@ kotlin {
         implementation("io.kvision:kvision-richtext:${kvisionVersion}")
         implementation("org.jetbrains.kotlinx:kotlinx-datetime:${kotlinxVersion}")
         implementation("io.kvision:kvision-common-types:${kvisionVersion}")
+        implementation("io.kvision:kvision-tabulator:${kvisionVersion}")
     }
 }
