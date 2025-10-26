@@ -24,6 +24,7 @@ import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
+import ru.yarsu.contentPages.Loading
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.CheckId
 import ru.yarsu.serializableClasses.ResponseError
@@ -62,6 +63,7 @@ class TaskViewer(
             }
         }
         buttonSend.onClickLaunch {
+            buttonSend.disabled = true
             val file = formPanelSendSolution.getDataWithFileContent().file[0]
             val encodedFile = file.base64Encoded
             val decodedFile = if (encodedFile != null) {
@@ -69,10 +71,18 @@ class TaskViewer(
             } else {
                 ""
             }
-            val contentType = file.contentType
+            val name = file.name
+            val expansion = name.split(".").last()
+            val contentType = if (expansion == "sql") "application/sql" else file.contentType
             val formData = FormData().apply {
-                append("ans", value = File(arrayOf(decodedFile), file.name, FilePropertyBag(type = contentType)))
+                append("ans", value = File(
+                    arrayOf(decodedFile),
+                    name,
+                    FilePropertyBag(type = contentType))
+                )
             }
+            this@TaskViewer.removeAll()
+            this@TaskViewer.add(Loading("Решение отправлено. Идёт проверка..."))
             val requestInit = RequestInit()
             requestInit.method = HttpMethod.POST.name
             requestInit.headers = js("{}")

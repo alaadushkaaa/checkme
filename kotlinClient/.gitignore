@@ -44,3 +44,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 /.kotlin-js-store/
+
+webpack.config.d/app.properties.js

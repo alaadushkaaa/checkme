@@ -12,6 +12,7 @@ import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
 import ru.yarsu.contentPages.content.solutionPage.Solution
 import ru.yarsu.contentPages.content.taskPage.Task
 import ru.yarsu.contentPages.content.mySolutionListPage.MySolutionList
+import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsTable
 import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
 import ru.yarsu.contentPages.content.userListPage.UserList
@@ -90,6 +91,9 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
+        }).on("/solution-table", { match ->
+            content.removeAll()
+            content.add(AllSolutionsTable(serverUrl, routingMainPage))
         }).resolve()
     }
 }

@@ -1,0 +1,2 @@
+const server_url = 'http://localhost:9999/';
+const client_port = 8080;

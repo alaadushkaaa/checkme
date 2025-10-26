@@ -230,6 +230,7 @@ class AddTask(
             }
         }
         buttonSend.onClickLaunch {
+            buttonSend.disabled = true
             val criterionString = formPanelAddTask.getData().criterion
             val criterion = Json.Default.decodeFromString<Map<String, Criterion>>(criterionString)
             val newCriterion : Map<String, Criterion> = criterion.mapValues { (key, value) ->
@@ -281,12 +282,14 @@ class AddTask(
                     } else {
                         ""
                     }
-                    val scriptContentType = scriptFileWithContent.contentType
+                    val scriptName = scriptFileWithContent.name
+                    val scriptExpansion = scriptName.split(".").last()
+                    val scriptContentType = if (scriptExpansion == "sql") "application/sql" else scriptFileWithContent.contentType
                     append(
                         name = "script",
                         value = File(
                             arrayOf(scriptDecodedContent),
-                            scriptFileWithContent.name,
+                            scriptName,
                             FilePropertyBag(type = scriptContentType)
                         )
                     )

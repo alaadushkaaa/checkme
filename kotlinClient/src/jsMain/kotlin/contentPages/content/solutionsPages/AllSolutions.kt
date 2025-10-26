@@ -24,6 +24,9 @@ class AllSolutions(
 ) : SimplePanel(){
     init {
         h2("Все решения")
+        button("Таблица", className = "usually-button").onClick {
+            routing.navigate("/solution-table")
+        }
         if ((page == null) || (page < 1)){
             routing.navigate("/solution-list/1")
         } else {
