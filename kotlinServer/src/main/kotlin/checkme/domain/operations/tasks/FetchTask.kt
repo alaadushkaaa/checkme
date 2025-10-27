@@ -53,6 +53,21 @@ class FetchAllTasksIdAndName(
         }
 }
 
+class FetchHiddenTasksIdAndName(
+    private val fetchHiddenTasksIdAndName: () -> List<TasksListData>?,
+) : () -> Result4k<List<TasksListData>, TaskFetchingError> {
+
+    override fun invoke(): Result4k<List<TasksListData>, TaskFetchingError> =
+        try {
+            when (val tasks = fetchHiddenTasksIdAndName()) {
+                is List<TasksListData> -> Success(tasks)
+                else -> Failure(TaskFetchingError.NO_SUCH_TASK)
+            }
+        } catch (_: DataAccessException) {
+            Failure(TaskFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
 class FetchTaskName(
     private val fetchTaskName: (taskId: Int) -> TaskNameForAllResults?,
 ) : (Int) -> Result4k<TaskNameForAllResults, TaskFetchingError> {

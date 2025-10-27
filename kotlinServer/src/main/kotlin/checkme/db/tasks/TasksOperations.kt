@@ -47,6 +47,16 @@ class TasksOperations(
             .fetch()
             .mapNotNull { record: Record -> record.toTasksListData() }
 
+    override fun selectHiddenTasksIdAndName(): List<TasksListData> =
+        jooqContext
+            .select(
+                TASKS.ID,
+                TASKS.NAME
+            ).from(TASKS)
+            .where(TASKS.IS_ACTUAL.eq(false))
+            .fetch()
+            .mapNotNull { record: Record -> record.toTasksListData() }
+
     override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
         jooqContext
             .select(

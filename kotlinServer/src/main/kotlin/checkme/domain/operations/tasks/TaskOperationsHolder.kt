@@ -28,6 +28,11 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTasksIdAndName()
         }
 
+    val fetchHiddenTasksIdAndName: () -> Result<List<TasksListData>, TaskFetchingError> =
+        FetchHiddenTasksIdAndName {
+            tasksDatabase.selectHiddenTasksIdAndName()
+        }
+
     val fetchTaskName: (Int) -> Result<TaskNameForAllResults, TaskFetchingError> =
         FetchTaskName {
                 taskId: Int ->

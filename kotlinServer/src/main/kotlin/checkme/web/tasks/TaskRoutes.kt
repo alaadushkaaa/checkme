@@ -7,6 +7,7 @@ import checkme.web.tasks.handlers.AddTaskHandler
 import checkme.web.tasks.handlers.ChangeTaskActualityHandler
 import checkme.web.tasks.handlers.DeleteTaskHandler
 import checkme.web.tasks.handlers.TaskHandler
+import checkme.web.tasks.handlers.TasksHiddenListHandler
 import checkme.web.tasks.handlers.TasksListHandler
 import org.http4k.core.*
 import org.http4k.routing.*
@@ -31,6 +32,10 @@ fun taskRouter(
             userLens = contextTools.userLens
         ),
         "/all" bind Method.GET to TasksListHandler(
+            taskOperations = operations.taskOperations,
+            userLens = contextTools.userLens
+        ),
+        "hidden" bind Method.GET to TasksHiddenListHandler(
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens
         ),

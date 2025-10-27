@@ -17,6 +17,8 @@ interface TasksDatabase {
 
     fun updateTaskActuality(task: Task): Task?
 
+    fun selectHiddenTasksIdAndName(): List<TasksListData>
+
     fun insertTask(
         name: String,
         criterions: Map<String, Criterion>,
