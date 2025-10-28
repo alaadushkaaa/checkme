@@ -4,9 +4,11 @@
 package checkme.db.generated.keys
 
 
+import checkme.db.generated.tables.Bundles
 import checkme.db.generated.tables.Checks
 import checkme.db.generated.tables.Tasks
 import checkme.db.generated.tables.Users
+import checkme.db.generated.tables.records.BundlesRecord
 import checkme.db.generated.tables.records.ChecksRecord
 import checkme.db.generated.tables.records.TasksRecord
 import checkme.db.generated.tables.records.UsersRecord
@@ -21,6 +23,7 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
+val BUNDLES_PKEY: UniqueKey<BundlesRecord> = Internal.createUniqueKey(Bundles.BUNDLES, DSL.name("bundles_pkey"), arrayOf(Bundles.BUNDLES.ID), true)
 val CHECKS_PKEY: UniqueKey<ChecksRecord> = Internal.createUniqueKey(Checks.CHECKS, DSL.name("checks_pkey"), arrayOf(Checks.CHECKS.ID), true)
 val TASKS_PKEY: UniqueKey<TasksRecord> = Internal.createUniqueKey(Tasks.TASKS, DSL.name("tasks_pkey"), arrayOf(Tasks.TASKS.ID), true)
 val USERS_LOGIN_KEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_login_key"), arrayOf(Users.USERS.LOGIN), true)
