@@ -157,9 +157,7 @@ internal fun fetchCheckById(
     }
 }
 
-internal fun fetchAllChecks(
-    checkOperations: CheckOperationHolder
-): Result4k<List<Check>, FetchingCheckError> {
+internal fun fetchAllChecks(checkOperations: CheckOperationHolder): Result4k<List<Check>, FetchingCheckError> {
     return when (
         val fetchedChecks = checkOperations.fetchAllChecks()
     ) {
