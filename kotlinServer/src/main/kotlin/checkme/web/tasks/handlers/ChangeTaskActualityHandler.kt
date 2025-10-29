@@ -91,18 +91,14 @@ private fun tryUpdateTaskActuality(
                     )
                 )
 
-                ResultType.LIST -> objectMapper.sendOKResponse(
-                    tryFetchTasks(
-                        taskOperations = tasksOperations,
-                        objectMapper = objectMapper
-                    )
+                ResultType.LIST -> tryFetchTasks(
+                    taskOperations = tasksOperations,
+                    objectMapper = objectMapper
                 )
 
-                ResultType.HIDDEN -> objectMapper.sendOKResponse(
-                    tryFetchHiddenTasks(
-                        taskOperations = tasksOperations,
-                        objectMapper = objectMapper
-                    )
+                ResultType.HIDDEN -> tryFetchHiddenTasks(
+                    taskOperations = tasksOperations,
+                    objectMapper = objectMapper
                 )
             }
         }
