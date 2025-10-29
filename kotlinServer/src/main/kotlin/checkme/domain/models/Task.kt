@@ -15,3 +15,16 @@ enum class AnswerType(val code: String) {
     FILE("file"),
     TEXT("text"),
 }
+
+enum class ResultType(val code: String) {
+    LIST("list"),
+    TASK("task"),
+    HIDDEN("hiddenList"),
+    ;
+
+    companion object {
+        fun resultTypeFromCode(code: String): ResultType? {
+            return entries.find { it.code == code }
+        }
+    }
+}
