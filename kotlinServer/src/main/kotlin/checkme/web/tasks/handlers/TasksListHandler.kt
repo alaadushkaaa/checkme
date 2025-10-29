@@ -37,7 +37,7 @@ private fun tryFetchTasks(
     objectMapper: ObjectMapper,
 ): Response {
     return when (
-        val tasks = fetchAllTasksIdName(taskOperations)
+        val tasks = fetchAllTasks(taskOperations)
     ) {
         is Failure -> objectMapper.sendBadRequestError(tasks.reason)
         is Success -> objectMapper.sendOKResponse(tasks.value)

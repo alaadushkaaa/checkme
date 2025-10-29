@@ -4,20 +4,17 @@ import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.web.solution.forms.TaskNameForAllResults
-import checkme.web.tasks.forms.TasksListData
 
 interface TasksDatabase {
     fun selectTaskById(taskId: Int): Task?
 
     fun selectAllTask(): List<Task>
 
+    fun selectHiddenTasks(): List<Task>
+
     fun selectTaskName(taskId: Int): TaskNameForAllResults?
 
-    fun selectAllTasksIdAndName(): List<TasksListData>
-
     fun updateTaskActuality(task: Task): Task?
-
-    fun selectHiddenTasksIdAndName(): List<TasksListData>
 
     fun insertTask(
         name: String,

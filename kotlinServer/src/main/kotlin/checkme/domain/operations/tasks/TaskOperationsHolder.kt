@@ -5,7 +5,6 @@ import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.domain.operations.dependencies.tasks.TasksDatabase
 import checkme.web.solution.forms.TaskNameForAllResults
-import checkme.web.tasks.forms.TasksListData
 import dev.forkhandles.result4k.Result
 
 class TaskOperationsHolder (
@@ -23,14 +22,9 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTask()
         }
 
-    val fetchAllTasksIdAndName: () -> Result<List<TasksListData>, TaskFetchingError> =
-        FetchAllTasksIdAndName {
-            tasksDatabase.selectAllTasksIdAndName()
-        }
-
-    val fetchHiddenTasksIdAndName: () -> Result<List<TasksListData>, TaskFetchingError> =
-        FetchHiddenTasksIdAndName {
-            tasksDatabase.selectHiddenTasksIdAndName()
+    val fetchHiddenTasks: () -> Result<List<Task>, TaskFetchingError> =
+        FetchHiddenTasks {
+            tasksDatabase.selectHiddenTasks()
         }
 
     val fetchTaskName: (Int) -> Result<TaskNameForAllResults, TaskFetchingError> =

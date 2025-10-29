@@ -12,7 +12,6 @@ import checkme.domain.operations.tasks.TaskRemovingError
 import checkme.logging.LoggerType
 import checkme.logging.ServerLogger
 import checkme.web.lenses.TaskLenses
-import checkme.web.tasks.forms.TasksListData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import dev.forkhandles.result4k.Failure
@@ -74,9 +73,9 @@ internal fun deleteTask(
     }
 }
 
-internal fun fetchAllTasksIdName(taskOperations: TaskOperationsHolder): Result<List<TasksListData>, FetchingTaskError> {
+internal fun fetchAllTasks(taskOperations: TaskOperationsHolder): Result<List<Task>, FetchingTaskError> {
     return when (
-        val fetchedTasks = taskOperations.fetchAllTasksIdAndName()
+        val fetchedTasks = taskOperations.fetchAllTasks()
     ) {
         is Success -> Success(fetchedTasks.value)
         is Failure -> when (fetchedTasks.reason) {
@@ -86,9 +85,9 @@ internal fun fetchAllTasksIdName(taskOperations: TaskOperationsHolder): Result<L
     }
 }
 
-internal fun fetchAllTasks(taskOperations: TaskOperationsHolder): Result<List<Task>, FetchingTaskError> {
+internal fun fetchHiddenTasks(taskOperations: TaskOperationsHolder): Result<List<Task>, FetchingTaskError> {
     return when (
-        val fetchedTasks = taskOperations.fetchAllTasks()
+        val fetchedTasks = taskOperations.fetchHiddenTasks()
     ) {
         is Success -> Success(fetchedTasks.value)
         is Failure -> when (fetchedTasks.reason) {

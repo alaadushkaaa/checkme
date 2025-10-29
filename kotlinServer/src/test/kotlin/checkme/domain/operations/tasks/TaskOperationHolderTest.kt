@@ -12,7 +12,7 @@ class TaskOperationHolderTest : FunSpec({
     test("TaskOperationsHolder should initialize with provided task operations") {
         taskOperationsHolder.fetchTaskById::class.shouldBe(FetchTaskById::class)
         taskOperationsHolder.fetchAllTasks::class.shouldBe(FetchAllTasks::class)
-        taskOperationsHolder.fetchAllTasksIdAndName::class.shouldBe(FetchAllTasksIdAndName::class)
+        taskOperationsHolder.fetchHiddenTasks::class.shouldBe(FetchHiddenTasks::class)
         taskOperationsHolder.fetchTaskName::class.shouldBe(FetchTaskName::class)
         taskOperationsHolder.removeTask::class.shouldBe(RemoveTask::class)
         taskOperationsHolder.createTask::class.shouldBe(CreateTask::class)

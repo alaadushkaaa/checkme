@@ -37,25 +37,14 @@ class TasksOperations(
                 record.toTask()
             }
 
-    override fun selectAllTasksIdAndName(): List<TasksListData> =
-        jooqContext
-            .select(
-                TASKS.ID,
-                TASKS.NAME
-            ).from(TASKS)
-            .where(TASKS.IS_ACTUAL.eq(true))
-            .fetch()
-            .mapNotNull { record: Record -> record.toTasksListData() }
-
-    override fun selectHiddenTasksIdAndName(): List<TasksListData> =
-        jooqContext
-            .select(
-                TASKS.ID,
-                TASKS.NAME
-            ).from(TASKS)
+    override fun selectHiddenTasks(): List<Task> =
+        selectFromTasks()
             .where(TASKS.IS_ACTUAL.eq(false))
+            .orderBy(TASKS.ID)
             .fetch()
-            .mapNotNull { record: Record -> record.toTasksListData() }
+            .mapNotNull { record: Record ->
+                record.toTask()
+            }
 
     override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
         jooqContext
