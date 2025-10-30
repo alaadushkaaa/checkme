@@ -10,6 +10,7 @@ data class TaskClientResponse (
     val criterions: Map<String, Criterion>,
     val answerFormat: List<FormatOfAnswer>,
     val description: String,
+    val isActual: Boolean,
 ) {
     companion object {
         fun Map<String, AnswerType>.toClientEntryAnswerFormat(): List<FormatOfAnswer> {

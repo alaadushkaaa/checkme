@@ -39,7 +39,10 @@ fun taskRouter(
             taskOperations = operations.taskOperations,
             userLens = contextTools.userLens
         ),
-        "/{id}" bind Method.GET to TaskHandler(operations.taskOperations)
+        "/{id}" bind Method.GET to TaskHandler(
+            userLens = contextTools.userLens,
+            taskOperations = operations.taskOperations
+        )
     )
 
 const val TASK_SEGMENT = "/task"

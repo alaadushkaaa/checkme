@@ -87,7 +87,8 @@ private fun tryUpdateTaskActuality(
                         updatedTask.value.name,
                         updatedTask.value.criterions,
                         updatedTask.value.answerFormat.toClientEntryAnswerFormat(),
-                        updatedTask.value.description
+                        updatedTask.value.description,
+                        updatedTask.value.isActual
                     )
                 )
 
