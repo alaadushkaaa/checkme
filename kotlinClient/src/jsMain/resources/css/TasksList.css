@@ -1,8 +1,12 @@
-.task-item {
+.task-item .name {
     cursor: pointer;
     font-weight: bold;
 }
 
 .task-item:hover {
     outline: 1px solid black;
+}
+
+.task-item .usually-button {
+    margin: 4px;
 }

@@ -9,35 +9,52 @@ import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
+import ru.yarsu.enumClasses.ListType
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
-import ru.yarsu.serializableClasses.task.TaskIdName
+import ru.yarsu.serializableClasses.task.TaskFormatForList
 
 class TaskList(
     serverUrl : String,
     private val routing: Routing,
+    listType: ListType
 ) : SimplePanel(){
     init {
-        h2("Список задач")
+        if (listType.ordinal == 0) {
+            h2("Список задач")
+        } else {
+            h2("Список скрытых задач")
+        }
         if (UserInformationStorage.isAdmin()) {
             button(
                 "Cоздать задачу",
                 className = "usually-button"
             ).onClick { routing.navigate("/add-task") }
+            if (listType.ordinal == 0) {
+                button(
+                    "Список скрытых задач",
+                    className = "usually-button"
+                ).onClick { routing.navigate("/hidden-task-list") }
+            } else {
+                button(
+                    "Список активных задач",
+                    className = "usually-button"
+                ).onClick { routing.navigate("/") }
+            }
         }
         val requestInit = RequestInit()
         requestInit.method = HttpMethod.GET.name
         requestInit.headers = js("{}")
         requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-        window.fetch(serverUrl + "task/all", requestInit).then { response ->
+        window.fetch(serverUrl + "task/${listType.keyWord}", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
-                    val taskList = Json.decodeFromString<List<TaskIdName>>(jsonString)
+                    val taskList = Json.decodeFromString<List<TaskFormatForList>>(jsonString)
                     if (taskList.isEmpty()){
                         this.add(Div("Задачи не найдены"))
                     } else {
-                        this.add(TaskListViewer(routing, taskList))
+                        this.add(TaskListViewer(serverUrl, routing, taskList))
                     }
                 }
             } else if (response.status.toInt() == 400) {
