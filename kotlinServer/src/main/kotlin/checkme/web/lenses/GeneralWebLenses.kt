@@ -13,7 +13,6 @@ import org.http4k.lens.RequestContextLens
 import org.http4k.lens.Validator
 import org.http4k.lens.WebForm
 import org.http4k.lens.int
-import org.http4k.lens.string
 import org.http4k.lens.webForm
 
 @Suppress("TooManyFunctions")
@@ -27,7 +26,6 @@ object GeneralWebLenses {
      * Lens for getting {id} from request path
      */
     val idFromPathField = Path.int().of("id")
-    val resultTypeFromPathField = Path.string().of("resultType")
     val checkIdFromPathField = Path.int().of("checkId")
     val pageCountFromPathField = Path.int().of("page")
 
@@ -84,8 +82,6 @@ object GeneralWebLenses {
     infix fun <T> BiDiLens<MultipartForm, T>.from(form: MultipartForm) = this(form)
 
     fun Request.idOrNull() = lensOrNull(idFromPathField, this)
-
-    fun Request.resultTypeOrNull() = lensOrNull(resultTypeFromPathField, this)
 
     fun Request.checkIdOrNull() = lensOrNull(checkIdFromPathField, this)
 

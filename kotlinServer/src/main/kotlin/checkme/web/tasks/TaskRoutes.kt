@@ -27,7 +27,7 @@ fun taskRouter(
             tasksOperations = operations.taskOperations,
             userLens = contextTools.userLens
         ),
-        "$CHANGE_ACTUALITY/{id}/{resultType}" bind Method.POST to ChangeTaskActualityHandler(
+        "$CHANGE_ACTUALITY/{id}" bind Method.POST to ChangeTaskActualityHandler(
             tasksOperations = operations.taskOperations,
             userLens = contextTools.userLens
         ),
