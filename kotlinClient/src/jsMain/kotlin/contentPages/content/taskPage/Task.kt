@@ -7,6 +7,7 @@ import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
+import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskFormat
 
@@ -18,6 +19,8 @@ class Task(
     init {
         val requestInit = RequestInit()
         requestInit.method = HttpMethod.GET.name
+        requestInit.headers = js("{}")
+        requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
         window.fetch(serverUrl + "task/$taskId", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.json().then {

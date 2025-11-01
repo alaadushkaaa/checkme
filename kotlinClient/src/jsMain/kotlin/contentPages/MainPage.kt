@@ -16,6 +16,7 @@ import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsTable
 import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
 import ru.yarsu.contentPages.content.userListPage.UserList
+import ru.yarsu.enumClasses.ListType
 
 class MainPage(
     private val serverUrl: String,
@@ -41,7 +42,7 @@ class MainPage(
         }
         routingMainPage.on("/", {
             content.removeAll()
-            content.add(TaskList(serverUrl, routingMainPage))
+            content.add(TaskList(serverUrl, routingMainPage, ListType.ALL))
         }).on("/add-task", {
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
@@ -94,6 +95,9 @@ class MainPage(
         }).on("/solution-table", { match ->
             content.removeAll()
             content.add(AllSolutionsTable(serverUrl, routingMainPage))
+        }).on("/hidden-task-list", {
+            content.removeAll()
+            content.add(TaskList(serverUrl, routingMainPage, ListType.HIDDEN))
         }).resolve()
     }
 }

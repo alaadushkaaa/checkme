@@ -18,6 +18,12 @@ class Header(
             div("CheckMe", className = "app-title")
             div(className = "navigation"){
                 button("Список задач", className = "navigation-button").onClick { routingMainPage.navigate("/") }
+                if (UserInformationStorage.isAdmin()) {
+                    button(
+                        "Список скрытых задач",
+                        className = "navigation-button"
+                    ).onClick { routingMainPage.navigate("/hidden-task-list") }
+                }
                 button("Мои решения", className = "navigation-button").onClick { routingMainPage.navigate("/my-solution-list") }
                 if (UserInformationStorage.isAdmin()) {
                     button("Все решения",

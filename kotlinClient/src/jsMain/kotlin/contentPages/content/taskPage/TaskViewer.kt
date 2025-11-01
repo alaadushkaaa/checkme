@@ -25,6 +25,7 @@ import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
 import ru.yarsu.contentPages.Loading
+import ru.yarsu.contentPages.content.hiddenTask.TaskHiddenButton
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.CheckId
 import ru.yarsu.serializableClasses.ResponseError
@@ -118,6 +119,12 @@ class TaskViewer(
             }
         }
         if (UserInformationStorage.isAdmin()) {
+            val hiddenButton = TaskHiddenButton(
+                serverUrl,
+                task.isActual,
+                task.id
+            )
+            this.add(hiddenButton)
             button("Удалить задачу", className = "usually-button warning-button").onClick {
                 val requestInit = RequestInit()
                 requestInit.method = HttpMethod.DELETE.name

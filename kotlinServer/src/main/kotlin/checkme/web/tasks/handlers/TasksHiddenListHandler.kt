@@ -12,7 +12,7 @@ import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
 
-class TasksListHandler(
+class TasksHiddenListHandler(
     private val taskOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
 ) : HttpHandler {
@@ -20,7 +20,9 @@ class TasksListHandler(
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
         return when {
-            user == null -> objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
+            user == null || !user.isAdmin() ->
+                objectMapper
+                    .sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
 
             else -> {
                 tryFetchTasks(
@@ -37,7 +39,7 @@ private fun tryFetchTasks(
     objectMapper: ObjectMapper,
 ): Response {
     return when (
-        val tasks = fetchAllTasks(taskOperations)
+        val tasks = fetchHiddenTasks(taskOperations)
     ) {
         is Failure -> objectMapper.sendBadRequestError(tasks.reason)
         is Success -> objectMapper.sendOKResponse(tasks.value)

@@ -5,5 +5,6 @@ CREATE TABLE tasks (
     name TEXT NOT NULL,
     criterions JSONB NOT NULL,
     answerFormat JSONB NOT NULL,
-    description TEXT NOT NULL
+    description TEXT NOT NULL,
+    is_actual BOOL NOT NULL
 );

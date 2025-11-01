@@ -30,20 +30,21 @@ class TasksOperations(
 
     override fun selectAllTask(): List<Task> =
         selectFromTasks()
+            .where(TASKS.IS_ACTUAL.eq(true))
             .orderBy(TASKS.ID)
             .fetch()
             .mapNotNull { record: Record ->
                 record.toTask()
             }
 
-    override fun selectAllTasksIdAndName(): List<TasksListData> =
-        jooqContext
-            .select(
-                TASKS.ID,
-                TASKS.NAME
-            ).from(TASKS)
+    override fun selectHiddenTasks(): List<Task> =
+        selectFromTasks()
+            .where(TASKS.IS_ACTUAL.eq(false))
+            .orderBy(TASKS.ID)
             .fetch()
-            .mapNotNull { record: Record -> record.toTasksListData() }
+            .mapNotNull { record: Record ->
+                record.toTask()
+            }
 
     override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
         jooqContext
@@ -59,12 +60,14 @@ class TasksOperations(
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
+        isActual: Boolean,
     ): Task? {
         return jooqContext.insertInto(TASKS)
             .set(TASKS.NAME, name)
             .set(TASKS.CRITERIONS, jsonb(objectMapper.writeValueAsString(criterions)))
             .set(TASKS.ANSWERFORMAT, jsonb(objectMapper.writeValueAsString(answerFormat)))
             .set(TASKS.DESCRIPTION, description)
+            .set(TASKS.IS_ACTUAL, isActual)
             .returningResult()
             .fetchOne()
             ?.toTask()
@@ -85,6 +88,15 @@ class TasksOperations(
         return deleteTaskFlag
     }
 
+    override fun updateTaskActuality(task: Task): Task? {
+        return jooqContext.update(TASKS)
+            .set(TASKS.IS_ACTUAL, task.isActual)
+            .where(TASKS.ID.eq(task.id))
+            .returningResult()
+            .fetchOne()
+            ?.toTask()
+    }
+
     private fun deleteSolutions(taskId: Int): Int =
         jooqContext.delete(CHECKS)
             .where(CHECKS.TASKID.eq(taskId))
@@ -97,7 +109,8 @@ class TasksOperations(
                 TASKS.NAME,
                 TASKS.CRITERIONS,
                 TASKS.ANSWERFORMAT,
-                TASKS.DESCRIPTION
+                TASKS.DESCRIPTION,
+                TASKS.IS_ACTUAL
             )
             .from(TASKS)
 }
@@ -108,20 +121,23 @@ internal fun Record.toTask(): Task? =
         this[TASKS.NAME],
         this[TASKS.CRITERIONS],
         this[TASKS.ANSWERFORMAT],
-        this[TASKS.DESCRIPTION]
+        this[TASKS.DESCRIPTION],
+        this[TASKS.IS_ACTUAL]
     ) {
             id,
             name,
             criterions,
             answerFormat,
             description,
+            isActual,
         ->
         Task(
             id = id,
             name = name,
             criterions = jacksonObjectMapper().readValue<Map<String, Criterion>>(criterions.data()),
             answerFormat = jacksonObjectMapper().readValue<Map<String, AnswerType>>(answerFormat.data()),
-            description = description
+            description = description,
+            isActual = isActual
         )
     }
 

@@ -5,7 +5,6 @@ import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.domain.operations.dependencies.tasks.TasksDatabase
 import checkme.web.solution.forms.TaskNameForAllResults
-import checkme.web.tasks.forms.TasksListData
 import dev.forkhandles.result4k.Result
 
 class TaskOperationsHolder (
@@ -23,9 +22,9 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTask()
         }
 
-    val fetchAllTasksIdAndName: () -> Result<List<TasksListData>, TaskFetchingError> =
-        FetchAllTasksIdAndName {
-            tasksDatabase.selectAllTasksIdAndName()
+    val fetchHiddenTasks: () -> Result<List<Task>, TaskFetchingError> =
+        FetchHiddenTasks {
+            tasksDatabase.selectHiddenTasks()
         }
 
     val fetchTaskName: (Int) -> Result<TaskNameForAllResults, TaskFetchingError> =
@@ -40,23 +39,35 @@ class TaskOperationsHolder (
             removeTask = tasksDatabase::deleteTask
         )
 
+    val updateTaskActuality: (
+        task: Task,
+    ) -> Result<Task, ModifyTaskError> =
+        ModifyTaskActuality {
+                task,
+            ->
+            tasksDatabase.updateTaskActuality(task)
+        }
+
     val createTask: (
         name: String,
         criterions: Map<String, Criterion>,
         answerFormat: Map<String, AnswerType>,
         description: String,
+        isActual: Boolean,
     ) -> Result<Task, CreateTaskError> =
         CreateTask {
                 name: String,
                 criterions: Map<String, Criterion>,
                 answerFormat: Map<String, AnswerType>,
                 description: String,
+                isActual: Boolean,
             ->
             tasksDatabase.insertTask(
                 name,
                 criterions,
                 answerFormat,
-                description
+                description,
+                isActual
             )
         }
 }

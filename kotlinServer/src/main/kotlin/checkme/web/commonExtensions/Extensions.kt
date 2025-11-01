@@ -10,7 +10,7 @@ fun ObjectMapper.sendBadRequestError(message: Any? = null): Response {
         .body(this.writeValueAsString(mapOf("error" to errorMessage)))
 }
 
-fun ObjectMapper.sendOKResponse(data: Any): Response =
+fun ObjectMapper.sendOKResponse(data: Any?): Response =
     Response(Status.OK)
         .body(this.writeValueAsString(data))
 

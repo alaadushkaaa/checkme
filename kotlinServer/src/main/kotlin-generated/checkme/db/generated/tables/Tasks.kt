@@ -106,6 +106,11 @@ open class Tasks(
      */
     val DESCRIPTION: TableField<TasksRecord, String?> = createField(DSL.name("description"), SQLDataType.CLOB.nullable(false), this, "")
 
+    /**
+     * The column <code>public.tasks.is_actual</code>.
+     */
+    val IS_ACTUAL: TableField<TasksRecord, Boolean?> = createField(DSL.name("is_actual"), SQLDataType.BOOLEAN.nullable(false), this, "")
+
     private constructor(alias: Name, aliased: Table<TasksRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<TasksRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<TasksRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)

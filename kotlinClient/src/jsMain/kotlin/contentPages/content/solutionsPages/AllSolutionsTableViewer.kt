@@ -12,15 +12,25 @@ import io.kvision.tabulator.TabulatorOptions
 import io.kvision.tabulator.tabulator
 import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 import ru.yarsu.serializableClasses.solution.UserNameSurname
-import ru.yarsu.serializableClasses.task.TaskIdName
+import ru.yarsu.serializableClasses.task.Criterion
+import ru.yarsu.serializableClasses.task.TaskFormatForList
 import kotlin.collections.mutableMapOf
 
 class AllSolutionsTableViewer(
     private val routing: Routing,
-    private val taskList: List<TaskIdName>,
+    private val taskList: List<TaskFormatForList>,
     private val solutionList: List<SolutionInAdminListsFormat>
 ): SimplePanel() {
-    private val listTitle = mutableListOf(TaskIdName(-1,"Фамилия Имя")).apply { this.addAll(taskList) }
+    private val listTitle = mutableListOf(
+        TaskFormatForList(
+            -1,
+            "Фамилия Имя",
+            mapOf(Pair("", Criterion("", 0, "", ""))),
+            mapOf(Pair("", "")),
+            "",
+            true
+        )
+    ).apply { this.addAll(taskList) }
 
     private fun creatingDataMap():  List<Pair<UserNameSurname, MutableMap<String, MutableList<Pair<Int, Pair<String, Int?>>>>>> {
         val userMap = mutableMapOf<UserNameSurname, MutableList<SolutionInAdminListsFormat>>()

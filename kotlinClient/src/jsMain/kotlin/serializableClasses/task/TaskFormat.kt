@@ -9,7 +9,18 @@ data class TaskFormat(
     val name: String,
     val criterions: Map<String, Criterion>,
     val answerFormat: List<AnswerFormat>,
-    val description: String
+    val description: String,
+    val isActual: Boolean
+)
+
+@Serializable
+data class TaskFormatForList(
+    val id: Int,
+    val name: String,
+    val criterions: Map<String, Criterion>,
+    val answerFormat: Map<String, String>,
+    val description: String,
+    val isActual: Boolean
 )
 
 @Serializable

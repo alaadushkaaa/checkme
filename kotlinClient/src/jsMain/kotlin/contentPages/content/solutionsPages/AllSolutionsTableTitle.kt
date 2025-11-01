@@ -10,7 +10,7 @@ import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
-import ru.yarsu.serializableClasses.task.TaskIdName
+import ru.yarsu.serializableClasses.task.TaskFormatForList
 
 class AllSolutionsTableTitle(
     serverUrl: String,
@@ -26,7 +26,7 @@ class AllSolutionsTableTitle(
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
-                    val taskList = Json.decodeFromString<List<TaskIdName>>(jsonString)
+                    val taskList = Json.decodeFromString<List<TaskFormatForList>>(jsonString)
                     this.add(AllSolutionsTableViewer(routing, taskList, solutionList))
                 }
             } else if (response.status.toInt() == 400) {

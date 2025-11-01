@@ -8,9 +8,23 @@ data class Task(
     val criterions: Map<String, Criterion>,
     val answerFormat: Map<String, AnswerType>,
     val description: String,
+    val isActual: Boolean,
 )
 
 enum class AnswerType(val code: String) {
     FILE("file"),
     TEXT("text"),
+}
+
+enum class ResultType(val code: String) {
+    LIST("list"),
+    TASK("task"),
+    HIDDEN("hiddenList"),
+    ;
+
+    companion object {
+        fun resultTypeFromCode(code: String): ResultType? {
+            return entries.find { it.code == code }
+        }
+    }
 }
