@@ -1,7 +1,7 @@
 package ru.yarsu.contentPages.content.hiddenTask
 
 import io.kvision.html.Button
-import io.kvision.panel.VPanel
+import io.kvision.panel.HPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
@@ -16,8 +16,8 @@ class TaskHiddenButton(
     private val serverUrl: String,
     private var isActual: Boolean,
     private val taskId: Int,
-    private val vPanel: VPanel? = null
-) : Button("", className = "usually-button") {
+    private val hPanel: HPanel? = null
+) : Button("", className = "hidden-button") {
     init {
         text = if (isActual) "Скрыть задачу" else "Показать задачу"
         this.onClick {
@@ -27,8 +27,8 @@ class TaskHiddenButton(
             requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
             window.fetch(serverUrl + "task/change-actuality/$taskId", requestInit).then { response ->
                 if (response.status.toInt() == 200) {
-                    if (vPanel != null)
-                        vPanel.visible = false
+                    if (hPanel != null)
+                        hPanel.visible = false
                     else {
                         isActual = !isActual
                         text = if (isActual) "Скрыть задачу" else "Показать задачу"

@@ -30,17 +30,6 @@ class TaskList(
                 "Cоздать задачу",
                 className = "usually-button"
             ).onClick { routing.navigate("/add-task") }
-            if (listType.ordinal == 0) {
-                button(
-                    "Список скрытых задач",
-                    className = "usually-button"
-                ).onClick { routing.navigate("/hidden-task-list") }
-            } else {
-                button(
-                    "Список активных задач",
-                    className = "usually-button"
-                ).onClick { routing.navigate("/") }
-            }
         }
         val requestInit = RequestInit()
         requestInit.method = HttpMethod.GET.name
