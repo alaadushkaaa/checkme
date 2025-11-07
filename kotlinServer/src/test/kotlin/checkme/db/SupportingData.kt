@@ -8,6 +8,7 @@ import checkme.domain.accounts.Role
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.AnswerType
+import checkme.domain.models.Bundle
 import checkme.domain.models.Check
 import checkme.domain.models.Task
 import checkme.web.solution.handlers.COMPLETE_TASK
@@ -140,6 +141,28 @@ val validUserName = "root"
 val validPassword = "password"
 val validUrlDatabase = "jdbc:mariadb://"
 val validOverall = true
+
+
+val validBundles : List<Bundle> = listOf(
+    Bundle(1, "Контрольная №1", mapOf(
+        1 to validTasks[1].id,
+        2 to validTasks[2].id,
+    ), true),
+    Bundle(1, "Контрольная №2", mapOf(
+        1 to validTasks[2].id,
+        2 to validTasks[3].id,
+    ), false),
+    Bundle(1, "Контрольная №3", mapOf(
+        1 to validTasks[1].id,
+        2 to validTasks[3].id,
+        3 to validTasks[2].id,
+    ), true),
+    Bundle(1, "Контрольная №4", mapOf(
+        1 to validTasks[2].id,
+        2 to validTasks[1].id,
+        3 to validTasks[3].id,
+    ), false),
+)
 
 val appConfig = AppConfig.fromEnvironment()
 val appConfiguredPasswordHasher = PasswordHasher(appConfig.authConfig)

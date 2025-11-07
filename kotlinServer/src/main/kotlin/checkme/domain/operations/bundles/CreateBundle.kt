@@ -10,24 +10,20 @@ import dev.forkhandles.result4k.Success
 class CreateBundle(
     private val insertBundle: (
             name: String,
-            tasks: Map<Int, Int>,
-            isActual: Boolean,
+            tasks: Map<Int, Int>
     ) -> Bundle?,
 ) : (
         String,
-        Map<Int, Int>,
-        Boolean,
+        Map<Int, Int>
     ) -> Result4k<Bundle, CreateBundleError> {
     override fun invoke(
         name: String,
-        tasks: Map<Int, Int>,
-        isActual: Boolean
+        tasks: Map<Int, Int>
     ): Result4k<Bundle, CreateBundleError> =
         when (
             val newBundle = insertBundle(
                 name,
-                tasks,
-                isActual
+                tasks
             )
         ) {
             is Bundle -> Success(newBundle)

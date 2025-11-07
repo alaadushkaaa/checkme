@@ -9,22 +9,14 @@ import org.jooq.exception.DataAccessException
 
 class ModifyBundle(
     private val updateBundle: (
-        name: String,
-        tasks: Map<Int, Int>,
-        isActual: Boolean
+        bundle: Bundle
     ) -> Bundle?,
-) : (String, Map<Int, Int>, Boolean) -> Result4k<Bundle, ModifyBundleError> {
+) : (Bundle) -> Result4k<Bundle, ModifyBundleError> {
     override fun invoke(
-        name: String,
-        tasks: Map<Int, Int>,
-        isActual: Boolean
+        bundle: Bundle
     ): Result4k<Bundle, ModifyBundleError> =
         when (
-            val editedBundle = updateBundle(
-                name,
-                tasks,
-                isActual
-            )
+            val editedBundle = updateBundle(bundle)
         ) {
             is Bundle -> Success(editedBundle)
             else -> Failure(ModifyBundleError.UNKNOWN_DATABASE_ERROR)
