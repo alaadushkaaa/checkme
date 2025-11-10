@@ -1,7 +1,6 @@
 package checkme.domain.operations
 
 import checkme.config.AppConfig
-import checkme.domain.operations.bundles.BundleOperationHolder
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.dependencies.DatabaseOperations
 import checkme.domain.operations.tasks.TaskOperationsHolder

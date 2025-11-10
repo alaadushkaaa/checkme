@@ -4,6 +4,7 @@
 package checkme.db.generated
 
 
+import checkme.db.generated.tables.BundleTasks
 import checkme.db.generated.tables.Bundles
 import checkme.db.generated.tables.Checks
 import checkme.db.generated.tables.Tasks
@@ -41,6 +42,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     }
 
     /**
+     * The table <code>public.bundle_tasks</code>.
+     */
+    val BUNDLE_TASKS: BundleTasks get() = BundleTasks.BUNDLE_TASKS
+
+    /**
      * The table <code>public.bundles</code>.
      */
     val BUNDLES: Bundles get() = Bundles.BUNDLES
@@ -63,6 +69,7 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
+        BundleTasks.BUNDLE_TASKS,
         Bundles.BUNDLES,
         Checks.CHECKS,
         Tasks.TASKS,

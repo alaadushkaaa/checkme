@@ -6,6 +6,9 @@ package checkme.db.generated.tables
 
 import checkme.db.generated.Public
 import checkme.db.generated.keys.BUNDLES_PKEY
+import checkme.db.generated.keys.BUNDLE_TASKS__BUNDLE_TASKS_BUNDLE_ID_FKEY
+import checkme.db.generated.tables.BundleTasks.BundleTasksPath
+import checkme.db.generated.tables.Tasks.TasksPath
 import checkme.db.generated.tables.records.BundlesRecord
 
 import javax.annotation.processing.Generated
@@ -17,8 +20,8 @@ import org.jooq.Field
 import org.jooq.ForeignKey
 import org.jooq.Identity
 import org.jooq.InverseForeignKey
-import org.jooq.JSONB
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -31,6 +34,7 @@ import org.jooq.TableField
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -92,11 +96,6 @@ open class Bundles(
     val NAME: TableField<BundlesRecord, String?> = createField(DSL.name("name"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>public.bundles.tasks</code>.
-     */
-    val TASKS: TableField<BundlesRecord, JSONB?> = createField(DSL.name("tasks"), SQLDataType.JSONB.nullable(false), this, "")
-
-    /**
      * The column <code>public.bundles.isactual</code>.
      */
     val ISACTUAL: TableField<BundlesRecord, Boolean?> = createField(DSL.name("isactual"), SQLDataType.BOOLEAN.nullable(false), this, "")
@@ -119,9 +118,45 @@ open class Bundles(
      * Create a <code>public.bundles</code> table reference
      */
     constructor(): this(DSL.name("bundles"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, BundlesRecord>?, parentPath: InverseForeignKey<out Record, BundlesRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, BUNDLES, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class BundlesPath : Bundles, Path<BundlesRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, BundlesRecord>?, parentPath: InverseForeignKey<out Record, BundlesRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<BundlesRecord>): super(alias, aliased)
+        override fun `as`(alias: String): BundlesPath = BundlesPath(DSL.name(alias), this)
+        override fun `as`(alias: Name): BundlesPath = BundlesPath(alias, this)
+        override fun `as`(alias: Table<*>): BundlesPath = BundlesPath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getIdentity(): Identity<BundlesRecord, Int?> = super.getIdentity() as Identity<BundlesRecord, Int?>
     override fun getPrimaryKey(): UniqueKey<BundlesRecord> = BUNDLES_PKEY
+
+    private lateinit var _bundleTasks: BundleTasksPath
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>public.bundle_tasks</code> table
+     */
+    fun bundleTasks(): BundleTasksPath {
+        if (!this::_bundleTasks.isInitialized)
+            _bundleTasks = BundleTasksPath(this, null, BUNDLE_TASKS__BUNDLE_TASKS_BUNDLE_ID_FKEY.inverseKey)
+
+        return _bundleTasks;
+    }
+
+    val bundleTasks: BundleTasksPath
+        get(): BundleTasksPath = bundleTasks()
+
+    /**
+     * Get the implicit many-to-many join path to the <code>public.tasks</code>
+     * table
+     */
+    val tasks: TasksPath
+        get(): TasksPath = bundleTasks().tasks()
     override fun `as`(alias: String): Bundles = Bundles(DSL.name(alias), this)
     override fun `as`(alias: Name): Bundles = Bundles(alias, this)
     override fun `as`(alias: Table<*>): Bundles = Bundles(alias.qualifiedName, this)

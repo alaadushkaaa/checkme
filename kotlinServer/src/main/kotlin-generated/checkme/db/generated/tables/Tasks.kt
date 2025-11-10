@@ -5,7 +5,10 @@ package checkme.db.generated.tables
 
 
 import checkme.db.generated.Public
+import checkme.db.generated.keys.BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_FKEY
 import checkme.db.generated.keys.TASKS_PKEY
+import checkme.db.generated.tables.BundleTasks.BundleTasksPath
+import checkme.db.generated.tables.Bundles.BundlesPath
 import checkme.db.generated.tables.records.TasksRecord
 
 import javax.annotation.processing.Generated
@@ -19,6 +22,7 @@ import org.jooq.Identity
 import org.jooq.InverseForeignKey
 import org.jooq.JSONB
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -31,6 +35,7 @@ import org.jooq.TableField
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -129,9 +134,45 @@ open class Tasks(
      * Create a <code>public.tasks</code> table reference
      */
     constructor(): this(DSL.name("tasks"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, TasksRecord>?, parentPath: InverseForeignKey<out Record, TasksRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, TASKS, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class TasksPath : Tasks, Path<TasksRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, TasksRecord>?, parentPath: InverseForeignKey<out Record, TasksRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<TasksRecord>): super(alias, aliased)
+        override fun `as`(alias: String): TasksPath = TasksPath(DSL.name(alias), this)
+        override fun `as`(alias: Name): TasksPath = TasksPath(alias, this)
+        override fun `as`(alias: Table<*>): TasksPath = TasksPath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getIdentity(): Identity<TasksRecord, Int?> = super.getIdentity() as Identity<TasksRecord, Int?>
     override fun getPrimaryKey(): UniqueKey<TasksRecord> = TASKS_PKEY
+
+    private lateinit var _bundleTasks: BundleTasksPath
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>public.bundle_tasks</code> table
+     */
+    fun bundleTasks(): BundleTasksPath {
+        if (!this::_bundleTasks.isInitialized)
+            _bundleTasks = BundleTasksPath(this, null, BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_FKEY.inverseKey)
+
+        return _bundleTasks;
+    }
+
+    val bundleTasks: BundleTasksPath
+        get(): BundleTasksPath = bundleTasks()
+
+    /**
+     * Get the implicit many-to-many join path to the
+     * <code>public.bundles</code> table
+     */
+    val bundles: BundlesPath
+        get(): BundlesPath = bundleTasks().bundles()
     override fun `as`(alias: String): Tasks = Tasks(DSL.name(alias), this)
     override fun `as`(alias: Name): Tasks = Tasks(alias, this)
     override fun `as`(alias: Table<*>): Tasks = Tasks(alias.qualifiedName, this)

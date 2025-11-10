@@ -8,7 +8,6 @@ import checkme.db.generated.tables.Bundles
 
 import javax.annotation.processing.Generated
 
-import org.jooq.JSONB
 import org.jooq.Record1
 import org.jooq.impl.UpdatableRecordImpl
 
@@ -36,13 +35,9 @@ open class BundlesRecord() : UpdatableRecordImpl<BundlesRecord>(Bundles.BUNDLES)
         set(value): Unit = set(1, value)
         get(): String? = get(1) as String?
 
-    open var tasks: JSONB?
-        set(value): Unit = set(2, value)
-        get(): JSONB? = get(2) as JSONB?
-
     open var isactual: Boolean?
-        set(value): Unit = set(3, value)
-        get(): Boolean? = get(3) as Boolean?
+        set(value): Unit = set(2, value)
+        get(): Boolean? = get(2) as Boolean?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -53,10 +48,9 @@ open class BundlesRecord() : UpdatableRecordImpl<BundlesRecord>(Bundles.BUNDLES)
     /**
      * Create a detached, initialised BundlesRecord
      */
-    constructor(id: Int? = null, name: String? = null, tasks: JSONB? = null, isactual: Boolean? = null): this() {
+    constructor(id: Int? = null, name: String? = null, isactual: Boolean? = null): this() {
         this.id = id
         this.name = name
-        this.tasks = tasks
         this.isactual = isactual
         resetChangedOnNotNull()
     }

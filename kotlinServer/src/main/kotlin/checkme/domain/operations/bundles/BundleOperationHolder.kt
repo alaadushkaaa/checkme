@@ -1,15 +1,16 @@
 package checkme.domain.operations.bundles
 
 import checkme.domain.models.Bundle
+import checkme.domain.models.TaskAndPriority
 import checkme.domain.operations.dependencies.bundles.BundlesDatabase
 import dev.forkhandles.result4k.Result
 
 class BundleOperationHolder(
     private val bundleDatabase: BundlesDatabase,
-){
+) {
     val fetchBundleById: (Int) -> Result<Bundle, BundleFetchingError> =
         FetchBundleById {
-            bundleId: Int
+                bundleId: Int,
             ->
             bundleDatabase.selectBundleById(bundleId)
         }
@@ -24,19 +25,29 @@ class BundleOperationHolder(
             bundleDatabase.selectHiddenBundles()
         }
 
+    val fetchBundleTasksById: (bundleId: Int) -> Result<List<TaskAndPriority>, BundleFetchingError> =
+        FetchBundleTasks (
+            selectBundleById = bundleDatabase::selectBundleById,
+            selectBundleTasks = bundleDatabase::selectBundleTasksById
+        )
+
     val createBundle: (
-            name: String,
-            tasks: Map<Int, Int>
+        name: String,
     ) -> Result<Bundle, CreateBundleError> =
         CreateBundle {
                 name: String,
-                tasks: Map<Int, Int>,
-             ->
-            bundleDatabase.insertBundle(
-                name,
-                tasks
-            )
+            ->
+            bundleDatabase.insertBundle(name)
         }
+
+    val createBundleTasks: (
+        bundleId: Int,
+        tasks: List<TaskAndPriority>,
+    ) -> Result<List<TaskAndPriority>, CreateBundleError> =
+        CreateBundleTasks(
+            bundleDatabase::selectBundleById,
+            bundleDatabase::insertBundleTasks
+        )
 
     val removeBundle: (bundle: Bundle) -> Result<Int, BundleRemovingError> =
         RemoveBundle(
@@ -57,4 +68,13 @@ class BundleOperationHolder(
             ->
             bundleDatabase.updateBundle(bundle)
         }
+
+    val modifyBundleTasks: (
+        bundleId: Int,
+        newTasksAndPriority: List<TaskAndPriority>,
+    ) -> Result<List<TaskAndPriority>, ModifyBundleError> =
+        ModifyBundleTasks (
+            bundleDatabase::selectBundleById,
+            bundleDatabase::updateBundleTasks
+        )
 }
