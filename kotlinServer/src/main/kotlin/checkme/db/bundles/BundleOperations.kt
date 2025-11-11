@@ -111,15 +111,15 @@ class BundleOperations(
         return savedTasks
     }
 
-    override fun deleteBundle(bundleId: Int): Result4k<Boolean, BundleDatabaseError> {
+    override fun deleteBundle(bundle: Bundle): Result4k<Boolean, BundleDatabaseError> {
         var result: Result4k<Boolean, BundleDatabaseError> = Failure(BundleDatabaseError.UNKNOWN_DATABASE_ERROR)
         jooqContext.transaction { _ ->
             try {
                 jooqContext.deleteFrom(BUNDLE_TASKS)
-                    .where(BUNDLE_TASKS.BUNDLE_ID.eq(bundleId))
+                    .where(BUNDLE_TASKS.BUNDLE_ID.eq(bundle.id))
                     .execute()
                 jooqContext.deleteFrom(BUNDLES)
-                    .where(BUNDLES.ID.eq(bundleId))
+                    .where(BUNDLES.ID.eq(bundle.id))
                     .execute()
                 commit()
                 result = Success(true)

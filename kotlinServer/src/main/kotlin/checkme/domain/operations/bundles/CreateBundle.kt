@@ -44,17 +44,19 @@ class CreateBundleTasks(
         try {
             when {
                 bundleNotExists(bundleId) -> Failure(CreateBundleError.NO_SUCH_BUNDLE_FOR_TASKS)
-                else -> when (
-                    val insertedTasks = insertBundleTasks(
-                        bundleId,
-                        tasks
-                    )
-                ) {
-                    is List<TaskAndPriority> -> Success(insertedTasks)
-                    else -> {
-                        Failure(CreateBundleError.UNKNOWN_DATABASE_ERROR)
+                tasks.isEmpty() -> Failure(CreateBundleError.TASKS_LIST_IS_EMPTY)
+                else ->
+                    when (
+                        val insertedTasks = insertBundleTasks(
+                            bundleId,
+                            tasks
+                        )
+                    ) {
+                        is List<TaskAndPriority> -> Success(insertedTasks)
+                        else -> {
+                            Failure(CreateBundleError.UNKNOWN_DATABASE_ERROR)
+                        }
                     }
-                }
             }
         } catch (_: DataAccessException) {
             Failure(CreateBundleError.UNKNOWN_DATABASE_ERROR)
@@ -70,4 +72,5 @@ class CreateBundleTasks(
 enum class CreateBundleError {
     UNKNOWN_DATABASE_ERROR,
     NO_SUCH_BUNDLE_FOR_TASKS,
+    TASKS_LIST_IS_EMPTY,
 }

@@ -53,28 +53,14 @@ class FetchHiddenBundles(
 }
 
 class FetchBundleTasks(
-    private val selectBundleById: (Int) -> Bundle?,
     private val selectBundleTasks: (Int) -> List<TaskAndPriority>?,
 ) : (Int) -> Result4k<List<TaskAndPriority>, BundleFetchingError> {
     override fun invoke(bundleId: Int): Result4k<List<TaskAndPriority>, BundleFetchingError> {
-        return try {
-            when {
-                bundleNotExists(bundleId) -> Failure(BundleFetchingError.NO_SUCH_BUNDLE)
-                else -> when (val tasks = selectBundleTasks(bundleId)) {
-                    is List<TaskAndPriority> -> Success(tasks)
-                    else -> Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
-                }
-            }
-        } catch (_: DataAccessException) {
-            Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
+        return when (val tasks = selectBundleTasks(bundleId)) {
+            is List<TaskAndPriority> -> Success(tasks)
+            else -> Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
         }
     }
-
-    private fun bundleNotExists(bundleId: Int): Boolean =
-        when (selectBundleById(bundleId)) {
-            is Bundle -> false
-            else -> true
-        }
 }
 
 enum class BundleFetchingError {

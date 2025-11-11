@@ -26,10 +26,11 @@ class BundleOperationHolder(
         }
 
     val fetchBundleTasksById: (bundleId: Int) -> Result<List<TaskAndPriority>, BundleFetchingError> =
-        FetchBundleTasks (
-            selectBundleById = bundleDatabase::selectBundleById,
-            selectBundleTasks = bundleDatabase::selectBundleTasksById
-        )
+        FetchBundleTasks {
+                bundleId,
+            ->
+            bundleDatabase.selectBundleTasksById(bundleId)
+        }
 
     val createBundle: (
         name: String,
@@ -49,11 +50,12 @@ class BundleOperationHolder(
             bundleDatabase::insertBundleTasks
         )
 
-    val removeBundle: (bundle: Bundle) -> Result<Int, BundleRemovingError> =
-        RemoveBundle(
-            selectBundleById = bundleDatabase::selectBundleById,
-            removeBundle = bundleDatabase::deleteBundle
-        )
+    val removeBundle: (bundle: Bundle) -> Result<Boolean, BundleRemovingError> =
+        RemoveBundle {
+                bundle: Bundle,
+            ->
+            bundleDatabase.deleteBundle(bundle)
+        }
 
     val modifyBundleActuality: (bundle: Bundle) -> Result<Bundle, ModifyBundleError> =
         ModifyBundleActuality {
@@ -73,7 +75,7 @@ class BundleOperationHolder(
         bundleId: Int,
         newTasksAndPriority: List<TaskAndPriority>,
     ) -> Result<List<TaskAndPriority>, ModifyBundleError> =
-        ModifyBundleTasks (
+        ModifyBundleTasks(
             bundleDatabase::selectBundleById,
             bundleDatabase::updateBundleTasks
         )

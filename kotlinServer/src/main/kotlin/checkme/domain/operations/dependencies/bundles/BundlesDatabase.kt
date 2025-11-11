@@ -29,7 +29,7 @@ interface BundlesDatabase {
         newTasksAndPriority: List<TaskAndPriority>,
     ): List<TaskAndPriority>?
 
-    fun deleteBundle(bundleId: Int): Result4k<Boolean, BundleDatabaseError>
+    fun deleteBundle(bundle: Bundle): Result4k<Boolean, BundleDatabaseError>
 }
 
 enum class BundleDatabaseError {
