@@ -1,40 +1,50 @@
 package checkme.db.bundles
 
 import checkme.db.TestcontainerSpec
-import checkme.db.checks.CheckOperations
+import checkme.db.tasks.TasksOperations
+import checkme.db.validBundleTasks
 import checkme.db.validBundles
-import checkme.db.validChecks
-import checkme.db.validChecksMany
+import checkme.db.validTasks
 import checkme.domain.models.Bundle
-import checkme.domain.models.Check
-import io.kotest.matchers.collections.shouldBeEmpty
+import checkme.domain.models.TaskAndPriority
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
 class SelectBundleTest : TestcontainerSpec({ context ->
-    val bundleOperations = BundlesOperations(context)
+    val tasksOperations = TasksOperations(context)
+    val bundleOperations = BundleOperations(context, tasksOperations)
 
     lateinit var insertedBundles: List<Bundle>
+    lateinit var insertedBundleTasks: List<TaskAndPriority>
 
     beforeEach {
+        for (task in validTasks) {
+            tasksOperations.insertTask(
+                task.name,
+                task.criterions,
+                task.answerFormat,
+                task.description,
+                task.isActual
+            ).shouldNotBeNull()
+        }
         insertedBundles =
             validBundles.map {
                 bundleOperations.insertBundle(
                     it.name,
-                    it.tasks
                 ).shouldNotBeNull()
             }
+        insertedBundleTasks =
+            bundleOperations.insertBundleTasks(insertedBundles.first().id, validBundleTasks).shouldNotBeNull()
     }
 
     test("Select bundle by id should return this bundle") {
-        val selectedCheck = bundleOperations.selectBundleById(insertedBundles.first().id).shouldNotBeNull()
+        val selectedBundle = bundleOperations.selectBundleById(insertedBundles.first().id).shouldNotBeNull()
 
-        selectedCheck.id.shouldBe(insertedBundles.first().id)
-        selectedCheck.name.shouldBe(insertedBundles.first().name)
-        selectedCheck.tasks.shouldBe(insertedBundles.first().tasks)
-        selectedCheck.isActual.shouldBe(true)
+        selectedBundle.id.shouldBe(insertedBundles.first().id)
+        selectedBundle.name.shouldBe(insertedBundles.first().name)
+        selectedBundle.isActual.shouldBe(true)
     }
 
     test("Select bundle by invalid id should return null") {
@@ -44,5 +54,16 @@ class SelectBundleTest : TestcontainerSpec({ context ->
     test("Select all bundles should return all of this inserted bundles") {
         val selectedBundles = bundleOperations.selectAllBundles().shouldNotBeNull()
         selectedBundles shouldContainExactlyInAnyOrder insertedBundles
+    }
+
+    test("Select hidden bundles from db") {
+        bundleOperations
+            .selectHiddenBundles()
+            .shouldBe(insertedBundles.filter { !it.isActual })
+    }
+
+    test("Select bundle tasks should return all of this inserted bundle tasks") {
+        val selectedTasks = bundleOperations.selectBundleTasksById(insertedBundles.first().id).shouldNotBeNull()
+        selectedTasks shouldContainExactlyInAnyOrder insertedBundleTasks
     }
 })

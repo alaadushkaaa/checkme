@@ -1,41 +1,55 @@
 package checkme.db.bundles
 
 import checkme.db.TestcontainerSpec
+import checkme.db.tasks.TasksOperations
+import checkme.db.validBundleTasks
 import checkme.db.validBundles
+import checkme.db.validTasks
 import checkme.domain.models.Bundle
+import checkme.domain.models.TaskAndPriority
+import dev.forkhandles.result4k.Success
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
 class UpdateBundleTest : TestcontainerSpec({ context ->
-    val bundleOperations = BundleOperations(context)
+    val tasksOperations = TasksOperations(context)
+    val bundleOperations = BundleOperations(context, tasksOperations)
 
     lateinit var insertedBundles: List<Bundle>
+    lateinit var insertedBundleTasks: List<TaskAndPriority>
 
     beforeEach {
+        for (task in validTasks) {
+            tasksOperations.insertTask(
+                task.name,
+                task.criterions,
+                task.answerFormat,
+                task.description,
+                task.isActual
+            ).shouldNotBeNull()
+        }
         insertedBundles =
             validBundles.map {
                 bundleOperations.insertBundle(
                     it.name,
-                    it.tasks
                 ).shouldNotBeNull()
             }
+        insertedBundleTasks =
+            bundleOperations.insertBundleTasks(insertedBundles.first().id, validBundleTasks).shouldNotBeNull()
     }
 
     test("Valid bundle can be removed") {
         val bundleForRemove = validBundles.first()
-        bundleOperations.deleteBundle(bundleForRemove.id).shouldBe(1)
+        bundleOperations.deleteBundle(bundleForRemove).shouldBe(Success(true))
     }
 
     test("Only one bundle can be deleted") {
         val bundleForRemove = validBundles.first()
-        bundleOperations.deleteBundle(bundleForRemove.id).shouldBe(1)
+        bundleOperations.deleteBundle(bundleForRemove).shouldBe(Success(true))
+        bundleOperations.selectAllBundles().shouldBe(validBundles.subList(1, validBundles.size))
+        bundleOperations.deleteBundle(validBundles[1]).shouldBe(Success(true))
         bundleOperations.selectAllBundles().shouldBe(validBundles.subList(2, validBundles.size))
-        bundleOperations.deleteBundle(validBundles[1].id).shouldBe(1)
-        bundleOperations.selectAllBundles().shouldBe(validBundles.subList(2, validBundles.size))
-    }
-
-    test("Cant delete bundle by invalid id") {
-        bundleOperations.deleteBundle(validBundles.size + 1).shouldBe(0)
     }
 
     test("Bundle can be updated") {
@@ -45,7 +59,6 @@ class UpdateBundleTest : TestcontainerSpec({ context ->
 
         updatedBundle.id shouldBe validBundles[1].id
         updatedBundle.name shouldBe validBundles.first().name
-        updatedBundle.tasks shouldBe validBundles.first().tasks
         updatedBundle.isActual shouldBe validBundles.first().isActual
     }
 
@@ -53,9 +66,19 @@ class UpdateBundleTest : TestcontainerSpec({ context ->
         val bundleWithUpdatedActuality =
             bundleOperations.updateBundleActuality(validBundles.first().copy(isActual = false)).shouldNotBeNull()
 
-        bundleWithUpdatedActuality.id shouldBe validBundles[1].id
+        bundleWithUpdatedActuality.id shouldBe validBundles[0].id
         bundleWithUpdatedActuality.name shouldBe validBundles.first().name
-        bundleWithUpdatedActuality.tasks shouldBe validBundles.first().tasks
         bundleWithUpdatedActuality.isActual shouldBe !validBundles.first().isActual
+    }
+
+    test("Bundle tasks can be updated") {
+        val updatedBundleTasks =
+            bundleOperations.updateBundleTasks(
+                insertedBundles.first().id,
+                listOf(insertedBundleTasks[1], insertedBundleTasks[0])
+            ).shouldNotBeNull()
+
+        updatedBundleTasks shouldContainExactlyInAnyOrder listOf(insertedBundleTasks[1], insertedBundleTasks[0])
+        updatedBundleTasks.size shouldBe 2
     }
 })

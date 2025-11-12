@@ -44,6 +44,7 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
         fetchedTask.criterions.shouldBe(validTasks.first().criterions)
         fetchedTask.answerFormat.shouldBe(validTasks.first().answerFormat)
         fetchedTask.description.shouldBe(validTasks.first().description)
+        fetchedTask.isActual.shouldBe(true)
     }
 
     test("Task cant be fetched by invalid id") {
