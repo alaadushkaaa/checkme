@@ -4,11 +4,23 @@
 package checkme.db.generated.tables.references
 
 
+import checkme.db.generated.tables.BundleTasks
+import checkme.db.generated.tables.Bundles
 import checkme.db.generated.tables.Checks
 import checkme.db.generated.tables.Tasks
 import checkme.db.generated.tables.Users
 
 
+
+/**
+ * The table <code>public.bundle_tasks</code>.
+ */
+val BUNDLE_TASKS: BundleTasks = BundleTasks.BUNDLE_TASKS
+
+/**
+ * The table <code>public.bundles</code>.
+ */
+val BUNDLES: Bundles = Bundles.BUNDLES
 
 /**
  * The table <code>public.checks</code>.
