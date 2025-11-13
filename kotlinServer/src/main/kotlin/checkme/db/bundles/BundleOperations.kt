@@ -5,7 +5,7 @@ import checkme.db.generated.tables.references.BUNDLE_TASKS
 import checkme.db.tasks.TasksOperations
 import checkme.db.utils.safeLet
 import checkme.domain.models.Bundle
-import checkme.domain.models.TaskAndPriority
+import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.dependencies.bundles.BundleDatabaseError
 import checkme.domain.operations.dependencies.bundles.BundlesDatabase
 import dev.forkhandles.result4k.Failure
@@ -46,7 +46,7 @@ class BundleOperations(
                 record.toBundle()
             }
 
-    override fun selectBundleTasksById(id: Int): List<TaskAndPriority> = selectBundleTasksByIDRecords(id)
+    override fun selectBundleTasksById(id: Int): List<TaskAndOrder> = selectBundleTasksByIDRecords(id)
 
     override fun insertBundle(name: String): Bundle? {
         return jooqContext.insertInto(BUNDLES)
@@ -59,11 +59,11 @@ class BundleOperations(
 
     override fun insertBundleTasks(
         bundleId: Int,
-        tasksAndPriority: List<TaskAndPriority>,
-    ): List<TaskAndPriority>? {
-        var savedTasks: List<TaskAndPriority>? = null
+        tasksAndOrder: List<TaskAndOrder>,
+    ): List<TaskAndOrder>? {
+        var savedTasks: List<TaskAndOrder>? = null
         jooqContext.transaction { _ ->
-            savedTasks = setTasks(bundleId, tasksAndPriority)
+            savedTasks = setTasks(bundleId, tasksAndOrder)
             when {
                 savedTasks != null -> commit()
                 else -> rollback()
@@ -93,15 +93,15 @@ class BundleOperations(
 
     override fun updateBundleTasks(
         bundleId: Int,
-        newTasksAndPriority: List<TaskAndPriority>,
-    ): List<TaskAndPriority>? {
-        var savedTasks: List<TaskAndPriority>? = null
+        newTasksAndOrder: List<TaskAndOrder>,
+    ): List<TaskAndOrder>? {
+        var savedTasks: List<TaskAndOrder>? = null
         jooqContext.transaction { _ ->
             jooqContext.deleteFrom(BUNDLE_TASKS)
                 .where(BUNDLE_TASKS.BUNDLE_ID.eq(bundleId))
                 .execute()
 
-            savedTasks = setTasks(bundleId, newTasksAndPriority)
+            savedTasks = setTasks(bundleId, newTasksAndOrder)
             when {
                 savedTasks != null -> commit()
                 else -> rollback()
@@ -135,27 +135,27 @@ class BundleOperations(
     private fun selectBundleTasksByIDRecords(id: Int) =
         jooqContext.select(
             BUNDLE_TASKS.TASK_ID,
-            BUNDLE_TASKS.PRIORITY,
+            BUNDLE_TASKS.TASK_ORDER,
         ).from(BUNDLE_TASKS)
             .where(BUNDLE_TASKS.BUNDLE_ID.eq(id))
             .fetch()
             .map {
-                it.toTaskAndPriority(taskOperations)
+                it.toTaskAndOrder(taskOperations)
             }
 
     private fun setTasks(
         bundleId: Int,
-        tasksAndPriority: List<TaskAndPriority>,
-    ): List<TaskAndPriority>? =
-        tasksAndPriority.map { (task, priority) ->
+        tasksAndOrder: List<TaskAndOrder>,
+    ): List<TaskAndOrder>? =
+        tasksAndOrder.map { (task, order) ->
             jooqContext
                 .insertInto(BUNDLE_TASKS)
                 .set(BUNDLE_TASKS.BUNDLE_ID, bundleId)
                 .set(BUNDLE_TASKS.TASK_ID, task.id)
-                .set(BUNDLE_TASKS.PRIORITY, priority)
+                .set(BUNDLE_TASKS.TASK_ORDER, order)
                 .returningResult()
                 .fetchOne()
-                ?.toTaskAndPriority(taskOperations) ?: return null
+                ?.toTaskAndOrder(taskOperations) ?: return null
         }
 
     private fun selectFromBundles() =
@@ -185,10 +185,10 @@ internal fun Record.toBundle(): Bundle? =
         )
     }
 
-internal fun Record.toTaskAndPriority(taskOperations: TasksOperations): TaskAndPriority? =
+internal fun Record.toTaskAndOrder(taskOperations: TasksOperations): TaskAndOrder? =
     safeLet(
         this[BUNDLE_TASKS.TASK_ID],
-        this[BUNDLE_TASKS.PRIORITY],
-    ) { taskID, priority ->
-        taskOperations.selectTaskById(taskID)?.let { TaskAndPriority(it, priority) }
+        this[BUNDLE_TASKS.TASK_ORDER],
+    ) { taskID, order ->
+        taskOperations.selectTaskById(taskID)?.let { TaskAndOrder(it, order) }
     }

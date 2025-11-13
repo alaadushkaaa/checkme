@@ -97,9 +97,9 @@ open class BundleTasks(
     val TASK_ID: TableField<BundleTasksRecord, Int?> = createField(DSL.name("task_id"), SQLDataType.INTEGER.nullable(false), this, "")
 
     /**
-     * The column <code>public.bundle_tasks.priority</code>.
+     * The column <code>public.bundle_tasks.task_order</code>.
      */
-    val PRIORITY: TableField<BundleTasksRecord, Int?> = createField(DSL.name("priority"), SQLDataType.INTEGER.nullable(false), this, "")
+    val TASK_ORDER: TableField<BundleTasksRecord, Int?> = createField(DSL.name("task_order"), SQLDataType.INTEGER.nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<BundleTasksRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<BundleTasksRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)

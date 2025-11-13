@@ -1,7 +1,7 @@
 package checkme.domain.operations.bundles
 
 import checkme.domain.models.Bundle
-import checkme.domain.models.TaskAndPriority
+import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -53,11 +53,11 @@ class FetchHiddenBundles(
 }
 
 class FetchBundleTasks(
-    private val selectBundleTasks: (Int) -> List<TaskAndPriority>?,
-) : (Int) -> Result4k<List<TaskAndPriority>, BundleFetchingError> {
-    override fun invoke(bundleId: Int): Result4k<List<TaskAndPriority>, BundleFetchingError> {
+    private val selectBundleTasks: (Int) -> List<TaskAndOrder>?,
+) : (Int) -> Result4k<List<TaskAndOrder>, BundleFetchingError> {
+    override fun invoke(bundleId: Int): Result4k<List<TaskAndOrder>, BundleFetchingError> {
         return when (val tasks = selectBundleTasks(bundleId)) {
-            is List<TaskAndPriority> -> Success(tasks)
+            is List<TaskAndOrder> -> Success(tasks)
             else -> Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
         }
     }

@@ -6,7 +6,7 @@ data class Bundle(
     val isActual: Boolean,
 )
 
-data class TaskAndPriority(
+data class TaskAndOrder(
     val task: Task,
-    val priority: Int,
+    val order: Int,
 )

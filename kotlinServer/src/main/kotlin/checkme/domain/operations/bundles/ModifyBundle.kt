@@ -1,7 +1,7 @@
 package checkme.domain.operations.bundles
 
 import checkme.domain.models.Bundle
-import checkme.domain.models.TaskAndPriority
+import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.dependencies.bundles.BundleDatabaseError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
@@ -43,20 +43,20 @@ class ModifyBundleTasks(
     private val selectBundleById: (bundleId: Int) -> Bundle?,
     private val updateBundleTasks: (
         bundleId: Int,
-        newTasksAndPriority: List<TaskAndPriority>,
-    ) -> List<TaskAndPriority>?,
-) : (Int, List<TaskAndPriority>) -> Result4k<List<TaskAndPriority>, ModifyBundleError> {
+        newTasksAndOrder: List<TaskAndOrder>,
+    ) -> List<TaskAndOrder>?,
+) : (Int, List<TaskAndOrder>) -> Result4k<List<TaskAndOrder>, ModifyBundleError> {
     override fun invoke(
         bundleId: Int,
-        newTasksAndPriority: List<TaskAndPriority>,
-    ): Result4k<List<TaskAndPriority>, ModifyBundleError> =
+        newTasksAndOrder: List<TaskAndOrder>,
+    ): Result4k<List<TaskAndOrder>, ModifyBundleError> =
         try {
             when {
                 bundleNotExists(bundleId) -> Failure(ModifyBundleError.NO_SUCH_BUNDLE)
                 else -> when (
-                    val updatedTasks = updateBundleTasks(bundleId, newTasksAndPriority)
+                    val updatedTasks = updateBundleTasks(bundleId, newTasksAndOrder)
                 ) {
-                    is List<TaskAndPriority> -> Success(updatedTasks)
+                    is List<TaskAndOrder> -> Success(updatedTasks)
                     else -> Failure(ModifyBundleError.UNKNOWN_DATABASE_ERROR)
                 }
             }

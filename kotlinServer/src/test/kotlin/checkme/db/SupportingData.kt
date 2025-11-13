@@ -11,7 +11,7 @@ import checkme.domain.models.AnswerType
 import checkme.domain.models.Bundle
 import checkme.domain.models.Check
 import checkme.domain.models.Task
-import checkme.domain.models.TaskAndPriority
+import checkme.domain.models.TaskAndOrder
 import checkme.web.solution.handlers.COMPLETE_TASK
 import java.time.LocalDateTime
 
@@ -166,10 +166,10 @@ val validBundles: List<Bundle> = listOf(
     ),
 )
 
-val validBundleTasks: List<TaskAndPriority> = listOf(
-    TaskAndPriority(validTasks[0], 1),
-    TaskAndPriority(validTasks[2], 2),
-    TaskAndPriority(validTasks[1], 3),
+val validBundleTasks: List<TaskAndOrder> = listOf(
+    TaskAndOrder(validTasks[0], 1),
+    TaskAndOrder(validTasks[2], 2),
+    TaskAndOrder(validTasks[1], 3),
 )
 
 val appConfig = AppConfig.fromEnvironment()

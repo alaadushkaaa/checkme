@@ -1,7 +1,7 @@
 package checkme.domain.operations.dependencies.bundles
 
 import checkme.domain.models.Bundle
-import checkme.domain.models.TaskAndPriority
+import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Result4k
 
 interface BundlesDatabase {
@@ -9,14 +9,14 @@ interface BundlesDatabase {
 
     fun selectAllBundles(): List<Bundle>
 
-    fun selectBundleTasksById(id: Int): List<TaskAndPriority>
+    fun selectBundleTasksById(id: Int): List<TaskAndOrder>
 
     fun insertBundle(name: String): Bundle?
 
     fun insertBundleTasks(
         bundleId: Int,
-        tasksAndPriority: List<TaskAndPriority>,
-    ): List<TaskAndPriority>?
+        tasksAndOrder: List<TaskAndOrder>,
+    ): List<TaskAndOrder>?
 
     fun selectHiddenBundles(): List<Bundle>
 
@@ -26,8 +26,8 @@ interface BundlesDatabase {
 
     fun updateBundleTasks(
         bundleId: Int,
-        newTasksAndPriority: List<TaskAndPriority>,
-    ): List<TaskAndPriority>?
+        newTasksAndOrder: List<TaskAndOrder>,
+    ): List<TaskAndOrder>?
 
     fun deleteBundle(bundle: Bundle): Result4k<Boolean, BundleDatabaseError>
 }

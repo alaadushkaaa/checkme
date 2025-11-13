@@ -34,17 +34,17 @@ open class BundleTasksRecord() : TableRecordImpl<BundleTasksRecord>(BundleTasks.
         set(value): Unit = set(1, value)
         get(): Int? = get(1) as Int?
 
-    open var priority: Int?
+    open var taskOrder: Int?
         set(value): Unit = set(2, value)
         get(): Int? = get(2) as Int?
 
     /**
      * Create a detached, initialised BundleTasksRecord
      */
-    constructor(bundleId: Int? = null, taskId: Int? = null, priority: Int? = null): this() {
+    constructor(bundleId: Int? = null, taskId: Int? = null, taskOrder: Int? = null): this() {
         this.bundleId = bundleId
         this.taskId = taskId
-        this.priority = priority
+        this.taskOrder = taskOrder
         resetChangedOnNotNull()
     }
 }

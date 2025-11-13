@@ -6,7 +6,7 @@ import checkme.db.validBundleTasks
 import checkme.db.validBundles
 import checkme.db.validTasks
 import checkme.domain.models.Bundle
-import checkme.domain.models.TaskAndPriority
+import checkme.domain.models.TaskAndOrder
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -17,7 +17,7 @@ class SelectBundleTest : TestcontainerSpec({ context ->
     val bundleOperations = BundleOperations(context, tasksOperations)
 
     lateinit var insertedBundles: List<Bundle>
-    lateinit var insertedBundleTasks: List<TaskAndPriority>
+    lateinit var insertedBundleTasks: List<TaskAndOrder>
 
     beforeEach {
         for (task in validTasks) {

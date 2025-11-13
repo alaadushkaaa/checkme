@@ -1,7 +1,7 @@
 package checkme.domain.operations.bundles
 
 import checkme.domain.models.Bundle
-import checkme.domain.models.TaskAndPriority
+import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -31,16 +31,16 @@ class CreateBundleTasks(
     private val selectBundleById: (bundleId: Int) -> Bundle?,
     private val insertBundleTasks: (
         bundleId: Int,
-        tasks: List<TaskAndPriority>,
-    ) -> List<TaskAndPriority>?,
+        tasks: List<TaskAndOrder>,
+    ) -> List<TaskAndOrder>?,
 ) : (
         Int,
-        List<TaskAndPriority>,
-    ) -> Result4k<List<TaskAndPriority>, CreateBundleError> {
+        List<TaskAndOrder>,
+    ) -> Result4k<List<TaskAndOrder>, CreateBundleError> {
     override fun invoke(
         bundleId: Int,
-        tasks: List<TaskAndPriority>,
-    ): Result4k<List<TaskAndPriority>, CreateBundleError> =
+        tasks: List<TaskAndOrder>,
+    ): Result4k<List<TaskAndOrder>, CreateBundleError> =
         try {
             when {
                 bundleNotExists(bundleId) -> Failure(CreateBundleError.NO_SUCH_BUNDLE_FOR_TASKS)
@@ -52,7 +52,7 @@ class CreateBundleTasks(
                             tasks
                         )
                     ) {
-                        is List<TaskAndPriority> -> Success(insertedTasks)
+                        is List<TaskAndOrder> -> Success(insertedTasks)
                         else -> {
                             Failure(CreateBundleError.UNKNOWN_DATABASE_ERROR)
                         }

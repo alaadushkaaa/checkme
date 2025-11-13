@@ -9,6 +9,6 @@ CREATE TABLE bundles (
 CREATE TABLE bundle_tasks (
     bundle_id INT NOT NULL REFERENCES bundles(id),
     task_id INT NOT NULL REFERENCES tasks(id),
-    priority INT NOT NULL,
+    task_order INT NOT NULL,
     UNIQUE (bundle_id, task_id)
 );
