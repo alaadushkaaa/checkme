@@ -24,6 +24,7 @@ class InsertTaskTest : TestcontainerSpec ({ context ->
         insertedTask.criterions.shouldBe(taskForInsert.criterions)
         insertedTask.answerFormat.shouldBe(taskForInsert.answerFormat)
         insertedTask.description.shouldBe(taskForInsert.description)
+        insertedTask.isActual.shouldBe(true)
     }
 
     for (type in AnswerType.entries) {
@@ -42,6 +43,7 @@ class InsertTaskTest : TestcontainerSpec ({ context ->
             insertedTask.criterions.shouldBe(taskForInsert.criterions)
             insertedTask.answerFormat.shouldBe(mapOf(type.code to type))
             insertedTask.description.shouldBe(taskForInsert.description)
+            insertedTask.isActual.shouldBe(true)
         }
     }
 })

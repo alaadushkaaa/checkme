@@ -5,7 +5,7 @@ import checkme.db.validTasks
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
-class RemoveTaskTest : TestcontainerSpec ({ context ->
+class RemoveTaskTest : TestcontainerSpec({ context ->
     val taskOperations = TasksOperations(context)
 
     beforeEach {
@@ -35,5 +35,16 @@ class RemoveTaskTest : TestcontainerSpec ({ context ->
 
     test("Cant delete task by invalid id") {
         taskOperations.deleteTask(validTasks.size + 1).shouldBe(0)
+    }
+
+    test("Task actuality can bu updated") {
+        val updatedTask =
+            taskOperations.updateTaskActuality(validTasks.first().copy(isActual = false)).shouldNotBeNull()
+
+        updatedTask.name.shouldBe(validTasks.first().name)
+        updatedTask.criterions.shouldBe(validTasks.first().criterions)
+        updatedTask.answerFormat.shouldBe(validTasks.first().answerFormat)
+        updatedTask.description.shouldBe(validTasks.first().description)
+        updatedTask.isActual.shouldBe(!validTasks.first().isActual)
     }
 })
