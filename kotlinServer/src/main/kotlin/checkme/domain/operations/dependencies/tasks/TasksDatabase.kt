@@ -3,6 +3,7 @@ package checkme.domain.operations.dependencies.tasks
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
+import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
 
 interface TasksDatabase {
@@ -11,6 +12,8 @@ interface TasksDatabase {
     fun selectAllTask(): List<Task>
 
     fun selectHiddenTasks(): List<Task>
+
+    fun selectAllTasksIdAndNames(): List<TaskIdAndName>
 
     fun selectTaskName(taskId: Int): TaskNameForAllResults?
 

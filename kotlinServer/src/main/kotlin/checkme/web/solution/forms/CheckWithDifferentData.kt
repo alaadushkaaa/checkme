@@ -22,6 +22,11 @@ data class TaskNameForAllResults(
     val name: String,
 )
 
+data class TaskIdAndName(
+    val id: String,
+    val name: String,
+)
+
 data class UserNameSurnameForAllResults(
     val name: String,
     val surname: String,

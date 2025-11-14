@@ -1,6 +1,7 @@
 package checkme.domain.operations.tasks
 
 import checkme.domain.models.Task
+import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
@@ -45,6 +46,20 @@ class FetchHiddenTasks(
         try {
             when (val tasks = fetchHiddenTasks()) {
                 is List<Task> -> Success(tasks)
+                else -> Failure(TaskFetchingError.NO_SUCH_TASK)
+            }
+        } catch (_: DataAccessException) {
+            Failure(TaskFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
+class FetchAllTasksIdAndName(
+    private val fetchAllTasksIdAndName: () -> List<TaskIdAndName>?,
+) : () -> Result4k<List<TaskIdAndName>, TaskFetchingError> {
+    override fun invoke(): Result4k<List<TaskIdAndName>, TaskFetchingError> =
+        try {
+            when (val tasks = fetchAllTasksIdAndName()) {
+                is List<TaskIdAndName> -> Success(tasks)
                 else -> Failure(TaskFetchingError.NO_SUCH_TASK)
             }
         } catch (_: DataAccessException) {

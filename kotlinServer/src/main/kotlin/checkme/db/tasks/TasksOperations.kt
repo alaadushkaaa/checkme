@@ -7,8 +7,8 @@ import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.domain.operations.dependencies.tasks.TasksDatabase
+import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
-import checkme.web.tasks.forms.TasksListData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
@@ -35,6 +35,14 @@ class TasksOperations(
             .fetch()
             .mapNotNull { record: Record ->
                 record.toTask()
+            }
+
+    override fun selectAllTasksIdAndNames(): List<TaskIdAndName> =
+        selectFromTasks()
+            .orderBy(TASKS.ID)
+            .fetch()
+            .mapNotNull { record: Record ->
+                record.toTaskIdAndName()
             }
 
     override fun selectHiddenTasks(): List<Task> =
@@ -152,7 +160,7 @@ internal fun Record.toTaskDataForAllResults(): TaskNameForAllResults? =
         )
     }
 
-internal fun Record.toTasksListData(): TasksListData? =
+internal fun Record.toTaskIdAndName(): TaskIdAndName? =
     safeLet(
         this[TASKS.ID],
         this[TASKS.NAME]
@@ -160,7 +168,7 @@ internal fun Record.toTasksListData(): TasksListData? =
             id,
             name,
         ->
-        TasksListData(
+        TaskIdAndName(
             id = id.toString(),
             name = name,
         )
