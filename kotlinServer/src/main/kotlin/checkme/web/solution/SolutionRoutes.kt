@@ -8,6 +8,7 @@ import checkme.web.solution.handlers.ListResultsHandler
 import checkme.web.solution.handlers.ListTaskResultsHandler
 import checkme.web.solution.handlers.ListUserResultsHandler
 import checkme.web.solution.handlers.ResultHandler
+import checkme.web.solution.handlers.ResultsTableHandler
 import org.http4k.core.*
 import org.http4k.routing.*
 
@@ -50,6 +51,12 @@ fun solutionRouter(
             userOperations = operations.userOperations,
             userLens = contextTools.userLens
         ),
+        SOLUTIONS_TABLE bind Method.GET to ResultsTableHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
         "/user/{id}" bind Method.GET to ListUserResultsHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
@@ -66,3 +73,4 @@ fun solutionRouter(
 
 const val SOLUTION_SEGMENT = "/solution"
 const val NEW_SOLUTION = "/new"
+const val SOLUTIONS_TABLE = "/solutions_table"
