@@ -10,6 +10,8 @@ import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.solution.forms.TableSolutionsResponse
 import checkme.web.solution.forms.UserDataForUsersList
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.valueOrNull
@@ -26,6 +28,9 @@ class ResultsTableHandler(
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
+        objectMapper.registerModule(JavaTimeModule())
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT)
         val user = userLens(request)
         return when {
             user == null || !user.isAdmin() ->

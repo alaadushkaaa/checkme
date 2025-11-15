@@ -6,14 +6,11 @@ import checkme.domain.checks.CheckDataConsole
 import checkme.domain.checks.CheckDataSQL
 import checkme.domain.checks.Criterion
 import checkme.domain.forms.CheckResult
-import checkme.domain.models.Check.Companion.tryCheckSpecialCriterionEach
 import checkme.logging.LoggerType
 import checkme.logging.ServerLogger
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.http4k.core.*
 import java.io.File
 import java.time.LocalDateTime
-import kotlin.math.log
 
 @Suppress("LongParameterList")
 data class Check(
