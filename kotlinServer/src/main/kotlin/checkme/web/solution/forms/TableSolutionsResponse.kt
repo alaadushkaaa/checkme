@@ -4,5 +4,5 @@ import checkme.domain.models.Check
 
 data class TableSolutionsResponse (
     val tasks: List<TaskIdAndName>,
-    val solutions: Map<UserDataForUsersList, Check>,
+    val solutions: Map<UserDataForUsersList, List<Check>>,
 )

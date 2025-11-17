@@ -67,11 +67,10 @@ private fun tryGetSolutionsWithData(
             objectMapper.sendBadRequestError(ResultsTableError.FETCH_SOLUTIONS_ERROR.errorText)
 
         else -> {
-            val usersAndSolutions: Map<UserDataForUsersList, Check> =
-                solutionsData.valueOrNull()?.mapNotNull { solution ->
+            val usersAndSolutions: Map<UserDataForUsersList, List<Check>> =
+                solutionsData.valueOrNull()?.groupBy { solution ->
                     usersData.valueOrNull()?.find { it.id == solution.userId.toString() }
-                        ?.let { userData -> userData to solution }
-                }?.toMap() ?: emptyMap()
+                }?.filterKeys { it != null }?.mapKeys { it.key!! } ?: emptyMap()
             objectMapper.sendOKResponse(
                 TableSolutionsResponse(
                     tasksData.valueOrNull() ?: emptyList(),
