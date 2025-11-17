@@ -32,6 +32,12 @@ fun solutionRouter(
             userOperations = operations.userOperations,
             userLens = contextTools.userLens
         ),
+        SOLUTIONS_TABLE bind Method.GET to ResultsTableHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens
+        ),
         "/{checkId}" bind Method.GET to ResultHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
@@ -46,12 +52,6 @@ fun solutionRouter(
         ),
         "/all/" bind Method.GET to ListResultsHandler(
             forTable = true,
-            checkOperations = operations.checkOperations,
-            taskOperations = operations.taskOperations,
-            userOperations = operations.userOperations,
-            userLens = contextTools.userLens
-        ),
-        SOLUTIONS_TABLE bind Method.GET to ResultsTableHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
             userOperations = operations.userOperations,
