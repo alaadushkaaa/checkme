@@ -57,12 +57,6 @@ fun solutionRouter(
             userOperations = operations.userOperations,
             userLens = contextTools.userLens
         ),
-        SOLUTIONS_TABLE bind Method.GET to ResultsTableHandler(
-            checkOperations = operations.checkOperations,
-            taskOperations = operations.taskOperations,
-            userOperations = operations.userOperations,
-            userLens = contextTools.userLens
-        ),
         "/user/{id}" bind Method.GET to ListUserResultsHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
