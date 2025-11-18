@@ -8,7 +8,6 @@ import checkme.domain.operations.users.UserOperationHolder
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.solution.forms.TableSolutionsResponse
-import checkme.web.solution.forms.UserDataForUsersList
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -67,13 +66,13 @@ private fun tryGetSolutionsWithData(
             objectMapper.sendBadRequestError(ResultsTableError.FETCH_SOLUTIONS_ERROR.errorText)
 
         else -> {
-            val usersAndSolutions: Map<UserDataForUsersList, List<Check>> =
-                solutionsData.valueOrNull()?.groupBy { solution ->
-                    usersData.valueOrNull()?.find { it.id == solution.userId.toString() }
-                }?.filterKeys { it != null }?.mapKeys { it.key!! } ?: emptyMap()
+            val usersAndSolutions: Map<Int, List<Check>> =
+                solutionsData.valueOrNull()?.groupBy { it.userId } ?: emptyMap()
+            for (solution in usersAndSolutions) println(solution)
             objectMapper.sendOKResponse(
                 TableSolutionsResponse(
                     tasksData.valueOrNull() ?: emptyList(),
+                    usersData.valueOrNull() ?: emptyList(),
                     usersAndSolutions
                 )
             )
