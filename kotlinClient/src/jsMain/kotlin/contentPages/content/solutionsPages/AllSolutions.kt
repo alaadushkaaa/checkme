@@ -25,7 +25,7 @@ class AllSolutions(
     init {
         h2("Все решения")
         button("Таблица", className = "usually-button").onClick {
-            routing.navigate("/solution-table")
+            routing.navigate("/solutions-table")
         }
         if ((page == null) || (page < 1)){
             routing.navigate("/solution-list/1")

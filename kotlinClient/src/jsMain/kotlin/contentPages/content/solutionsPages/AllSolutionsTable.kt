@@ -9,9 +9,9 @@ import io.kvision.routing.Routing
 import kotlinx.browser.window
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
-import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 import kotlinx.serialization.json.Json
 import ru.yarsu.serializableClasses.ResponseError
+import ru.yarsu.serializableClasses.solution.SolutionsTable
 
 class AllSolutionsTable(
     serverUrl: String,
@@ -26,18 +26,12 @@ class AllSolutionsTable(
         requestInit.method = HttpMethod.GET.name
         requestInit.headers = js("{}")
         requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-        window.fetch(serverUrl + "solution/all/f", requestInit).then { response ->
+        window.fetch(serverUrl + "solution/solutions_table", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
-                    if (UserInformationStorage.isAdmin()) {
-                        val solutionList = Json.Default.decodeFromString<List<SolutionInAdminListsFormat>>(jsonString)
-                        if (solutionList.isEmpty()){
-                            this.add(Div("Решения не найдены"))
-                        } else {
-                            this.add(AllSolutionsTableTitle(serverUrl, routing, solutionList))
-                        }
-                    }
+                    val solutions = Json.Default.decodeFromString<SolutionsTable>(jsonString)
+                    this.add(AllSolutionsTableViewer(routing, solutions))
                 }
             } else if (response.status.toInt() == 400) {
                 response.json().then {
