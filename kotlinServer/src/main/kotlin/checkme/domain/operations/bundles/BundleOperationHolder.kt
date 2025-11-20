@@ -44,7 +44,7 @@ class BundleOperationHolder(
     val createBundleTasks: (
         bundleId: Int,
         tasks: List<TaskAndOrder>,
-    ) -> Result<List<TaskAndOrder>, CreateBundleError> =
+    ) -> Result<List<TaskAndOrder>, CreateBundleTasksError> =
         CreateBundleTasks(
             bundleDatabase::selectBundleById,
             bundleDatabase::insertBundleTasks

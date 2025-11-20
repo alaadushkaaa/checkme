@@ -36,15 +36,15 @@ class CreateBundleTasks(
 ) : (
         Int,
         List<TaskAndOrder>,
-    ) -> Result4k<List<TaskAndOrder>, CreateBundleError> {
+    ) -> Result4k<List<TaskAndOrder>, CreateBundleTasksError> {
     override fun invoke(
         bundleId: Int,
         tasks: List<TaskAndOrder>,
-    ): Result4k<List<TaskAndOrder>, CreateBundleError> =
+    ): Result4k<List<TaskAndOrder>, CreateBundleTasksError> =
         try {
             when {
-                bundleNotExists(bundleId) -> Failure(CreateBundleError.NO_SUCH_BUNDLE_FOR_TASKS)
-                tasks.isEmpty() -> Failure(CreateBundleError.TASKS_LIST_IS_EMPTY)
+                bundleNotExists(bundleId) -> Failure(CreateBundleTasksError.NO_SUCH_BUNDLE_FOR_TASKS)
+                tasks.isEmpty() -> Failure(CreateBundleTasksError.TASKS_LIST_IS_EMPTY)
                 else ->
                     when (
                         val insertedTasks = insertBundleTasks(
@@ -54,12 +54,12 @@ class CreateBundleTasks(
                     ) {
                         is List<TaskAndOrder> -> Success(insertedTasks)
                         else -> {
-                            Failure(CreateBundleError.UNKNOWN_DATABASE_ERROR)
+                            Failure(CreateBundleTasksError.UNKNOWN_DATABASE_ERROR)
                         }
                     }
             }
         } catch (_: DataAccessException) {
-            Failure(CreateBundleError.UNKNOWN_DATABASE_ERROR)
+            Failure(CreateBundleTasksError.UNKNOWN_DATABASE_ERROR)
         }
 
     private fun bundleNotExists(bundleId: Int): Boolean =
@@ -71,6 +71,10 @@ class CreateBundleTasks(
 
 enum class CreateBundleError {
     UNKNOWN_DATABASE_ERROR,
+}
+
+enum class CreateBundleTasksError {
     NO_SUCH_BUNDLE_FOR_TASKS,
     TASKS_LIST_IS_EMPTY,
+    UNKNOWN_DATABASE_ERROR,
 }
