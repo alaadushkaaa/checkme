@@ -64,6 +64,6 @@ private fun tryFetchTask(
 }
 
 enum class ViewTaskError(val errorText: String) {
-    NO_TASK_ID_ERROR("The ID of the task to view is missing"),
+    NO_TASK_ID_ERROR("No task id to view task"),
     USER_CANT_VIEW_THIS_TASK("User can't view this task"),
 }
