@@ -68,7 +68,6 @@ private fun tryGetSolutionsWithData(
         else -> {
             val usersAndSolutions: Map<Int, List<Check>> =
                 solutionsData.valueOrNull()?.groupBy { it.userId } ?: emptyMap()
-            for (solution in usersAndSolutions) println(solution)
             objectMapper.sendOKResponse(
                 TableSolutionsResponse(
                     tasksData.valueOrNull() ?: emptyList(),
