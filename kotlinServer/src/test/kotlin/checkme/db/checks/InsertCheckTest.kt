@@ -26,8 +26,8 @@ class InsertCheckTest : TestcontainerSpec({ context ->
         insertedCheck.status.shouldBe(checkForInsert.status)
     }
 
-    test("Valid check with null result can be inserted") {
-        val checkForInsert = validChecks.filter { it.result == null }.first()
+    test("Valid check with empty result can be inserted") {
+        val checkForInsert = validChecks.filter { it.result.isEmpty() }.first()
         val insertedCheck =
             checkOperations.insertCheck(
                 checkForInsert.taskId,
