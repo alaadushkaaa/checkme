@@ -1,8 +1,10 @@
 package checkme.domain.operations.bundles
 
 import checkme.domain.models.Bundle
+import checkme.domain.models.Task
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.dependencies.bundles.BundleDatabaseError
+import checkme.domain.operations.tasks.TaskRemovingError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Result4k
@@ -72,22 +74,36 @@ class ModifyBundleTasks(
 }
 
 class RemoveBundle(
+    private val selectBundleById: (bundleId: Int) -> Bundle?,
     private val removeBundle: (Bundle) -> Result4k<Boolean, BundleDatabaseError>,
 ) : (Bundle) -> Result<Boolean, BundleRemovingError> {
     override fun invoke(bundle: Bundle): Result<Boolean, BundleRemovingError> {
-        return when (removeBundle(bundle)) {
-            is Success -> Success(true)
-            else -> Failure(BundleRemovingError.UNKNOWN_DELETE_ERROR)
+        return try {
+            when {
+                bundleNotExists(bundle.id) -> Failure(BundleRemovingError.BUNDLE_NOT_EXISTS)
+                else -> when (removeBundle(bundle)) {
+                    is Success -> Success(true)
+                    else -> Failure(BundleRemovingError.UNKNOWN_DELETE_ERROR)
+                }
+            }
+        } catch (_: DataAccessException) {
+            Failure(BundleRemovingError.UNKNOWN_DATABASE_ERROR)
         }
     }
+    private fun bundleNotExists(bundleId: Int): Boolean =
+        when (selectBundleById(bundleId)) {
+            is Bundle -> false
+            else -> true
+        }
 }
 
 enum class ModifyBundleError {
     UNKNOWN_DATABASE_ERROR,
-    NO_SUCH_BUNDLE,
+    NO_SUCH_BUNDLE
 }
 
 enum class BundleRemovingError {
     UNKNOWN_DATABASE_ERROR,
     UNKNOWN_DELETE_ERROR,
+    BUNDLE_NOT_EXISTS
 }

@@ -51,11 +51,10 @@ class BundleOperationHolder(
         )
 
     val removeBundle: (bundle: Bundle) -> Result<Boolean, BundleRemovingError> =
-        RemoveBundle {
-                bundle: Bundle,
-            ->
-            bundleDatabase.deleteBundle(bundle)
-        }
+        RemoveBundle (
+            bundleDatabase::selectBundleById,
+            bundleDatabase::deleteBundle
+        )
 
     val modifyBundleActuality: (bundle: Bundle) -> Result<Bundle, ModifyBundleError> =
         ModifyBundleActuality {
