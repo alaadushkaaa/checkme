@@ -17,7 +17,7 @@ class CreateCheckTest : FunSpec({
         taskId: Int,
         userId: Int,
         date: LocalDateTime,
-        result: Map<String, CheckResult>?,
+        result: Map<String, CheckResult>,
         status: String,
     ) -> Check? = {
             taskId,
@@ -85,7 +85,7 @@ class CreateCheckTest : FunSpec({
     }
 
     test("task with null result can be inserted") {
-        val validTask = validChecks.first().copy(result = null)
+        val validTask = validChecks.first().copy(result = emptyMap())
         createCheck(
             taskId = validTask.taskId,
             userId = validTask.userId,

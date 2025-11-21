@@ -12,21 +12,21 @@ class CreateCheck(
         taskId: Int,
         userId: Int,
         date: LocalDateTime,
-        result: Map<String, CheckResult>?,
+        result: Map<String, CheckResult>,
         status: String,
     ) -> Check?,
 ) : (
         Int,
         Int,
         LocalDateTime,
-        Map<String, CheckResult>?,
+        Map<String, CheckResult>,
         String,
     ) -> Result4k<Check, CreateCheckError> {
     override fun invoke(
         taskId: Int,
         userId: Int,
         date: LocalDateTime,
-        result: Map<String, CheckResult>?,
+        result: Map<String, CheckResult>,
         status: String,
     ): Result4k<Check, CreateCheckError> =
         when (

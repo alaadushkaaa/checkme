@@ -134,7 +134,7 @@ internal fun Record.toCheck(): Check? =
             taskId = taskId,
             userId = userId,
             date = date,
-            result = jacksonObjectMapper().readValue<Map<String, CheckResult>?>(result.data()),
+            result = jacksonObjectMapper().readValue<Map<String, CheckResult>>(result.data()),
             status
         )
     }

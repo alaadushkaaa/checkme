@@ -44,14 +44,14 @@ class CheckOperationHolder (
         taskId: Int,
         userId: Int,
         date: LocalDateTime,
-        result: Map<String, CheckResult>?,
+        result: Map<String, CheckResult>,
         status: String,
     ) -> Result<Check, CreateCheckError> =
         CreateCheck {
                 taskId: Int,
                 userId: Int,
                 date: LocalDateTime,
-                result: Map<String, CheckResult>?,
+                result: Map<String, CheckResult>,
                 status: String,
             ->
             checksDatabase.insertCheck(
