@@ -85,7 +85,6 @@ class BundleOperations(
     override fun updateBundle(bundle: Bundle): Bundle? {
         return jooqContext.update(BUNDLES)
             .set(BUNDLES.NAME, bundle.name)
-            .set(BUNDLES.ISACTUAL, bundle.isActual)
             .where(BUNDLES.ID.eq(bundle.id))
             .execute()
             .let { selectBundleById(bundle.id) }
