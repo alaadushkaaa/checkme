@@ -1,6 +1,7 @@
 package checkme.domain.operations
 
 import checkme.config.AppConfig
+import checkme.domain.operations.bundles.BundleOperationHolder
 import checkme.domain.operations.checks.CheckOperationHolder
 import checkme.domain.operations.dependencies.DatabaseOperations
 import checkme.domain.operations.tasks.TaskOperationsHolder
@@ -18,4 +19,6 @@ class OperationHolder (
     val checkOperations: CheckOperationHolder = CheckOperationHolder(database.checkOperations)
 
     val taskOperations: TaskOperationsHolder = TaskOperationsHolder(database.taskOperations)
+
+    val bundleOperations: BundleOperationHolder = BundleOperationHolder(database.bundleOperations)
 }
