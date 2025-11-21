@@ -1,12 +1,12 @@
 package checkme.web.bundles.handlers
 
 import checkme.domain.models.Bundle
-import checkme.domain.models.Task
 import checkme.domain.models.TaskAndOrder
-import checkme.domain.operations.bundles.*
-import checkme.domain.operations.tasks.TaskOperationsHolder
-import checkme.domain.operations.tasks.TaskRemovingError
-import checkme.web.tasks.handlers.RemovingTaskError
+import checkme.domain.operations.bundles.BundleFetchingError
+import checkme.domain.operations.bundles.BundleOperationHolder
+import checkme.domain.operations.bundles.CreateBundleError
+import checkme.domain.operations.bundles.CreateBundleTasksError
+import checkme.domain.operations.bundles.ModifyBundleError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
@@ -104,36 +104,6 @@ internal fun selectHiddenBundles(bundleOperations: BundleOperationHolder): Resul
     }
 }
 
-internal fun changeBundleActuality(
-    bundle: Bundle,
-    bundleOperations: BundleOperationHolder,
-): Result<Bundle, BundleChangingError> {
-    return when (
-        val updatedBundle = bundleOperations.modifyBundleActuality(bundle)
-    ) {
-        is Success -> Success(updatedBundle.value)
-        is Failure -> when (updatedBundle.reason) {
-            ModifyBundleError.NO_SUCH_BUNDLE -> Failure(BundleChangingError.NO_SUCH_BUNDLE)
-            ModifyBundleError.UNKNOWN_DATABASE_ERROR -> Failure(BundleChangingError.UNKNOWN_DATABASE_ERROR)
-        }
-    }
-}
-
-internal fun changeBundleName(
-    bundle: Bundle,
-    bundleOperations: BundleOperationHolder,
-): Result<Bundle, BundleChangingError> {
-    return when (
-        val updatedBundle = bundleOperations.modifyBundle(bundle)
-    ) {
-        is Success -> Success(updatedBundle.value)
-        is Failure -> when (updatedBundle.reason) {
-            ModifyBundleError.NO_SUCH_BUNDLE -> Failure(BundleChangingError.NO_SUCH_BUNDLE)
-            ModifyBundleError.UNKNOWN_DATABASE_ERROR -> Failure(BundleChangingError.UNKNOWN_DATABASE_ERROR)
-        }
-    }
-}
-
 internal fun tryUpdateBundleTasks(
     tasksAndOrder: List<TaskAndOrder>,
     bundleId: Int,
@@ -149,22 +119,6 @@ internal fun tryUpdateBundleTasks(
                     ModifyBundleError.UNKNOWN_DATABASE_ERROR -> Failure(CreationBundleTasksError.UNKNOWN_DATABASE_ERROR)
                 }
             }
-        }
-    }
-}
-
-internal fun deleteBundle(
-    bundle: Bundle,
-    bundleOperations: BundleOperationHolder
-): Result<Boolean, RemovingBundleError> {
-    return when (
-        val deletedBundle = bundleOperations.removeBundle(bundle)
-    ) {
-        is Success -> Success(deletedBundle.value)
-        is Failure -> when (deletedBundle.reason) {
-            BundleRemovingError.UNKNOWN_DELETE_ERROR -> Failure(RemovingBundleError.UNKNOWN_DELETE_ERROR)
-            BundleRemovingError.UNKNOWN_DATABASE_ERROR -> Failure(RemovingBundleError.UNKNOWN_DATABASE_ERROR)
-            BundleRemovingError.BUNDLE_NOT_EXISTS -> Failure(RemovingBundleError.NO_SUCH_BUNDLE)
         }
     }
 }
@@ -212,16 +166,3 @@ enum class AddBundleTasksError(val errorText: String) {
     NO_BUNDLE_ID_TO_ADD_TASKS("No bundle id for adding task"),
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
 }
-
-enum class BundleChangingError(val errorText: String) {
-    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
-    NO_SUCH_BUNDLE("No bundle for fetching"),
-}
-
-enum class RemovingBundleError(val errorText: String) {
-    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
-    NO_SUCH_BUNDLE("Bundle does not exist"),
-    UNKNOWN_DELETE_ERROR("Something was wrong until task deleting. Please try again later."),
-}
-
-
