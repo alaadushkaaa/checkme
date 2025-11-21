@@ -18,7 +18,7 @@ data class Check(
     val taskId: Int,
     val userId: Int,
     val date: LocalDateTime,
-    val result: Map<String, CheckResult>?,
+    val result: Map<String, CheckResult>,
     val status: String,
 ) {
     companion object {
