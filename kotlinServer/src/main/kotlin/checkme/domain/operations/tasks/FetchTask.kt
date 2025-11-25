@@ -67,6 +67,21 @@ class FetchAllTasksIdAndName(
         }
 }
 
+class FetchAllTasksPagination(
+    private val fetchAllTasksWithData: (Int) -> List<Task>?,
+) : (Int) -> Result4k<List<Task>, TaskFetchingError> {
+
+    override fun invoke(page: Int): Result4k<List<Task>, TaskFetchingError> =
+        try {
+            when (val tasks = fetchAllTasksWithData(page)) {
+                is List<Task> -> Success(tasks)
+                else -> Failure(TaskFetchingError.NO_SUCH_TASK)
+            }
+        } catch (_: DataAccessException) {
+            Failure(TaskFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
 class FetchTaskName(
     private val fetchTaskName: (taskId: Int) -> TaskNameForAllResults?,
 ) : (Int) -> Result4k<TaskNameForAllResults, TaskFetchingError> {
