@@ -1,12 +1,13 @@
 package checkme.web.bundles.handlers
 
 import checkme.domain.models.Bundle
-import checkme.domain.models.Task
 import checkme.domain.models.TaskAndOrder
-import checkme.domain.operations.bundles.*
-import checkme.domain.operations.tasks.TaskOperationsHolder
-import checkme.domain.operations.tasks.TaskRemovingError
-import checkme.web.tasks.handlers.RemovingTaskError
+import checkme.domain.operations.bundles.BundleFetchingError
+import checkme.domain.operations.bundles.BundleOperationHolder
+import checkme.domain.operations.bundles.BundleRemovingError
+import checkme.domain.operations.bundles.CreateBundleError
+import checkme.domain.operations.bundles.CreateBundleTasksError
+import checkme.domain.operations.bundles.ModifyBundleError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
@@ -155,7 +156,7 @@ internal fun tryUpdateBundleTasks(
 
 internal fun deleteBundle(
     bundle: Bundle,
-    bundleOperations: BundleOperationHolder
+    bundleOperations: BundleOperationHolder,
 ): Result<Boolean, RemovingBundleError> {
     return when (
         val deletedBundle = bundleOperations.removeBundle(bundle)
@@ -223,5 +224,3 @@ enum class RemovingBundleError(val errorText: String) {
     NO_SUCH_BUNDLE("Bundle does not exist"),
     UNKNOWN_DELETE_ERROR("Something was wrong until task deleting. Please try again later."),
 }
-
-
