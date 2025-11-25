@@ -15,6 +15,8 @@ interface TasksDatabase {
 
     fun selectAllTasksIdAndNames(): List<TaskIdAndName>
 
+    fun selectAllTasksPagination(page: Int): List<Task>
+
     fun selectTaskName(taskId: Int): TaskNameForAllResults?
 
     fun updateTaskActuality(task: Task): Task?

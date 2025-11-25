@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.valueOrNull
 import org.http4k.core.*
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.RequestContextLens
@@ -40,12 +39,15 @@ class ChangeBundleNameHandler(
                     is Failure -> objectMapper.sendBadRequestError(ChangeBundleNameError.NO_SUCH_BUNDLE.errorText)
                     is Success -> {
                         val bundleToUpdate = fetchedBundle.value.copy(name = bundleNewName)
-                        if (!bundleAlreadyHaveThisName(fetchedBundle.value.name, bundleNewName)) tryUpdateBundleName(
-                            bundleToUpdateName = bundleToUpdate,
-                            bundleOperations = bundleOperations,
-                            objectMapper = objectMapper
-                        )
-                        else objectMapper.sendBadRequestError(ChangeBundleNameError.NAME_ALREADY_EXISTS.errorText)
+                        if (!bundleAlreadyHaveThisName(fetchedBundle.value.name, bundleNewName)) {
+                            tryUpdateBundleName(
+                                bundleToUpdateName = bundleToUpdate,
+                                bundleOperations = bundleOperations,
+                                objectMapper = objectMapper
+                            )
+                        } else {
+                            objectMapper.sendBadRequestError(ChangeBundleNameError.NAME_ALREADY_EXISTS.errorText)
+                        }
                     }
                 }
             }

@@ -33,6 +33,12 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTasksIdAndNames()
         }
 
+    val fetchAllTasksPagination: (Int) -> Result<List<Task>, TaskFetchingError> =
+        FetchAllTasksPagination {
+                page: Int ->
+            tasksDatabase.selectAllTasksPagination(page)
+        }
+
     val fetchTaskName: (Int) -> Result<TaskNameForAllResults, TaskFetchingError> =
         FetchTaskName {
                 taskId: Int ->
