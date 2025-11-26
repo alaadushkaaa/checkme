@@ -2,113 +2,108 @@ package ru.yarsu.contentPages.content.solutionsPages
 
 import io.kvision.core.onClick
 import io.kvision.html.Div
-import io.kvision.html.Span
+import io.kvision.html.button
 import io.kvision.panel.SimplePanel
 import io.kvision.panel.VPanel
 import io.kvision.routing.Routing
 import io.kvision.tabulator.ColumnDefinition
+import io.kvision.tabulator.Editor
 import io.kvision.tabulator.TableType
 import io.kvision.tabulator.TabulatorOptions
 import io.kvision.tabulator.tabulator
-import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
-import ru.yarsu.serializableClasses.solution.UserNameSurname
-import ru.yarsu.serializableClasses.task.Criterion
-import ru.yarsu.serializableClasses.task.TaskFormatForList
-import kotlin.collections.mutableMapOf
+import kotlinx.serialization.json.Json
+import ru.yarsu.serializableClasses.solution.IdScore
+import ru.yarsu.serializableClasses.solution.ResultScoreMessage
+import ru.yarsu.serializableClasses.solution.SolutionInformation
+import ru.yarsu.serializableClasses.solution.SolutionsTable
 
 class AllSolutionsTableViewer(
     private val routing: Routing,
-    private val taskList: List<TaskFormatForList>,
-    private val solutionList: List<SolutionInAdminListsFormat>
+    private val solutionsTable: SolutionsTable,
 ): SimplePanel() {
-    private val listTitle = mutableListOf(
-        TaskFormatForList(
-            -1,
-            "Фамилия Имя",
-            mapOf(Pair("", Criterion("", 0, "", ""))),
-            mapOf(Pair("", "")),
-            "",
-            true
-        )
-    ).apply { this.addAll(taskList) }
-
-    private fun creatingDataMap():  List<Pair<UserNameSurname, MutableMap<String, MutableList<Pair<Int, Pair<String, Int?>>>>>> {
-        val userMap = mutableMapOf<UserNameSurname, MutableList<SolutionInAdminListsFormat>>()
-        for (solution in solutionList) {
-            if (userMap.containsKey(solution.user)) {
-                userMap[solution.user]?.add(solution)
-            } else {
-                if (solution.user != null)
-                    userMap.put(solution.user, mutableListOf(solution))
-            }
+    private fun getListMaxScore(solutions: List<SolutionInformation>) : List<IdScore> {
+        return solutionsTable.tasks.map { task ->
+            val max = solutions.filter { it.taskId == task.id }.maxOfOrNull { solution ->
+                solution.result?.values?.map { it.score }?.toList()?.sum() ?: 0
+            } ?: 0
+            IdScore(task.id, max)
         }
-        val newUserMap = mutableMapOf<UserNameSurname, MutableMap<String, MutableList<Pair<Int, Pair<String, Int?>>>>>()
-        for ((key, value) in userMap){
-            val solutionsMap = mutableMapOf<String, MutableList<Pair<Int, Pair<String, Int?>>>>()
-            for (solution in value){
-                val taskName = solution.task?.name ?: ""
-                if (solutionsMap.containsKey(taskName)) {
-                    if ((solution.status == "Проверено")) {
-                        val score = solution.result?.values?.map { it.score }?.toList()?.sum() ?: 0
-                        solutionsMap[taskName]?.add(Pair(solution.id, Pair(solution.status, score)))
-                    } else {
-                        solutionsMap[taskName]?.add(Pair(solution.id, Pair(solution.status, null)))
-                    }
-                } else {
-                    if ((solution.status == "Проверено")) {
-                        val score = solution.result?.values?.map { it.score }?.toList()?.sum() ?: 0
-                        solutionsMap.put(taskName, mutableListOf(Pair(solution.id, Pair(solution.status, score))))
-                    } else {
-                        solutionsMap.put(taskName, mutableListOf(Pair(solution.id, Pair(solution.status, null))))
-                    }
-                }
-            }
-            newUserMap.put(key, solutionsMap)
-        }
-        return newUserMap.toList().sortedBy { (surname, _) -> surname.surname }
     }
 
-    private val listRows = creatingDataMap()
+    private fun getData() : List<Map<String, String>> {
+        return solutionsTable.solutions.toList().mapIndexed { index, user ->
+            val userStats = solutionsTable.users.find { it.id == user.first }
+            val surnameNameLogin = if (userStats != null) {
+                "${userStats.surname} ${userStats.name} (${userStats.login})"
+            } else {
+                "Неизвестный пользователь"
+            }
+            val row = mutableMapOf<String, String>()
+            row.put("id", user.first.toString())
+            row.put("solutions", Json.Default.encodeToString(user.second))
+            val listMaxScore = getListMaxScore(user.second)
+            for (max in listMaxScore) {
+                row.put("taskId${max.id}", max.score.toString())
+            }
+            row.put("surnameNameLogin", surnameNameLogin)
+            row
+        }
+    }
 
-    private val columns = listTitle.mapIndexed { index, title ->
-        ColumnDefinition<Pair<UserNameSurname, MutableMap<String, MutableList<Pair<Int, Pair<String, Int?>>>>>>(
+    private fun getColorScore(score: Int, result: Map<String, ResultScoreMessage>?): String {
+        return if ((score == 0) || (result == null)) {
+            "table-criteria-failed"
+        } else {
+            val criteriaScore = result.map { Pair(it.key, it.value.score) }.toMap()
+            if (criteriaScore.values.contains(0)) {
+                "table-criteria-fifty-fifty"
+            } else {
+                "table-criteria-passed"
+            }
+        }
+    }
+
+    private val columns = listOf<ColumnDefinition<Map<String, String>>>(
+        ColumnDefinition(
+            "Фамилия имя (логин)",
+            field = "surnameNameLogin",
+            headerFilter = Editor.INPUT
+        )
+    ) + solutionsTable.tasks.mapIndexed { index, title ->
+        val taskId = title.id
+        ColumnDefinition(
             title.name,
+            field = "taskId$taskId",
             headerSort = false,
             formatterComponentFunction = { _, _, data ->
-                if (index == 0) {
-                    Div("${data.first.surname} ${data.first.name}")
-                } else {
-                    val listDiv = data.second.keys
-                    if (listDiv.contains(title.name)) {
-                        val divList = data.second[title.name]
-                        if (divList != null) {
-                            VPanel().apply {
-                                this.addAll(
-                                    divList.map { value ->
-                                        Div("${value.second.first}: ${value.second.second}", className = "cell-content").apply { this.onClick {
-                                                routing.navigate("/solution/${value.first}")
-                                            }
-                                        }
-                                    }
-                                )
+                val solutions = Json.Default.decodeFromString<List<SolutionInformation>>(
+                    data.getValue("solutions")
+                ).filter { it.taskId == taskId }
+                VPanel().apply {
+                    this.addAll(
+                        solutions.map { solution ->
+                            val score = solution.result?.values?.map { it.score }?.toList()?.sum() ?: 0
+                            Div("${solution.status}: $score", className = getColorScore(score, solution.result)).apply {
+                                this.onClick {
+                                    routing.navigate("/solution/${solution.id}")
+                                }
                             }
-                        } else {
-                            Span("")
                         }
-                    } else {
-                        Span("")
-                    }
+                    )
                 }
             }
         )
     }
 
     init {
-        tabulator(data = listRows, false,
+        val table = tabulator(data = getData(), false,
             options = TabulatorOptions(
                 columns = columns
             ),
             types = setOf(TableType.BORDERED)
         )
+        button("Скачать", className = "usually-button").onClick {
+            table.downloadCSV("solutionsTable")
+        }
     }
 }

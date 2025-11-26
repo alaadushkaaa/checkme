@@ -1,0 +1,14 @@
+.table-criteria-passed {
+    color: #3E8D00;
+    text-decoration: underline;
+}
+
+.table-criteria-fifty-fifty {
+    color: #FDE910;
+    text-decoration: underline;
+}
+
+.table-criteria-failed {
+    color: #CE2727;
+    text-decoration: underline;
+}

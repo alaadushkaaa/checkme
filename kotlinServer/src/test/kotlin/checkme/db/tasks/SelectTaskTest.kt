@@ -2,6 +2,7 @@ package checkme.db.tasks
 
 import checkme.db.TestcontainerSpec
 import checkme.db.validTasks
+import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -26,6 +27,12 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
         taskOperations
             .selectAllTask()
             .shouldBe(validTasks.filter { it.isActual })
+    }
+
+    test("Select all tasks ids and names from db") {
+        taskOperations
+            .selectAllTasksIdAndNames()
+            .shouldBe(validTasks.map { task -> TaskIdAndName(task.id.toString(), task.name) })
     }
 
     test("Select hidden tasks from db") {

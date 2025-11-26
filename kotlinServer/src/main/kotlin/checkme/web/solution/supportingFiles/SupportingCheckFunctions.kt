@@ -88,7 +88,7 @@ internal fun createNewCheck(
                 taskId,
                 userId,
                 LocalDateTime.now(),
-                null,
+                emptyMap(),
                 "В процессе"
             )
         ) {

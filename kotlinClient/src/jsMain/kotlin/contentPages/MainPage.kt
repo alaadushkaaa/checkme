@@ -92,7 +92,7 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
-        }).on("/solution-table", { match ->
+        }).on("/solutions-table", { match ->
             content.removeAll()
             content.add(AllSolutionsTable(serverUrl, routingMainPage))
         }).on("/hidden-task-list", {
