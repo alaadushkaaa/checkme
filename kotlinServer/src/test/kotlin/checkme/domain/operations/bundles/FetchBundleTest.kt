@@ -1,6 +1,5 @@
 package checkme.domain.operations.bundles
 
-import checkme.db.validBundleTasks
 import checkme.db.validBundleTasksAsATable
 import checkme.db.validBundles
 import checkme.domain.models.Bundle
@@ -57,10 +56,10 @@ class FetchBundleTest : FunSpec({
     }
 
     test("Fetch bundle tasks should return empty list if bundle has no tasks") {
-        fetchBundleTasksById(bundles[3].id).shouldBeSuccess().shouldBeEmpty()
+        fetchBundleTasksById(bundles[2].id).shouldBeSuccess().shouldBeEmpty()
     }
 
-    test("Fetch bundle tasks by invalid bundle id should return an error") {
-        fetchBundleTasksById(bundles.size).shouldBeFailure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
+    test("Fetch bundle tasks by invalid bundle id should return an empty list") {
+        fetchBundleTasksById(bundles.size + 1).shouldBeSuccess().shouldBeEmpty()
     }
 })

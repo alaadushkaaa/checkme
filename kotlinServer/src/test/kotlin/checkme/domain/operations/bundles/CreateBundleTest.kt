@@ -15,8 +15,8 @@ class CreateBundleTest : FunSpec({
     isolationMode = IsolationMode.InstancePerTest
 
     val insertBundleMock: (
-        name: String
-    ) -> Bundle? = { name
+        name: String,
+    ) -> Bundle? = { name,
         ->
         val bundle =
             Bundle(
@@ -35,14 +35,15 @@ class CreateBundleTest : FunSpec({
         bundle
     }
     val insertBundleNullMock: (
-        name: String
+        name: String,
     ) -> Bundle? = { null }
 
     val insertBundleTasksMock: (
         bundleId: Int,
-        tasksAndOrder: List<TaskAndOrder>
-    ) -> List<TaskAndOrder>? = { bundleId,
-                                 taskAndOrder
+        tasksAndOrder: List<TaskAndOrder>,
+    ) -> List<TaskAndOrder>? = {
+            bundleId,
+            taskAndOrder,
         ->
         taskAndOrder.forEach { task ->
             if (bundles.map { it.id }.contains(bundleId)) {
@@ -60,7 +61,7 @@ class CreateBundleTest : FunSpec({
 
     val insertBundleTasksNullMock: (
         bundleId: Int,
-        tasksAndOrder: List<TaskAndOrder>
+        tasksAndOrder: List<TaskAndOrder>,
     ) -> List<TaskAndOrder>? = { _, _ -> null }
 
     val selectBundleMock: (
@@ -71,7 +72,6 @@ class CreateBundleTest : FunSpec({
             else -> null
         }
     }
-
 
     val createBundle = CreateBundle(insertBundleMock)
 
