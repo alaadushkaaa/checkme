@@ -205,6 +205,7 @@ enum class FetchingBundleError(val errorText: String) {
 
 enum class AddBundleError(val errorText: String) {
     USER_HAS_NOT_RIGHTS("Not allowed to add task"),
+    BUNDLE_NAME_CANNOT_BE_EMPTY_OR_BLANK("Bundle name cannot be empty or blank")
 }
 
 enum class AddBundleTasksError(val errorText: String) {

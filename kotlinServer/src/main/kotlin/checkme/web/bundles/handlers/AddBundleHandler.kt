@@ -22,14 +22,17 @@ class AddBundleHandler(
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
         val form: MultipartForm = BundleLenses.multipartFormFieldsAll(request)
+        val bundleName = BundleLenses.nameField(form).value
         return when {
             user == null || !user.isAdmin() ->
                 objectMapper.sendBadRequestError(AddBundleError.USER_HAS_NOT_RIGHTS.errorText)
+
+            bundleName.isBlank() or bundleName.isEmpty() ->
+                objectMapper.sendBadRequestError(AddBundleError.BUNDLE_NAME_CANNOT_BE_EMPTY_OR_BLANK.errorText)
             else -> {
-                val bundleName = BundleLenses.nameField(form).value
                 when (
                     val newBundle = addBundle(
-                        bundleName = bundleName,
+                        bundleName = bundleName.trim(),
                         bundleOperations = bundleOperations
                     )
                 ) {

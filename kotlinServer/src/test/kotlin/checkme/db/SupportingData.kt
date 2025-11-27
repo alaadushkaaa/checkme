@@ -172,5 +172,14 @@ val validBundleTasks: List<TaskAndOrder> = listOf(
     TaskAndOrder(validTasks[1], 3),
 )
 
+val validBundleTasksAsATable: Map<Int, TaskAndOrder> = mapOf(
+    validBundles[0].id to validBundleTasks[0],
+    validBundles[0].id to validBundleTasks[1],
+    validBundles[0].id to validBundleTasks[2],
+    validBundles[1].id to validBundleTasks[0],
+    validBundles[1].id to validBundleTasks[2],
+    validBundles[3].id to validBundleTasks[1],
+)
+
 val appConfig = AppConfig.fromEnvironment()
 val appConfiguredPasswordHasher = PasswordHasher(appConfig.authConfig)
