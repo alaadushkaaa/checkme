@@ -16,7 +16,7 @@ import java.io.File
 @Suppress("LongParameterList")
 data class CheckDataSQL(
     val type: CheckType,
-    val dbScript: String,
+    val dbScript: List<String>,
     val referenceQuery: String,
 ) {
     companion object {
@@ -63,12 +63,12 @@ data class CheckDataSQL(
         }
 
         private fun findCScriptFile(
-            scriptName: String,
+            scriptNames: List<String>,
             taskName: String,
-        ): File? {
+        ): List<File>? {
             val dir = File("../tasks/$taskName")
             if (!dir.isDirectory) return null
-            return dir.listFiles()?.firstOrNull { it.name == scriptName }
+            return dir.listFiles()?.filter { scriptNames.contains(it.name) }
         }
 
         private fun tryGetSQLDataAndCheckResults(
@@ -82,12 +82,12 @@ data class CheckDataSQL(
             config: CheckDatabaseConfig,
         ): CheckResult {
             val answerSQl = answerFile.readText()
-            val sqlScript = findCScriptFile(
-                scriptName = checkDataSQL.dbScript,
+            val sqlScripts = findCScriptFile(
+                scriptNames = checkDataSQL.dbScript,
                 taskName = task.name
             )
             return when {
-                sqlScript == null || !sqlScript.exists() -> {
+                sqlScripts == null || !sqlScripts.all { it.exists() } -> {
                     ServerLogger.log(
                         user = user,
                         action = "Check task warnings",
@@ -111,7 +111,7 @@ data class CheckDataSQL(
                         criterion = criterion,
                         overall = overall,
                         config = config,
-                        setupSql = sqlScript
+                        setupSql = sqlScripts
                     )
                 }
             }
@@ -126,36 +126,49 @@ data class CheckDataSQL(
             criterion: Criterion,
             overall: Boolean,
             config: CheckDatabaseConfig,
-            setupSql: File,
+            setupSql: List<File>,
         ): CheckResult {
-            return when (
-                val queriesResults = SqlCheckService(config, user, overall).getSqlResults(
-                    firstScript = setupSql,
-                    referenceQuery = checkDataSQL.referenceQuery,
-                    studentQuery = studentQuery,
-                    checkId = checkId,
-                )
-            ) {
-                is Failure -> {
-                    ServerLogger.log(
-                        user = user,
-                        action = "Check task warnings",
-                        message = "An error occurred while running check ${criterion.test} for task \" +\n" +
-                            "\"${task.name}-${task.id}: ${queriesResults.reason.trim()}",
-                        type = LoggerType.WARN
+            val scriptsResult: MutableList<CheckResult> = mutableListOf()
+            for (script in setupSql) {
+                when (
+                    val queriesResults = SqlCheckService(config, user, overall).getSqlResults(
+                        firstScript = script,
+                        referenceQuery = checkDataSQL.referenceQuery,
+                        studentQuery = studentQuery,
+                        checkId = checkId,
                     )
-                    CheckResult(0, "Something was wrong with check. Ask for help")
-                }
+                ) {
+                    is Failure -> {
+                        ServerLogger.log(
+                            user = user,
+                            action = "Check task warnings",
+                            message = "An error occurred while running check ${criterion.test} for task +\n" +
+                                "${task.name}-${task.id}: ${queriesResults.reason.trim()}+\n" +
+                                "script: ${script.name}",
+                            type = LoggerType.WARN
+                        )
+                        return CheckResult(0, "Something was wrong with check. Ask for help")
+                    }
 
-                is Success -> {
-                    val studentResult = queriesResults.value.first
-                    val referenceResult = queriesResults.value.second
-                    if (studentResult == referenceResult) {
-                        CheckResult(criterion.score, criterion.description)
-                    } else {
-                        CheckResult(0, criterion.message)
+                    is Success -> {
+                        val studentResult = queriesResults.value.first
+                        val referenceResult = queriesResults.value.second
+                        if (studentResult == referenceResult) {
+                            scriptsResult.add(CheckResult(criterion.score, criterion.description))
+                        } else {
+                            scriptsResult.add(CheckResult(0, criterion.message))
+                        }
                     }
                 }
+            }
+            val correctResults = scriptsResult.filter { it.score != 0 }
+            return when {
+                correctResults.size == scriptsResult.size -> CheckResult(criterion.score, criterion.description)
+                correctResults.isEmpty() -> CheckResult(0, criterion.message)
+                else -> CheckResult(
+                    criterion.score / scriptsResult.size * correctResults.size,
+                    "Some checks were not successful: ${criterion.message}"
+                )
             }
         }
     }
