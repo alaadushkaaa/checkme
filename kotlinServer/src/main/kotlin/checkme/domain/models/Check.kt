@@ -278,9 +278,13 @@ data class Check(
                     }
 
                     CheckType.SQL_CHECK.code -> {
+                        val dbScript = jsonWithCheck.get("dbScript").asText().toString()
+                        val scripts = dbScript.split(",")
+                            .map { it.trim() }
+                            .filter { it.isNotBlank() }
                         val check = CheckDataSQL(
                             type = CheckType.SQL_CHECK,
-                            dbScript = jsonWithCheck.get("dbScript").asText().toString(),
+                            dbScript = scripts,
                             referenceQuery = jsonWithCheck.get("referenceQuery").asText().toString()
                         )
                         CheckDataSQL.sqlCheck(

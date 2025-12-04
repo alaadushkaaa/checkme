@@ -138,19 +138,24 @@ class AddTask(
             )
             add(
                 FormAddTask::script,
-                Upload(accept = listOf(".sql")) {
+                Upload(accept = listOf(".sql"), multiple = true) {
                     this.input.id = "input-file-1"
                     onChangeLaunch {
                         val scriptListFile = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
                         scriptFile.clear()
                         scriptFile.addAll(scriptListFile)
-                        updateFileViewer(addedScriptFileViewer, scriptFile, this@formPanel)
+                        updateFilesViewer(addedScriptFileViewer, scriptFile, this@formPanel)
                         this@Upload.clearInput()
                         this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
                         this@formPanel.validate()
                     }
-                }
-            )
+                },
+                validatorMessage = { "" }
+            ) {
+                scriptFile.isNotEmpty()
+            }
+            this.validate()
+
             add(
                 addedScriptFileViewer
             )
@@ -257,7 +262,7 @@ class AddTask(
             val beforeAll = fileSelectionData["beforeAll"]?.value
             val afterAll = fileSelectionData["afterAll"]?.value
             val filesWithContent = fileList
-            val scriptFileWithContent = if (scriptFile.isEmpty()) null else scriptFile[0]
+            val scriptFilesWithContent = if (scriptFile.isEmpty()) null else scriptFile
             val formData = FormData().apply {
                 append("name", formPanelAddTask.getData().name)
                 append("description", formPanelAddTask.getData().description)
@@ -275,24 +280,26 @@ class AddTask(
                 if (afterAll != null){
                     append("afterAll", afterAll)
                 }
-                if (scriptFileWithContent != null) {
-                    val scriptEncodedContent = scriptFileWithContent.base64Encoded
-                    val scriptDecodedContent = if (scriptEncodedContent != null) {
-                        Base64.Default.decode(scriptEncodedContent).decodeToString()
-                    } else {
-                        ""
-                    }
-                    val scriptName = scriptFileWithContent.name
-                    val scriptExpansion = scriptName.split(".").last()
-                    val scriptContentType = if (scriptExpansion == "sql") "application/sql" else scriptFileWithContent.contentType
-                    append(
-                        name = "script",
-                        value = File(
-                            arrayOf(scriptDecodedContent),
-                            scriptName,
-                            FilePropertyBag(type = scriptContentType)
+                if (scriptFilesWithContent != null) {
+                    scriptFilesWithContent.forEach { script ->
+                        val scriptEncodedContent = script.base64Encoded
+                        val scriptDecodedContent = if (scriptEncodedContent != null) {
+                            Base64.Default.decode(scriptEncodedContent).decodeToString()
+                        } else {
+                            ""
+                        }
+                        val scriptName = script.name
+                        val scriptExpansion = scriptName.split(".").last()
+                        val scriptContentType = if (scriptExpansion == "sql") "application/sql" else script.contentType
+                        append(
+                            name = "script",
+                            value = File(
+                                arrayOf(scriptDecodedContent),
+                                scriptName,
+                                FilePropertyBag(type = scriptContentType)
+                            )
                         )
-                    )
+                    }
                 }
                 filesWithContent.forEach { kFile ->
                     val encodedContent = kFile.base64Encoded
