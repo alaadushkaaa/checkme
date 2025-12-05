@@ -30,6 +30,9 @@ external val cssFooter: dynamic
 @JsModule("./css/TaskForm.css")
 external val cssTaskForm: dynamic
 
+@JsModule("./css/BundleForm.css")
+external val cssBundleForm: dynamic
+
 @JsModule("./css/TasksList.css")
 external val cssTasksList: dynamic
 
@@ -56,6 +59,7 @@ class CheckMe : Application() {
         useModule(cssFooter)
         useModule(cssApp)
         useModule(cssTaskForm)
+        useModule(cssBundleForm)
         useModule(cssTasksList)
         useModule(cssTask)
         useModule(cssUserList)

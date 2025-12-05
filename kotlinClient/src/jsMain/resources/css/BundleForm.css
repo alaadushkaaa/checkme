@@ -1,0 +1,12 @@
+.BundleAdd .base-form .separate-form-label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    margin: 20px 0px;
+    font-size: 30px;
+}
+
+.BundleAdd input {
+    flex: 4;
+    border: 1px solid #ccc;
+}

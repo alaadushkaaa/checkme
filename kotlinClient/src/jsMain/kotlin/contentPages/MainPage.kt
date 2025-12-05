@@ -6,6 +6,7 @@ import io.kvision.routing.Routing
 import ru.yarsu.contentPages.componentsPage.Content
 import ru.yarsu.contentPages.componentsPage.Footer
 import ru.yarsu.contentPages.componentsPage.Header
+import ru.yarsu.contentPages.content.addBundlePage.AddBundle
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
@@ -47,6 +48,13 @@ class MainPage(
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
                 content.add(AddTask(serverUrl, routingMainPage))
+            } else {
+                routingMainPage.navigate("/")
+            }
+        }).on("/add-bundle", {
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                content.add(AddBundle(serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }
