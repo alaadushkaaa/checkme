@@ -24,15 +24,15 @@ class AllSolutionsGroupByTask(
     init {
         h2("Все решения")
         if ((page == null) || (page < 1)) {
-            routing.navigate("/tasks-solutions-list/1")
+            routing.navigate("/task-solutions-list/1")
         } else {
             hPanel(className = "pagination") {
                 button("Назад").onClick {
-                    routing.navigate("/tasks-solutions-list/${page - 1}")
+                    routing.navigate("/task-solutions-list/${page - 1}")
                 }
                 div("Страница $page")
                 button("Вперёд").onClick {
-                    routing.navigate("/tasks-solutions-list/${page + 1}")
+                    routing.navigate("/task-solutions-list/${page + 1}")
                 }
             }
             val requestInit = RequestInit()
