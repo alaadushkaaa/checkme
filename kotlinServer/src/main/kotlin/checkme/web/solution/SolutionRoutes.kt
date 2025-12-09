@@ -13,6 +13,7 @@ import checkme.web.solution.handlers.ResultsTableHandler
 import org.http4k.core.*
 import org.http4k.routing.*
 
+@Suppress("LongMethod")
 fun solutionRouter(
     operations: OperationHolder,
     contextTools: ContextTools,
@@ -47,6 +48,7 @@ fun solutionRouter(
         "/tasks-solutions/{page}" bind Method.GET to ResultsGroupByTasksHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
             userLens = contextTools.userLens
         ),
         "/all/{page}" bind Method.GET to ListResultsHandler(

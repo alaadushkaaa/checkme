@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package checkme.db.tasks
 
 import checkme.db.checks.CHECKS_LIMIT

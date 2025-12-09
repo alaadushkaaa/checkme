@@ -29,6 +29,9 @@ class Header(
                     button("Все решения",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/solution-list/1") }
+                    button("Решения по задачам",
+                        className = "navigation-button"
+                    ).onClick { routingMainPage.navigate("/task-solutions-list/1") }
                     button(
                         "Пользователи",
                         className = "navigation-button"

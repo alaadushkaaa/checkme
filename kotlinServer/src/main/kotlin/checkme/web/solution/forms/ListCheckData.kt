@@ -1,6 +1,7 @@
 package checkme.web.solution.forms
 
 import checkme.domain.forms.CheckResult
+import checkme.domain.models.Task
 
 data class ListUserCheck(
     val name: String,
@@ -27,4 +28,9 @@ data class CheckForTasksSolutions(
     val status: String,
     val result: Map<String, CheckResult>?,
     val user: UserNameSurnameForAllResults,
+)
+
+data class SolutionsGroupByTask(
+    val task: Task,
+    val solutions: List<CheckForTasksSolutions>,
 )

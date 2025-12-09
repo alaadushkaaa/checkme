@@ -22,6 +22,15 @@ data class SolutionInformation(
 )
 
 @Serializable
+data class SolutionInformationWithUserInformation(
+    val id: Int,
+    val date: String,
+    val status: String,
+    val result: Map<String, ResultScoreMessage>?,
+    val user: UserNameSurname
+)
+
+@Serializable
 data class IdScore(
     val id: Int,
     val score: Int

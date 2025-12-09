@@ -120,21 +120,6 @@ internal fun changeBundleActuality(
     }
 }
 
-internal fun changeBundleName(
-    bundle: Bundle,
-    bundleOperations: BundleOperationHolder,
-): Result<Bundle, BundleChangingError> {
-    return when (
-        val updatedBundle = bundleOperations.modifyBundle(bundle)
-    ) {
-        is Success -> Success(updatedBundle.value)
-        is Failure -> when (updatedBundle.reason) {
-            ModifyBundleError.NO_SUCH_BUNDLE -> Failure(BundleChangingError.NO_SUCH_BUNDLE)
-            ModifyBundleError.UNKNOWN_DATABASE_ERROR -> Failure(BundleChangingError.UNKNOWN_DATABASE_ERROR)
-        }
-    }
-}
-
 internal fun tryUpdateBundleTasks(
     tasksAndOrder: List<TaskAndOrder>,
     bundleId: Int,
