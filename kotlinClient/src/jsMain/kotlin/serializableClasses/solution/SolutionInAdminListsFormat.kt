@@ -1,6 +1,8 @@
 package ru.yarsu.serializableClasses.solution
 
 import kotlinx.serialization.Serializable
+import ru.yarsu.serializableClasses.task.TaskFormat
+import ru.yarsu.serializableClasses.task.TaskFormatForList
 import ru.yarsu.serializableClasses.task.TaskName
 
 @Serializable
@@ -17,4 +19,10 @@ data class SolutionInAdminListsFormat(
     val result: Map<String, ResultScoreMessage>?,
     val user: UserNameSurname? = null,
     val task: TaskName? = null
+)
+
+@Serializable
+data class SolutionsGroupByTask(
+    val task: TaskFormatForList,
+    val solutions: List<SolutionInformationWithUserInformation>
 )

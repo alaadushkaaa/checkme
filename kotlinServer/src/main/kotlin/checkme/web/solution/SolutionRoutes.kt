@@ -8,10 +8,12 @@ import checkme.web.solution.handlers.ListResultsHandler
 import checkme.web.solution.handlers.ListTaskResultsHandler
 import checkme.web.solution.handlers.ListUserResultsHandler
 import checkme.web.solution.handlers.ResultHandler
+import checkme.web.solution.handlers.ResultsGroupByTasksHandler
 import checkme.web.solution.handlers.ResultsTableHandler
 import org.http4k.core.*
 import org.http4k.routing.*
 
+@Suppress("LongMethod")
 fun solutionRouter(
     operations: OperationHolder,
     contextTools: ContextTools,
@@ -41,6 +43,12 @@ fun solutionRouter(
         "/{checkId}" bind Method.GET to ResultHandler(
             checkOperations = operations.checkOperations,
             taskOperations = operations.taskOperations,
+            userLens = contextTools.userLens
+        ),
+        "/tasks-solutions/{page}" bind Method.GET to ResultsGroupByTasksHandler(
+            checkOperations = operations.checkOperations,
+            taskOperations = operations.taskOperations,
+            userOperations = operations.userOperations,
             userLens = contextTools.userLens
         ),
         "/all/{page}" bind Method.GET to ListResultsHandler(

@@ -1,5 +1,8 @@
+@file:Suppress("TooManyFunctions")
+
 package checkme.db.tasks
 
+import checkme.db.checks.CHECKS_LIMIT
 import checkme.db.generated.tables.references.CHECKS
 import checkme.db.generated.tables.references.TASKS
 import checkme.db.utils.safeLet
@@ -53,6 +56,14 @@ class TasksOperations(
             .mapNotNull { record: Record ->
                 record.toTask()
             }
+
+    override fun selectAllTasksPagination(page: Int): List<Task> =
+        selectFromTasks()
+            .orderBy(TASKS.ID)
+            .limit(CHECKS_LIMIT)
+            .offset((page - 1) * CHECKS_LIMIT)
+            .fetch()
+            .mapNotNull { record: Record -> record.toTask() }
 
     override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
         jooqContext

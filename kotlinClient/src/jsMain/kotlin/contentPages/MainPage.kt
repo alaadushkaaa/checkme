@@ -12,6 +12,7 @@ import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
 import ru.yarsu.contentPages.content.solutionPage.Solution
 import ru.yarsu.contentPages.content.taskPage.Task
 import ru.yarsu.contentPages.content.mySolutionListPage.MySolutionList
+import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsGroupByTask
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsTable
 import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
@@ -73,6 +74,14 @@ class MainPage(
                 content.removeAll()
                 val page = match.data.page.toString().toIntOrNull()
                 content.add(AllSolutions(page, serverUrl, routingMainPage))
+            } else {
+                routingMainPage.navigate("/")
+            }
+        }).on("/task-solutions-list/:page", { match ->
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                val page = match.data.page.toString().toIntOrNull()
+                content.add(AllSolutionsGroupByTask(page, serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }
