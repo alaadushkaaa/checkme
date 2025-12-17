@@ -6,6 +6,7 @@ import checkme.web.bundles.handlers.AddBundleTasksHandler
 import checkme.web.bundles.handlers.BundleHandler
 import checkme.web.bundles.handlers.BundleHiddenListHandler
 import checkme.web.bundles.handlers.BundleListHandler
+import checkme.web.bundles.handlers.SelectTasksOrderHandler
 import checkme.web.context.ContextTools
 import org.http4k.core.*
 import org.http4k.routing.*
@@ -30,6 +31,10 @@ fun bundleRouter(
         "/add-tasks/{id}" bind Method.POST to AddBundleTasksHandler(
             bundleOperations = operations.bundleOperations,
             userLens = contextTools.userLens,
+        ),
+        "/select-order/{id}" bind Method.GET to SelectTasksOrderHandler(
+            userLens = contextTools.userLens,
+            taskOperations = operations.taskOperations
         ),
         "/{id}" bind Method.GET to BundleHandler(
             userLens = contextTools.userLens,

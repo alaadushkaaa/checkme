@@ -7,6 +7,7 @@ import ru.yarsu.contentPages.componentsPage.Content
 import ru.yarsu.contentPages.componentsPage.Footer
 import ru.yarsu.contentPages.componentsPage.Header
 import ru.yarsu.contentPages.content.addBundlePage.AddBundle
+import ru.yarsu.contentPages.content.addBundlePage.SelectBundleTasksPage
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
@@ -106,6 +107,14 @@ class MainPage(
         }).on("/hidden-task-list", {
             content.removeAll()
             content.add(TaskList(serverUrl, routingMainPage, ListType.HIDDEN))
+        }).on("/bundle/select-bundle-tasks/:id", { match ->
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                val id = match.data.id.toString().toIntOrNull()
+                content.add(SelectBundleTasksPage(id.toString(), serverUrl, routingMainPage))
+            } else {
+                routingMainPage.navigate("/")
+            }
         }).resolve()
     }
 }
