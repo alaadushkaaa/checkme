@@ -1,5 +1,7 @@
 package checkme.web.bundles.handlers
 
+import checkme.domain.models.Bundle
+import checkme.domain.models.BundleAndTasks
 import checkme.domain.models.User
 import checkme.domain.operations.bundles.BundleOperationHolder
 import checkme.web.commonExtensions.sendBadRequestError
@@ -23,7 +25,7 @@ class BundleHandler(
         return when {
             user == null -> objectMapper.sendBadRequestError(ViewBundleError.USER_CANT_VIEW_THIS_BUNDLE.errorText)
             bundleId == null -> objectMapper.sendBadRequestError(ViewBundleError.NO_BUNDLE_ID_ERROR.errorText)
-            else -> tryFetchBundle(
+            else -> tryFetchBundleAndTasks(
                 bundleId = bundleId,
                 objectMapper = objectMapper,
                 bundleOperations = bundleOperations,
@@ -33,7 +35,7 @@ class BundleHandler(
     }
 }
 
-private fun tryFetchBundle(
+private fun tryFetchBundleAndTasks(
     bundleId: Int,
     objectMapper: ObjectMapper,
     bundleOperations: BundleOperationHolder,
@@ -44,10 +46,23 @@ private fun tryFetchBundle(
         is Success -> {
             if (!bundle.value.isActual && !user.isAdmin()) {
                 objectMapper.sendBadRequestError(ViewBundleError.USER_CANT_VIEW_THIS_BUNDLE.errorText)
-            } else {
-                objectMapper.sendOKResponse(bundle.value)
-            }
+            } else tryFetchBundleTasks(
+                bundle = bundle.value,
+                bundleOperations = bundleOperations,
+                objectMapper = objectMapper
+            )
         }
+    }
+}
+
+private fun tryFetchBundleTasks(
+    bundle: Bundle,
+    bundleOperations: BundleOperationHolder,
+    objectMapper: ObjectMapper,
+) : Response {
+    return when (val bundleTasks = selectBundleTasks(bundle.id, bundleOperations)) {
+        is Failure -> objectMapper.sendBadRequestError(bundleTasks.reason.errorText)
+        is Success -> objectMapper.sendOKResponse(BundleAndTasks(bundle = bundle, tasks = bundleTasks.value))
     }
 }
 

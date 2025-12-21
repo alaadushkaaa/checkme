@@ -1,0 +1,49 @@
+.bundle-in-list {
+    display: flex;
+    margin-top: 22px;
+    align-items:center;
+    width: 100%;
+}
+
+.bundle-in-list .bundle-item {
+    flex-grow: 1;
+    padding: 15px;
+    margin-right: 10px;
+    background: #EBEBEB;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border: 2px solid #7699D4;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.bundle-in-list .bundle-item:hover {
+    outline: 1px solid black;
+}
+
+.bundle-in-list .bundle-item .name {
+    font-weight: bold;
+}
+
+.bundle-in-list .hidden-button:hover {
+    outline: 1px solid black;
+}
+
+.bundle-in-list .hidden-button {
+    flex-shrink: 0;
+    height: 50px;
+    padding: 15px;
+    white-space: normal;
+    word-wrap: break-word;
+    text-align:center;
+    border: transparent;
+    border-radius: 10px;
+    color: black;
+    background-color: #7699D4;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    font: inherit;
+}
+
+.bundle-in-list .hidden-button:hover {
+    outline: 1px solid black;
+}

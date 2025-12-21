@@ -16,7 +16,11 @@ class Header(
     init {
         hPanel(className = "Header") {
             div("CheckMe", className = "app-title")
-            div(className = "navigation"){
+            div(className = "navigation") {
+                button(
+                    "Группы задач",
+                    className = "navigation-button"
+                ).onClick { routingMainPage.navigate("/bundle-list") }
                 button("Список задач", className = "navigation-button").onClick { routingMainPage.navigate("/") }
                 if (UserInformationStorage.isAdmin()) {
                     button(
@@ -24,9 +28,13 @@ class Header(
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/hidden-task-list") }
                 }
-                button("Мои решения", className = "navigation-button").onClick { routingMainPage.navigate("/my-solution-list") }
+                button(
+                    "Мои решения",
+                    className = "navigation-button"
+                ).onClick { routingMainPage.navigate("/my-solution-list") }
                 if (UserInformationStorage.isAdmin()) {
-                    button("Все решения",
+                    button(
+                        "Все решения",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/solution-list/1") }
                     button(

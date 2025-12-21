@@ -32,9 +32,10 @@ fun bundleRouter(
             bundleOperations = operations.bundleOperations,
             userLens = contextTools.userLens,
         ),
-        "/select-order/{id}" bind Method.GET to SelectTasksOrderHandler(
+        "/select-order/{id}" bind Method.POST to SelectTasksOrderHandler(
             userLens = contextTools.userLens,
-            taskOperations = operations.taskOperations
+            taskOperations = operations.taskOperations,
+            bundleOperations = operations.bundleOperations
         ),
         "/{id}" bind Method.GET to BundleHandler(
             userLens = contextTools.userLens,

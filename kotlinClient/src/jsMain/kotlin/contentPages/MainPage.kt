@@ -7,9 +7,12 @@ import ru.yarsu.contentPages.componentsPage.Content
 import ru.yarsu.contentPages.componentsPage.Footer
 import ru.yarsu.contentPages.componentsPage.Header
 import ru.yarsu.contentPages.content.addBundlePage.AddBundle
+import ru.yarsu.contentPages.content.addBundlePage.ChangeBundleTasksOrder
 import ru.yarsu.contentPages.content.addBundlePage.SelectBundleTasksPage
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
+import ru.yarsu.contentPages.content.bundlesPages.Bundle
+import ru.yarsu.contentPages.content.bundlesPages.BundlesList
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
 import ru.yarsu.contentPages.content.solutionPage.Solution
 import ru.yarsu.contentPages.content.taskPage.Task
@@ -45,6 +48,9 @@ class MainPage(
         routingMainPage.on("/", {
             content.removeAll()
             content.add(TaskList(serverUrl, routingMainPage, ListType.ALL))
+        }).on("/bundle-list", {
+            content.removeAll()
+            content.add(BundlesList(serverUrl, routingMainPage, ListType.ALL))
         }).on("/add-task", {
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
@@ -115,6 +121,18 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
+        }).on("bundle/select-order/:id", { match ->
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                val id = match.data.id.toString().toIntOrNull()
+                content.add(ChangeBundleTasksOrder(id.toString(), serverUrl, routingMainPage))
+            } else {
+                routingMainPage.navigate("/")
+            }
+        }).on("/bundle/:id", { match ->
+            content.removeAll()
+            val id = match.data.id.toString().toIntOrNull()
+            content.add(Bundle(id, serverUrl, routingMainPage))
         }).resolve()
     }
 }
