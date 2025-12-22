@@ -68,5 +68,5 @@ private fun tryFetchBundleTasks(
 
 enum class ViewBundleError(val errorText: String) {
     NO_BUNDLE_ID_ERROR("No bundle id to view bundle info"),
-    USER_CANT_VIEW_THIS_BUNDLE("User can't view this task"),
+    USER_CANT_VIEW_THIS_BUNDLE("User can't view this bundle"),
 }

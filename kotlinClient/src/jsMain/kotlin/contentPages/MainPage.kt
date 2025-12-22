@@ -8,7 +8,7 @@ import ru.yarsu.contentPages.componentsPage.Footer
 import ru.yarsu.contentPages.componentsPage.Header
 import ru.yarsu.contentPages.content.addBundlePage.AddBundle
 import ru.yarsu.contentPages.content.addBundlePage.ChangeBundleTasksOrder
-import ru.yarsu.contentPages.content.addBundlePage.SelectBundleTasksPage
+import ru.yarsu.contentPages.content.addBundlePage.SelectBundleTasks
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
 import ru.yarsu.contentPages.content.bundlesPages.Bundle
@@ -114,10 +114,11 @@ class MainPage(
             content.removeAll()
             content.add(TaskList(serverUrl, routingMainPage, ListType.HIDDEN))
         }).on("/bundle/select-bundle-tasks/:id", { match ->
+            println("I'm alive")
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
                 val id = match.data.id.toString().toIntOrNull()
-                content.add(SelectBundleTasksPage(id.toString(), serverUrl, routingMainPage))
+                content.add(SelectBundleTasks(id.toString(), serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }

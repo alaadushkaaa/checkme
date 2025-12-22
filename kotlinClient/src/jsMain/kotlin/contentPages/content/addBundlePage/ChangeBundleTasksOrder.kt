@@ -28,10 +28,11 @@ class ChangeBundleTasksOrder(
         requestInit.method = HttpMethod.GET.name
         requestInit.headers = js("{}")
         requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-        window.fetch(serverUrl + "bundle/select-order/$bundleId", requestInit).then { response ->
+        window.fetch(serverUrl + "bundle/tasks/$bundleId", requestInit).then { response ->
             if (response.status.toInt() == 200) {
-                response.json().then {
-                    val jsonString = JSON.stringify(it)
+                response.text().then { jsonString ->
+                    println(jsonString)
+                    println("*/*/*/*/*/*/*")
                     val taskList = Json.decodeFromString<List<TaskFormatWithOrder>>(jsonString)
                     if (taskList.isEmpty()) {
                         this.add(Div("Задачи не найдены"))

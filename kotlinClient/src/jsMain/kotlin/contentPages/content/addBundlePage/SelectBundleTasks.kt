@@ -19,14 +19,18 @@ import ru.yarsu.serializableClasses.signIn.RequestSignIn
 import ru.yarsu.serializableClasses.task.TaskFormatForList
 
 const val DESCRIPTION_SIZE = 150
-class SelectBundleTasksPage(
+
+class SelectBundleTasks(
     bundleId: String,
     serverUrl: String,
     private val routing: Routing,
 ) : SimplePanel() {
     private val selectedTasks = mutableSetOf<String>()
+
     init {
         h2("Выбор задач")
+        console.log("I'm alive")
+        println("Я жив")
         val saveButton = button(
             "Далее",
             className = "usually-button"
@@ -38,15 +42,14 @@ class SelectBundleTasksPage(
                     requestInit.method = HttpMethod.POST.name
                     requestInit.headers = js("{}")
                     requestInit.headers["Content-Type"] = "application/json"
-                    requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+                    requestInit.headers["Authentication"] =
+                        "Bearer ${UserInformationStorage.getUserInformation()?.token}"
                     requestInit.body = Json.Default.encodeToString(
                         selectedTasks
                     )
-                    window.fetch(serverUrl + "bundle/select-order/$bundleId", requestInit).then { response ->
+                    window.fetch(serverUrl + "bundle/select-tasks/$bundleId", requestInit).then { response ->
                         if (response.status.toInt() == 200) {
                             response.json().then {
-                                val jsonString = JSON.stringify(it)
-                                UserInformationStorage.addUserInformation(jsonString)
                                 routing.navigate("bundle/select-order/$bundleId")
                             }
                         } else if (response.status.toInt() == 401) {
@@ -54,7 +57,8 @@ class SelectBundleTasksPage(
                                 val jsonString = JSON.stringify(it)
                                 val responseUnauthorized =
                                     Json.Default.decodeFromString<ResponseError>(jsonString)
-                                Toast.danger(responseUnauthorized.error,
+                                Toast.danger(
+                                    responseUnauthorized.error,
                                     ToastOptions(
                                         duration = 3000,
                                         position = ToastPosition.TOPRIGHT,
@@ -62,7 +66,8 @@ class SelectBundleTasksPage(
                                 )
                             }
                         } else {
-                            Toast.danger("Код ошибки ${response.status}: ${response.statusText}",
+                            Toast.danger(
+                                "Код ошибки ${response.status}: ${response.statusText}",
                                 ToastOptions(
                                     duration = 5000,
                                     position = ToastPosition.TOPRIGHT,
@@ -115,9 +120,12 @@ class SelectBundleTasksPage(
     ) {
         val taskDiv = Div(className = "task-item").apply {
             val checkbox =
-                CheckBox(value = false,
-                    label = "${task.name} (${task.description.replace("(<([^>]+)>)".toRegex(), "")
-                        .slice(0..DESCRIPTION_SIZE - task.name.length)}...)"
+                CheckBox(
+                    value = false,
+                    label = "${task.name} (${
+                        task.description.replace("(<([^>]+)>)".toRegex(), "")
+                            .slice(0..DESCRIPTION_SIZE - task.name.length)
+                    }...)"
                 )
             add(checkbox)
             onClick {

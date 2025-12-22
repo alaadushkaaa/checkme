@@ -99,7 +99,6 @@ class BundleOperations(
             jooqContext.deleteFrom(BUNDLE_TASKS)
                 .where(BUNDLE_TASKS.BUNDLE_ID.eq(bundleId))
                 .execute()
-
             savedTasks = setTasks(bundleId, newTasksAndOrder)
             when {
                 savedTasks != null -> commit()

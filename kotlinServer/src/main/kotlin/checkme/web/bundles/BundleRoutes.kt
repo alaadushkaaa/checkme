@@ -2,11 +2,12 @@ package checkme.web.bundles
 
 import checkme.domain.operations.OperationHolder
 import checkme.web.bundles.handlers.AddBundleHandler
-import checkme.web.bundles.handlers.AddBundleTasksHandler
 import checkme.web.bundles.handlers.BundleHandler
 import checkme.web.bundles.handlers.BundleHiddenListHandler
 import checkme.web.bundles.handlers.BundleListHandler
-import checkme.web.bundles.handlers.SelectTasksOrderHandler
+import checkme.web.bundles.handlers.BundleTasksHandler
+import checkme.web.bundles.handlers.ChangeBundleTasksOrderHandler
+import checkme.web.bundles.handlers.SelectBundleTasks
 import checkme.web.context.ContextTools
 import org.http4k.core.*
 import org.http4k.routing.*
@@ -28,13 +29,18 @@ fun bundleRouter(
             bundleOperations = operations.bundleOperations,
             userLens = contextTools.userLens,
         ),
-        "/add-tasks/{id}" bind Method.POST to AddBundleTasksHandler(
-            bundleOperations = operations.bundleOperations,
-            userLens = contextTools.userLens,
-        ),
-        "/select-order/{id}" bind Method.POST to SelectTasksOrderHandler(
+        "/select-tasks/{id}" bind Method.POST to SelectBundleTasks(
             userLens = contextTools.userLens,
             taskOperations = operations.taskOperations,
+            bundleOperations = operations.bundleOperations
+        ),
+        "/select-order/{id}" bind Method.POST to ChangeBundleTasksOrderHandler(
+            userLens = contextTools.userLens,
+            taskOperations = operations.taskOperations,
+            bundleOperations = operations.bundleOperations
+        ),
+        "/tasks/{id}" bind Method.GET to BundleTasksHandler(
+            userLens = contextTools.userLens,
             bundleOperations = operations.bundleOperations
         ),
         "/{id}" bind Method.GET to BundleHandler(

@@ -4,6 +4,8 @@ import checkme.domain.models.Task
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.models.User
 import checkme.domain.operations.bundles.BundleOperationHolder
+import checkme.domain.operations.bundles.CreateBundleTasks
+import checkme.domain.operations.bundles.CreateBundleTasksError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
@@ -18,26 +20,29 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.lens.RequestContextLens
 
-class SelectTasksOrderHandler(
+class SelectBundleTasks(
     private val userLens: RequestContextLens<User?>,
     private val taskOperations: TaskOperationsHolder,
     private val bundleOperations: BundleOperationHolder
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
-        println("Я тут")
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
         val bundleId = request.idOrNull()
-        val selectedTasksIds =  objectMapper.readValue<List<String>>(request.bodyString())
-        print(selectedTasksIds)
+        val selectedTasksIds = objectMapper.readValue<List<String>>(request.bodyString())
+        println(selectedTasksIds)
         return when {
-            user == null ->
+            user == null || !user.isAdmin() ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.USER_CANT_VIEW_THIS_BUNDLE.errorText)
+                    .also { println("000") }
 
             bundleId == null ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.NO_BUNDLE_ID_ERROR.errorText)
+                    .also { println("111") }
+
             selectedTasksIds.isEmpty() ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.TASKS_IDS_LIST_IS_EMPTY_ERROR.errorText)
+                    .also { println("222") }
 
             else -> tryFetchSelectedTasks(
                 tasksIds = selectedTasksIds,
@@ -67,22 +72,25 @@ class SelectTasksOrderHandler(
                 }
             }
         }
-        return when (val insertedTasks = bundleOperations.createBundleTasks(
-            bundleId,
-            fetchedTasks.map { TaskAndOrder(it, fetchedTasks.indexOf(it) + 1) })) {
+        return when (val insertedTasks = tryUpdateBundleTasks(
+            tasksAndOrder = fetchedTasks.map { TaskAndOrder(it, fetchedTasks.indexOf(it) + 1) },
+            bundleId = bundleId,
+            bundleOperations = bundleOperations
+        )) {
             is Failure -> objectMapper.sendBadRequestError(
-                ViewSelectedTasksError.PRELIMINARY_ADD_TASK_ERROR.errorText
+                insertedTasks.reason.errorText
             )
 
-            is Success -> objectMapper.sendOKResponse(insertedTasks.value)
+            is Success -> objectMapper.sendOKResponse(insertedTasks.value).also {
+            }
         }
     }
 }
+
 
 enum class ViewSelectedTasksError(val errorText: String) {
     NO_BUNDLE_ID_ERROR("No bundle id to view bundle info"),
     USER_CANT_VIEW_THIS_BUNDLE("User can't view this task"),
     TASKS_IDS_LIST_IS_EMPTY_ERROR("List with tasks ids can not be empty"),
     SELECT_TASK_ERROR("Something wrong while trying to fetch tasks. Please ask for help or try later"),
-    PRELIMINARY_ADD_TASK_ERROR("Something wrong while trying to add preliminary tasks. Ask for help or try later")
 }

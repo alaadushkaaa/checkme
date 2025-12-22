@@ -166,3 +166,7 @@ enum class AddBundleTasksError(val errorText: String) {
     NO_BUNDLE_ID_TO_ADD_TASKS("No bundle id for adding task"),
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
 }
+
+enum class ValidateBundleTasksError(val errorText: String) {
+
+}
