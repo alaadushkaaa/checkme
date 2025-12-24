@@ -1,9 +1,10 @@
 package checkme.domain.models
 
 import checkme.domain.accounts.Role
+import java.util.UUID
 
 data class User(
-    val id: Int,
+    val id: UUID,
     val login: String,
     val name: String,
     val surname: String,

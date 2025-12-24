@@ -21,6 +21,7 @@ import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormField
 import org.http4k.lens.MultipartFormFile
 import java.io.File
+import java.util.UUID
 
 internal fun addTask(
     task: Task,
@@ -43,7 +44,7 @@ internal fun addTask(
 }
 
 internal fun fetchTask(
-    taskId: Int,
+    taskId: UUID,
     taskOperations: TaskOperationsHolder,
 ): Result<Task, FetchingTaskError> {
     return when (
@@ -60,7 +61,7 @@ internal fun fetchTask(
 internal fun deleteTask(
     task: Task,
     taskOperations: TaskOperationsHolder,
-): Result<Int, RemovingTaskError> {
+): Result<UUID?, RemovingTaskError> {
     return when (
         val deletedTask = taskOperations.removeTask(task)
     ) {
@@ -69,6 +70,7 @@ internal fun deleteTask(
             TaskRemovingError.TASK_NOT_EXISTS -> Failure(RemovingTaskError.NO_SUCH_TASK)
             TaskRemovingError.UNKNOWN_DELETE_ERROR -> Failure(RemovingTaskError.UNKNOWN_DELETE_ERROR)
             TaskRemovingError.UNKNOWN_DATABASE_ERROR -> Failure(RemovingTaskError.UNKNOWN_DATABASE_ERROR)
+            TaskRemovingError.TASK_ID_IS_NULL -> Failure(RemovingTaskError.NO_SUCH_TASK)
         }
     }
 }
@@ -98,7 +100,7 @@ internal fun fetchHiddenTasks(taskOperations: TaskOperationsHolder): Result<List
 }
 
 internal fun taskExists(
-    taskId: Int,
+    taskId: UUID,
     taskOperations: TaskOperationsHolder,
 ): Boolean {
     return when (fetchTask(taskId = taskId, taskOperations = taskOperations)) {
@@ -108,7 +110,7 @@ internal fun taskExists(
 }
 
 @Suppress("ReturnCount")
-fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
+fun MultipartForm.validateForm(taskId: UUID?): Result<Task, ValidateTaskError> {
     val jacksonMapper = jacksonObjectMapper()
     val taskName = TaskLenses.nameField(this).value
     val description = TaskLenses.descriptionField(this).value
@@ -133,7 +135,7 @@ fun MultipartForm.validateForm(taskId: Int?): Result<Task, ValidateTaskError> {
     }
     return Success(
         Task(
-            id = taskId ?: -1,
+            id = taskId, //TODO тут была заглушка в виде -1 если null возможно это было важно
             name = taskName,
             criterions = criterions,
             answerFormat = answerFormatBd,

@@ -23,7 +23,7 @@ val criterions = mapOf(
 )
 
 val task = Task(
-    1,
+    null,//TODO тут была 1, так как uuidv7 не знаю на что заменить
     "Суммирование чисел",
     criterions,
     mapOf("Прикрепите файл" to AnswerType.FILE),

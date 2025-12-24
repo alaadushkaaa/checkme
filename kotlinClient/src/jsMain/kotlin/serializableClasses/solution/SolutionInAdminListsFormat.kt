@@ -18,7 +18,8 @@ data class SolutionInAdminListsFormat(
     val status: String,
     val result: Map<String, ResultScoreMessage>?,
     val user: UserNameSurname? = null,
-    val task: TaskName? = null
+    val task: TaskName? = null,
+    val totalScore: Int?,
 )
 
 @Serializable

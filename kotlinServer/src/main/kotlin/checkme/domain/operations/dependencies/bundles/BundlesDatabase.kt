@@ -3,18 +3,19 @@ package checkme.domain.operations.dependencies.bundles
 import checkme.domain.models.Bundle
 import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Result4k
+import java.util.UUID
 
 interface BundlesDatabase {
-    fun selectBundleById(bundleId: Int): Bundle?
+    fun selectBundleById(bundleId: UUID): Bundle?
 
     fun selectAllBundles(): List<Bundle>
 
-    fun selectBundleTasksById(id: Int): List<TaskAndOrder>
+    fun selectBundleTasksById(id: UUID): List<TaskAndOrder>
 
     fun insertBundle(name: String): Bundle?
 
     fun insertBundleTasks(
-        bundleId: Int,
+        bundleId: UUID,
         tasksAndOrder: List<TaskAndOrder>,
     ): List<TaskAndOrder>?
 
@@ -25,7 +26,7 @@ interface BundlesDatabase {
     fun updateBundle(bundle: Bundle): Bundle?
 
     fun updateBundleTasks(
-        bundleId: Int,
+        bundleId: UUID,
         newTasksAndOrder: List<TaskAndOrder>,
     ): List<TaskAndOrder>?
 

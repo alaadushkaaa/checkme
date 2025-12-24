@@ -19,13 +19,14 @@ import org.jooq.JSONB.jsonb
 import org.jooq.Record
 import org.jooq.impl.DSL.commit
 import org.jooq.impl.DSL.rollback
+import java.util.UUID
 
 class TasksOperations(
     private val jooqContext: DSLContext,
 ) : TasksDatabase {
     private val objectMapper = jacksonObjectMapper()
 
-    override fun selectTaskById(taskId: Int): Task? =
+    override fun selectTaskById(taskId: UUID): Task? =
         selectFromTasks()
             .where(TASKS.ID.eq(taskId))
             .fetchOne()
@@ -65,7 +66,7 @@ class TasksOperations(
             .fetch()
             .mapNotNull { record: Record -> record.toTask() }
 
-    override fun selectTaskName(taskId: Int): TaskNameForAllResults? =
+    override fun selectTaskName(taskId: UUID): TaskNameForAllResults? =
         jooqContext
             .select(
                 TASKS.NAME
@@ -92,7 +93,7 @@ class TasksOperations(
             ?.toTask()
     }
 
-    override fun deleteTask(taskId: Int): Int {
+    override fun deleteTask(taskId: UUID): Int {
         var deleteTaskFlag = 0
         jooqContext.transaction { _ ->
             deleteSolutions(taskId)
@@ -116,9 +117,9 @@ class TasksOperations(
             ?.toTask()
     }
 
-    private fun deleteSolutions(taskId: Int): Int =
+    private fun deleteSolutions(taskId: UUID): Int =
         jooqContext.delete(CHECKS)
-            .where(CHECKS.TASKID.eq(taskId))
+            .where(CHECKS.TASK_ID.eq(taskId))
             .execute()
 
     private fun selectFromTasks() =

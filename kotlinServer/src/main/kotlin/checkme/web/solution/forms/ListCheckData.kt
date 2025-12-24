@@ -20,6 +20,7 @@ data class ChecksForUsersSolutions(
     val status: String,
     val result: Map<String, CheckResult>?,
     val task: TaskNameForAllResults,
+    val totalScore: Int?,
 )
 
 data class CheckForTasksSolutions(
@@ -28,6 +29,7 @@ data class CheckForTasksSolutions(
     val status: String,
     val result: Map<String, CheckResult>?,
     val user: UserNameSurnameForAllResults,
+    val totalScore: Int?,
 )
 
 data class SolutionsGroupByTask(

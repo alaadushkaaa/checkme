@@ -24,6 +24,8 @@ import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
 import ru.yarsu.contentPages.content.userListPage.UserList
 import ru.yarsu.enumClasses.ListType
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class MainPage(
     private val serverUrl: String,
@@ -80,7 +82,9 @@ class MainPage(
             }
         }).on("/task/:id", { match ->
             content.removeAll()
-            val id = match.data.id.toString().toIntOrNull()
+            @OptIn(ExperimentalUuidApi::class)
+            val id = Uuid.parse(match.data.id.toString())
+            @OptIn(ExperimentalUuidApi::class)
             content.add(Task(id, serverUrl, routingMainPage))
         }).on("/user-list",{
             if (UserInformationStorage.isAdmin()) {

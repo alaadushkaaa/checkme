@@ -8,12 +8,13 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
+import java.util.UUID
 
 class FetchUserById(
-    private val fetchUserByID: (Int) -> User?,
-) : (Int) -> Result4k<User, UserFetchingError> {
+    private val fetchUserByID: (UUID) -> User?,
+) : (UUID) -> Result4k<User, UserFetchingError> {
 
-    override operator fun invoke(userId: Int): Result4k<User, UserFetchingError> =
+    override operator fun invoke(userId: UUID): Result4k<User, UserFetchingError> =
         try {
             when (val user = fetchUserByID(userId)) {
                 is User -> Success(user)
@@ -55,9 +56,9 @@ class FetchUserByLogin(
 }
 
 class FetchUserNameSurname(
-    private val fetchUserNameSurname: (Int) -> UserNameSurnameForAllResults?,
-) : (Int) -> Result4k<UserNameSurnameForAllResults, UserFetchingError> {
-    override operator fun invoke(userId: Int): Result4k<UserNameSurnameForAllResults, UserFetchingError> =
+    private val fetchUserNameSurname: (UUID) -> UserNameSurnameForAllResults?,
+) : (UUID) -> Result4k<UserNameSurnameForAllResults, UserFetchingError> {
+    override operator fun invoke(userId: UUID): Result4k<UserNameSurnameForAllResults, UserFetchingError> =
         try {
             when (val userData = fetchUserNameSurname(userId)) {
                 is UserNameSurnameForAllResults -> Success(userData)

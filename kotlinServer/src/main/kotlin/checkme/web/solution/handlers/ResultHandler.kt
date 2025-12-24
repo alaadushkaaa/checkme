@@ -17,6 +17,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class ResultHandler(
     private val checkOperations: CheckOperationHolder,
@@ -49,7 +50,7 @@ private fun tryFetchCheckResultData(
     checkOperations: CheckOperationHolder,
     objectMapper: ObjectMapper,
     user: User,
-    checkId: Int,
+    checkId: UUID,
 ): Response {
     return when (
         val check = fetchCheckById(
@@ -95,7 +96,8 @@ private fun tryFetchTaskAndSendResponse(
                 task = TaskResultResponse(
                     id = fetchedTaskForResult.value.id.toString(),
                     name = fetchedTaskForResult.value.name
-                )
+                ),
+                totalScore = check.totalScore
             )
         )
     }

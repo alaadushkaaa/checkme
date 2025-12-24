@@ -19,6 +19,7 @@ data class SolutionInformation(
     val date: String,
     val result: Map<String, ResultScoreMessage>?,
     val status: String,
+    val totalScore: Int?,
 )
 
 @Serializable
@@ -27,7 +28,8 @@ data class SolutionInformationWithUserInformation(
     val date: String,
     val status: String,
     val result: Map<String, ResultScoreMessage>?,
-    val user: UserNameSurname
+    val user: UserNameSurname,
+    val totalScore: Int?
 )
 
 @Serializable

@@ -6,6 +6,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
+import java.util.UUID
 
 class CreateBundle(
     private val insertBundle: (
@@ -28,17 +29,17 @@ class CreateBundle(
 }
 
 class CreateBundleTasks(
-    private val selectBundleById: (bundleId: Int) -> Bundle?,
+    private val selectBundleById: (bundleId: UUID) -> Bundle?,
     private val insertBundleTasks: (
-        bundleId: Int,
+        bundleId: UUID,
         tasks: List<TaskAndOrder>,
     ) -> List<TaskAndOrder>?,
 ) : (
-        Int,
+        UUID,
         List<TaskAndOrder>,
     ) -> Result4k<List<TaskAndOrder>, CreateBundleTasksError> {
     override fun invoke(
-        bundleId: Int,
+        bundleId: UUID,
         tasks: List<TaskAndOrder>,
     ): Result4k<List<TaskAndOrder>, CreateBundleTasksError> =
         try {
@@ -62,7 +63,7 @@ class CreateBundleTasks(
             Failure(CreateBundleTasksError.UNKNOWN_DATABASE_ERROR)
         }
 
-    private fun bundleNotExists(bundleId: Int): Boolean =
+    private fun bundleNotExists(bundleId: UUID): Boolean =
         when (selectBundleById(bundleId)) {
             is Bundle -> false
             else -> true

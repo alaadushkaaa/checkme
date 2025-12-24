@@ -13,6 +13,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.Statement
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 const val QUERY_TIMEOUT = 7
@@ -29,7 +30,7 @@ class SqlCheckService(
         firstScript: File,
         referenceQuery: String,
         studentQuery: String,
-        checkId: Int,
+        checkId: UUID,
     ): Result4k<Pair<String, String>, String> {
         val studentUser = "student_${checkId}${user.id}"
         val studentPass = "student_pass_${checkId}${user.id}"

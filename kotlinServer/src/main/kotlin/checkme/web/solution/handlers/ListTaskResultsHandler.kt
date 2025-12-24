@@ -75,7 +75,8 @@ private fun tryFetchTaskSolutions(
                     date = check.date.toString(),
                     status = check.status,
                     result = check.result,
-                    user = userData.valueOrNull()!!
+                    user = userData.valueOrNull()!!,
+                    totalScore = check.totalScore
                 )
             }
             objectMapper.sendOKResponse(

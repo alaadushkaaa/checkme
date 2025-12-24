@@ -11,6 +11,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import java.io.File
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 // Извлекается команда из CheckDataConsole, после чего она запускается в нужной директории с решением пользователя
@@ -29,7 +30,7 @@ data class CheckDataConsole(
             task: Task,
             checkDataConsole: CheckDataConsole,
             user: User,
-            checkId: Int,
+            checkId: UUID,
             criterion: Criterion,
         ): CheckResult {
             val command = checkDataConsole.command

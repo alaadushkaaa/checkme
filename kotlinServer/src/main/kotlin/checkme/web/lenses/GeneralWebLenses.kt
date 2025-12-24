@@ -13,6 +13,7 @@ import org.http4k.lens.RequestContextLens
 import org.http4k.lens.Validator
 import org.http4k.lens.WebForm
 import org.http4k.lens.int
+import org.http4k.lens.uuid
 import org.http4k.lens.webForm
 
 @Suppress("TooManyFunctions")
@@ -25,8 +26,8 @@ object GeneralWebLenses {
     /**
      * Lens for getting {id} from request path
      */
-    val idFromPathField = Path.int().of("id")
-    val checkIdFromPathField = Path.int().of("checkId")
+    val idFromPathField = Path.uuid().of("id")
+    val checkIdFromPathField = Path.uuid().of("checkId")
     val pageCountFromPathField = Path.int().of("page")
 
     /**

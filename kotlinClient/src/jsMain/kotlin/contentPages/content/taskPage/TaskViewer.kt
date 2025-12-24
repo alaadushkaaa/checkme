@@ -32,6 +32,7 @@ import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.SolutionFileList
 import ru.yarsu.serializableClasses.task.TaskFormat
 import kotlin.io.encoding.Base64
+import kotlin.uuid.ExperimentalUuidApi
 
 class TaskViewer(
     private val task: TaskFormat,
@@ -89,6 +90,7 @@ class TaskViewer(
             requestInit.headers = js("{}")
             requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
             requestInit.body = formData
+            @OptIn(ExperimentalUuidApi::class)
             window.fetch(serverUrl + "solution/new/${task.id}", requestInit).then { response ->
                 if (response.status.toInt() == 200) {
                     response.json().then {
@@ -119,6 +121,7 @@ class TaskViewer(
             }
         }
         if (UserInformationStorage.isAdmin()) {
+            @OptIn(ExperimentalUuidApi::class)
             val hiddenButton = TaskHiddenButton(
                 serverUrl,
                 task.isActual,
@@ -130,6 +133,7 @@ class TaskViewer(
                 requestInit.method = HttpMethod.DELETE.name
                 requestInit.headers = js("{}")
                 requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+                @OptIn(ExperimentalUuidApi::class)
                 window.fetch(serverUrl + "task/delete/${task.id}", requestInit).then { response ->
                     if (response.status.toInt() == 200) {
                         routing.navigate("/")

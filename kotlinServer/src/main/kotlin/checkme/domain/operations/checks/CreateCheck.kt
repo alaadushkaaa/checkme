@@ -6,25 +6,26 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import java.time.LocalDateTime
+import java.util.UUID
 
 class CreateCheck(
     private val insertCheck: (
-        taskId: Int,
-        userId: Int,
+        taskId: UUID,
+        userId: UUID,
         date: LocalDateTime,
         result: Map<String, CheckResult>,
         status: String,
     ) -> Check?,
 ) : (
-        Int,
-        Int,
+        UUID,
+        UUID,
         LocalDateTime,
         Map<String, CheckResult>,
         String,
     ) -> Result4k<Check, CreateCheckError> {
     override fun invoke(
-        taskId: Int,
-        userId: Int,
+        taskId: UUID,
+        userId: UUID,
         date: LocalDateTime,
         result: Map<String, CheckResult>,
         status: String,

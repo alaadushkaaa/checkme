@@ -1,8 +1,11 @@
 package ru.yarsu.serializableClasses.task
 
 import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 data class TaskId(
-    val taskId: Int
+    @OptIn(ExperimentalUuidApi::class)
+    val taskId: Uuid
 )

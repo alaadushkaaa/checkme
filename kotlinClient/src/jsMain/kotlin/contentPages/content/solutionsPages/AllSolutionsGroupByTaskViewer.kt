@@ -11,6 +11,7 @@ import io.kvision.routing.Routing
 import io.kvision.snabbdom.classModule
 import kotlinx.datetime.LocalDateTime
 import ru.yarsu.serializableClasses.solution.SolutionsGroupByTask
+import kotlin.uuid.ExperimentalUuidApi
 
 class AllSolutionsGroupByTaskViewer(
     solutionsGroupByTask: List<SolutionsGroupByTask>,
@@ -20,6 +21,7 @@ class AllSolutionsGroupByTaskViewer(
         for (taskSolutions in solutionsGroupByTask) {
             vPanel(className = "block") {
                 h4("Задача ${taskSolutions.task.name}") {
+                    @OptIn(ExperimentalUuidApi::class)
                     onClick {
                         routing.navigate("task/${taskSolutions.task.id}")
                     }
@@ -31,7 +33,7 @@ class AllSolutionsGroupByTaskViewer(
                             div("Пользователь: ${solution.user.surname} ${solution.user.name}")
                             div("Статус: ${solution.status}")
                             if ((solution.status == "Проверено")) {
-                                val score = solution.result?.values?.map { it.score }?.toList()?.sum()
+                                val score = solution.totalScore
                                 div("Результат: $score")
                             }
                             val dateTime = LocalDateTime.parse(solution.date)

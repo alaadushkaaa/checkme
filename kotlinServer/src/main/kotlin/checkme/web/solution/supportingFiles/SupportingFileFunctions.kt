@@ -7,6 +7,7 @@ import checkme.web.solution.handlers.SOLUTIONS_DIR
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
 import java.io.File
+import java.util.UUID
 
 private fun chooseFileExtension(extension: String): String =
     when (extension) {
@@ -21,7 +22,7 @@ private fun chooseFileExtension(extension: String): String =
     }
 
 internal fun tryAddFileToUserSolutionDirectory(
-    checkId: Int,
+    checkId: UUID,
     user: User,
     file: MultipartFormFile,
     taskName: String,
