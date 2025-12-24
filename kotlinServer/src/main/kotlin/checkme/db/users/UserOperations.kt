@@ -12,6 +12,7 @@ import checkme.web.solution.forms.UserDataForUsersList
 import checkme.web.solution.forms.UserNameSurnameForAllResults
 import org.jooq.DSLContext
 import org.jooq.Record
+import java.util.UUID
 
 class UserOperations(
     private val jooqContext: DSLContext,
@@ -23,7 +24,7 @@ class UserOperations(
                 record.toUser()
             }
 
-    override fun selectUserById(userId: Int): User? =
+    override fun selectUserById(userId: UUID): User? =
         selectFromUsers(jooqContext)
             .where(USERS.ID.eq(userId))
             .fetchOne()
@@ -43,7 +44,7 @@ class UserOperations(
                 record.toUser()
             }
 
-    override fun selectUserNameSurname(userId: Int): UserNameSurnameForAllResults? =
+    override fun selectUserNameSurname(userId: UUID): UserNameSurnameForAllResults? =
         jooqContext
             .select(
                 USERS.NAME,

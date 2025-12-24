@@ -25,12 +25,14 @@ class Solution(
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
+                    console.log(jsonString)
                     val solution = Json.Default.decodeFromString<SolutionFormat>(jsonString)
                     this.add(SolutionViewer(solution, routing))
                 }
             } else if (response.status.toInt() == 400) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
+                    console.log(jsonString)
                     val responseError =
                         Json.Default.decodeFromString<ResponseError>(jsonString)
                     this.add(Div(responseError.error, className = "error-message"))

@@ -3,9 +3,10 @@ package checkme.web.tasks.forms
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
+import java.util.UUID
 
 data class TaskClientResponse (
-    val id: Int,
+    val id: UUID,
     val name: String,
     val criterions: Map<String, Criterion>,
     val answerFormat: List<FormatOfAnswer>,

@@ -11,22 +11,24 @@ import checkme.logging.ServerLogger
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Suppress("LongParameterList")
 data class Check(
-    val id: Int,
-    val taskId: Int,
-    val userId: Int,
+    val id: UUID,
+    val taskId: UUID,
+    val userId: UUID,
     val date: LocalDateTime,
-    val result: Map<String, CheckResult>,
+    val result: Map<String, CheckResult>?,
     val status: String,
+    val totalScore: Int? = null,
 ) {
     companion object {
         private val specialCriteria = listOf("beforeAll.json", "beforeEach.json", "afterEach.json", "afterAll.json")
 
         internal fun checkStudentAnswer(
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
@@ -88,7 +90,7 @@ data class Check(
 
         private fun beforeAllCriterionCheck(
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
@@ -111,7 +113,7 @@ data class Check(
 
         private fun beforeEachCriterionCheck(
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
@@ -135,7 +137,7 @@ data class Check(
 
         private fun afterAllCriterionCheck(
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
@@ -158,7 +160,7 @@ data class Check(
 
         private fun afterEachCriterionCheck(
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             results: MutableMap<String, CheckResult>,
@@ -183,7 +185,7 @@ data class Check(
         private fun MutableMap<String, CheckResult>.tryCheckSpecialCriterionEach(
             specialCriterion: Map.Entry<String, Criterion>?,
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
@@ -219,7 +221,7 @@ data class Check(
         private fun tryCheckSpecialCriterionAll(
             specialCriterion: Map.Entry<String, Criterion>?,
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,
@@ -245,7 +247,7 @@ data class Check(
         private fun criterionCheck(
             criterion: Map.Entry<String, Criterion>,
             task: Task,
-            checkId: Int,
+            checkId: UUID,
             user: User,
             answers: List<Pair<String, String>>,
             checkDatabaseConfig: CheckDatabaseConfig,

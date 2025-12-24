@@ -77,7 +77,8 @@ private fun tryGetSolutionsGroupedByTask(
                                     date = check.date.toString(),
                                     status = check.status,
                                     result = check.result,
-                                    user = userForCheck.value
+                                    user = userForCheck.value,
+                                    totalScore = check.totalScore
                                 )
                             }
                         }

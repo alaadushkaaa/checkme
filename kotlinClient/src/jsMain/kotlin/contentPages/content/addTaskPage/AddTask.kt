@@ -48,6 +48,7 @@ import ru.yarsu.serializableClasses.task.FormAddTaskFileSelection
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskId
 import kotlin.io.encoding.Base64
+import kotlin.uuid.ExperimentalUuidApi
 
 class AddTask(
     private val serverUrl: String,
@@ -329,6 +330,7 @@ class AddTask(
                     response.json().then {
                         val jsonString = JSON.stringify(it)
                         val taskId = Json.Default.decodeFromString<TaskId>(jsonString)
+                        @OptIn(ExperimentalUuidApi::class)
                         routing.navigate("/task/${taskId.taskId}")
                     }
                 } else if (response.status.toInt() == 400) {

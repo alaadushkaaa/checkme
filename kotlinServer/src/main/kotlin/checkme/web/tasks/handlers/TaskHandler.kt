@@ -13,6 +13,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class TaskHandler(
     private val userLens: RequestContextLens<User?>,
@@ -36,7 +37,7 @@ class TaskHandler(
 }
 
 private fun tryFetchTask(
-    taskId: Int,
+    taskId: UUID,
     objectMapper: ObjectMapper,
     user: User,
     taskOperations: TaskOperationsHolder,
@@ -48,16 +49,21 @@ private fun tryFetchTask(
             if (!task.value.isActual && !user.isAdmin()) {
                 objectMapper.sendBadRequestError(ViewTaskError.USER_CANT_VIEW_THIS_TASK.errorText)
             } else {
-                objectMapper.sendOKResponse(
-                    TaskClientResponse(
-                        task.value.id,
-                        task.value.name,
-                        task.value.criterions,
-                        task.value.answerFormat.toClientEntryAnswerFormat(),
-                        task.value.description,
-                        task.value.isActual
+                val taskId = task.value.id
+                if (taskId != null) {
+                    objectMapper.sendOKResponse(
+                        TaskClientResponse(
+                            taskId,
+                            task.value.name,
+                            task.value.criterions,
+                            task.value.answerFormat.toClientEntryAnswerFormat(),
+                            task.value.description,
+                            task.value.isActual
+                        )
                     )
-                )
+                } else {
+                    objectMapper.sendBadRequestError(ViewTaskError.NO_TASK_ID_ERROR)
+                }
             }
         }
     }
