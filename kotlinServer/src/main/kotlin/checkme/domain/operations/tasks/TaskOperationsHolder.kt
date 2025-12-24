@@ -7,13 +7,14 @@ import checkme.domain.operations.dependencies.tasks.TasksDatabase
 import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
 import dev.forkhandles.result4k.Result
+import java.util.UUID
 
 class TaskOperationsHolder (
     private val tasksDatabase: TasksDatabase,
 ) {
-    val fetchTaskById: (Int) -> Result<Task, TaskFetchingError> =
+    val fetchTaskById: (UUID) -> Result<Task, TaskFetchingError> =
         FetchTaskById {
-                taskId: Int,
+                taskId: UUID,
             ->
             tasksDatabase.selectTaskById(taskId)
         }
@@ -39,13 +40,13 @@ class TaskOperationsHolder (
             tasksDatabase.selectAllTasksPagination(page)
         }
 
-    val fetchTaskName: (Int) -> Result<TaskNameForAllResults, TaskFetchingError> =
+    val fetchTaskName: (UUID) -> Result<TaskNameForAllResults, TaskFetchingError> =
         FetchTaskName {
-                taskId: Int ->
+                taskId: UUID ->
             tasksDatabase.selectTaskName(taskId)
         }
 
-    val removeTask: (task: Task) -> Result<Int, TaskRemovingError> =
+    val removeTask: (task: Task) -> Result<UUID?, TaskRemovingError> =
         RemoveTask(
             selectTaskById = tasksDatabase::selectTaskById,
             removeTask = tasksDatabase::deleteTask

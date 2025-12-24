@@ -23,7 +23,7 @@ class AllSolutionsViewer(
                 }
                 div("Статус: ${solution.status}")
                 if ((solution.status == "Проверено")) {
-                    val score = solution.result?.values?.map { it.score }?.toList()?.sum()
+                    val score = solution.totalScore
                     div("Результат: $score")
                 }
                 val dateTime = LocalDateTime.parse(solution.date)

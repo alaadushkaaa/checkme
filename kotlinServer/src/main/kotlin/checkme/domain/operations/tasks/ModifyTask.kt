@@ -5,26 +5,31 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
+import java.util.UUID
 
 class RemoveTask(
-    private val selectTaskById: (taskId: Int) -> Task?,
-    private val removeTask: (Int) -> Int?,
-) : (Task) -> Result<Int, TaskRemovingError> {
-    override fun invoke(task: Task): Result<Int, TaskRemovingError> {
+    private val selectTaskById: (taskId: UUID) -> Task?,
+    private val removeTask: (UUID) -> Int?,
+) : (Task) -> Result<UUID?, TaskRemovingError> {
+    override fun invoke(task: Task): Result<UUID?, TaskRemovingError> {
         return try {
-            when {
-                taskNotExists(task.id) -> Failure(TaskRemovingError.TASK_NOT_EXISTS)
-                else -> when (removeTask(task.id)) {
-                    is Int -> Success(task.id)
-                    else -> Failure(TaskRemovingError.UNKNOWN_DELETE_ERROR)
+            if (task.id != null) {
+                when {
+                    taskNotExists(task.id) -> Failure(TaskRemovingError.TASK_NOT_EXISTS)
+                    else -> when (removeTask(task.id)) {
+                        is Int -> Success(task.id)
+                        else -> Failure(TaskRemovingError.UNKNOWN_DELETE_ERROR)
+                    }
                 }
+            } else {
+                Failure(TaskRemovingError.TASK_ID_IS_NULL)
             }
         } catch (_: DataAccessException) {
             Failure(TaskRemovingError.UNKNOWN_DATABASE_ERROR)
         }
     }
 
-    private fun taskNotExists(taskId: Int): Boolean =
+    private fun taskNotExists(taskId: UUID): Boolean =
         when (selectTaskById(taskId)) {
             is Task -> false
             else -> true
@@ -53,6 +58,7 @@ enum class TaskRemovingError {
     UNKNOWN_DATABASE_ERROR,
     UNKNOWN_DELETE_ERROR,
     TASK_NOT_EXISTS,
+    TASK_ID_IS_NULL
 }
 
 enum class ModifyTaskError {

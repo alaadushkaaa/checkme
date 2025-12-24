@@ -30,6 +30,7 @@ class AllSolutionsTable(
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
+                    console.log(jsonString)
                     val solutions = Json.Default.decodeFromString<SolutionsTable>(jsonString)
                     this.add(AllSolutionsTableViewer(routing, solutions))
                 }

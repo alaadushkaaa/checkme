@@ -7,12 +7,13 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
+import java.util.UUID
 
 class FetchTaskById(
-    private val fetchTaskById: (Int) -> Task?,
-) : (Int) -> Result4k<Task, TaskFetchingError> {
+    private val fetchTaskById: (UUID) -> Task?,
+) : (UUID) -> Result4k<Task, TaskFetchingError> {
 
-    override fun invoke(taskId: Int): Result4k<Task, TaskFetchingError> =
+    override fun invoke(taskId: UUID): Result4k<Task, TaskFetchingError> =
         try {
             when (val task = fetchTaskById(taskId)) {
                 is Task -> Success(task)
@@ -83,9 +84,9 @@ class FetchAllTasksPagination(
 }
 
 class FetchTaskName(
-    private val fetchTaskName: (taskId: Int) -> TaskNameForAllResults?,
-) : (Int) -> Result4k<TaskNameForAllResults, TaskFetchingError> {
-    override fun invoke(taskId: Int): Result4k<TaskNameForAllResults, TaskFetchingError> =
+    private val fetchTaskName: (taskId: UUID) -> TaskNameForAllResults?,
+) : (UUID) -> Result4k<TaskNameForAllResults, TaskFetchingError> {
+    override fun invoke(taskId: UUID): Result4k<TaskNameForAllResults, TaskFetchingError> =
         try {
             when (val taskName = fetchTaskName(taskId)) {
                 is TaskNameForAllResults -> Success(taskName)

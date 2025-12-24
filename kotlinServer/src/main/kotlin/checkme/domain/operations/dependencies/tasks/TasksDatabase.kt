@@ -5,9 +5,10 @@ import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
+import java.util.UUID
 
 interface TasksDatabase {
-    fun selectTaskById(taskId: Int): Task?
+    fun selectTaskById(taskId: UUID): Task?
 
     fun selectAllTask(): List<Task>
 
@@ -17,7 +18,7 @@ interface TasksDatabase {
 
     fun selectAllTasksPagination(page: Int): List<Task>
 
-    fun selectTaskName(taskId: Int): TaskNameForAllResults?
+    fun selectTaskName(taskId: UUID): TaskNameForAllResults?
 
     fun updateTaskActuality(task: Task): Task?
 
@@ -29,5 +30,5 @@ interface TasksDatabase {
         isActual: Boolean,
     ): Task?
 
-    fun deleteTask(taskId: Int): Int
+    fun deleteTask(taskId: UUID): Int
 }

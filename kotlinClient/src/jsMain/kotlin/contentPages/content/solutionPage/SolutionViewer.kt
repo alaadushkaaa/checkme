@@ -17,7 +17,7 @@ class SolutionViewer(
         if ((solution.status == "В процессе") || (solution.result == null)) {
             add(Loading("Проверяем эту задачу"))
         } else if (solution.status == "Проверено") {
-            val score = solution.result.values.map { it.score }.toList().sum()
+            val score = solution.totalScore
             h2("Результат: $score")
             div(solution.task.name, className = "task-link").onClick {
                 routing.navigate("task/${solution.task.id}")

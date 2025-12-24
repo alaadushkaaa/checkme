@@ -2,10 +2,13 @@ package ru.yarsu.serializableClasses.task
 
 import io.kvision.types.KFile
 import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 data class TaskFormat(
-    val id: Int,
+    @OptIn(ExperimentalUuidApi::class)
+    val id: Uuid,
     val name: String,
     val criterions: Map<String, Criterion>,
     val answerFormat: List<AnswerFormat>,
@@ -15,7 +18,8 @@ data class TaskFormat(
 
 @Serializable
 data class TaskFormatForList(
-    val id: Int,
+    @OptIn(ExperimentalUuidApi::class)
+    val id: Uuid,
     val name: String,
     val criterions: Map<String, Criterion>,
     val answerFormat: Map<String, String>,
