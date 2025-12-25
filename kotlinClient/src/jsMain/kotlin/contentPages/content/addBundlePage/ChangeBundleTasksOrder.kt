@@ -5,13 +5,20 @@ import io.kvision.core.onClick
 import io.kvision.form.check.CheckBox
 import io.kvision.html.Button
 import io.kvision.html.Div
+import io.kvision.html.button
+import io.kvision.html.div
 import io.kvision.html.h2
 import io.kvision.panel.SimplePanel
+import io.kvision.panel.VPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
+import io.kvision.toast.Toast
+import io.kvision.toast.ToastOptions
+import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
+import ru.yarsu.jsTasks
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.TaskFormatWithOrder
@@ -31,19 +38,75 @@ class ChangeBundleTasksOrder(
         window.fetch(serverUrl + "bundle/tasks/$bundleId", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.text().then { jsonString ->
-                    println(jsonString)
-                    println("*/*/*/*/*/*/*")
                     val taskList = Json.decodeFromString<List<TaskFormatWithOrder>>(jsonString)
                     if (taskList.isEmpty()) {
                         this.add(Div("Задачи не найдены"))
                     } else {
                         val tasksContainer = Div(className = "task-selection-container")
-                        h2("Ура!")
                         add(tasksContainer)
+                        val saveButton = button(
+                            "Сохранить",
+                            className = "usually-button"
+                        )
+                            .apply {
+                                onClick {
+                                    val indices: List<String> =
+                                        js("getTasksInOrder()").unsafeCast<Array<String>>().toList()
+                                    console.log(indices)
+                                    val orderedTasks = indices.mapNotNull { index ->
+                                        taskList.find { it.task.id.toString() == index }?.let { taskWithOrder ->
+                                            TaskFormatWithOrder(
+                                                task = taskWithOrder.task,
+                                                order = indices.indexOf(index) + 1
+                                            )
+                                        }
+                                    }
+                                    val requestInit = RequestInit()
+                                    requestInit.method = HttpMethod.POST.name
+                                    requestInit.headers = js("{}")
+                                    requestInit.headers["Content-Type"] = "application/json"
+                                    requestInit.headers["Authentication"] =
+                                        "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+                                    requestInit.body = Json.Default.encodeToString(
+                                        orderedTasks
+                                    )
+                                    window.fetch(serverUrl + "bundle/select-order/$bundleId", requestInit)
+                                        .then { response ->
+                                            if (response.status.toInt() == 200) {
+                                                response.json().then {
+                                                    routing.navigate("bundle/$bundleId")
+                                                }
+                                            } else if (response.status.toInt() == 401) {
+                                                response.json().then {
+                                                    val jsonString = JSON.stringify(it)
+                                                    val responseUnauthorized =
+                                                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                                                    Toast.danger(
+                                                        responseUnauthorized.error,
+                                                        ToastOptions(
+                                                            duration = 3000,
+                                                            position = ToastPosition.TOPRIGHT,
+                                                        )
+                                                    )
+                                                }
+                                            } else {
+                                                Toast.danger(
+                                                    "Код ошибки ${response.status}: ${response.statusText}",
+                                                    ToastOptions(
+                                                        duration = 5000,
+                                                        position = ToastPosition.TOPRIGHT,
+                                                    )
+                                                )
+                                            }
+                                        }
+                                }
+                            }
+                        add(saveButton)
 
-                        taskList.forEach { task ->
+                        taskList.sortedBy { it.order }.forEach { task ->
                             createTaskElement(task, tasksContainer)
                         }
+                        js("initDragAndDrop()")
                     }
                 }
             } else if (response.status.toInt() == 400) {
@@ -60,18 +123,24 @@ class ChangeBundleTasksOrder(
     }
 
     private fun createTaskElement(
-        task: TaskFormatWithOrder,
+        taskAndOrder: TaskFormatWithOrder,
         container: Container
     ) {
-        val taskDiv = Div(className = "task-item").apply {
-            val checkbox =
-                CheckBox(value = false,
-                    label = "${task.task.name} (${task.task.description.replace("(<([^>]+)>)".toRegex(), "")
-                        .slice(0..DESCRIPTION_SIZE - task.task.name.length)}...)"
-                )
-            add(checkbox)
+        val taskItem = VPanel(className = "task-item") {
+            id = taskAndOrder.task.id.toString()
+            div(taskAndOrder.task.id.toString(), className = "id") {
+                visible = false
+            }
+            div(taskAndOrder.task.name, className = "name")
+            val description = taskAndOrder.task.description
+                .replace("(<([^>]+)>)".toRegex(), "")
+            div(
+                if (description.length > 50)
+                    "" + description.filterIndexed { index, _ -> index <= 50 } + "..."
+                else description
+            )
         }
-        container.add(taskDiv)
+        add(taskItem)
+        container.add(taskItem)
     }
-
 }

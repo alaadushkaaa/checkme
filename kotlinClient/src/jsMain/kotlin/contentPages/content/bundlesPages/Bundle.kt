@@ -1,12 +1,14 @@
 package ru.yarsu.contentPages.content.bundlesPages
 
 import io.kvision.html.Div
+import io.kvision.html.button
 import io.kvision.panel.SimplePanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
+import ru.yarsu.contentPages.content.hiddenBundle.BundleHiddenButton
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.BundleFormatWithTasks
@@ -26,7 +28,7 @@ class Bundle(
                 response.json().then {
                     val jsonString = JSON.stringify(it)
                     val bundleAndTasks = Json.Default.decodeFromString<BundleFormatWithTasks>(jsonString)
-                    this.add(BundleViewer(bundleAndTasks.bundle, bundleAndTasks.tasks, routing))
+                    this.add(BundleViewer(serverUrl, bundleAndTasks.bundle, bundleAndTasks.tasks, routing))
                 }
             } else if (response.status.toInt() == 400) {
                 response.json().then {

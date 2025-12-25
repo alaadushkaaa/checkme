@@ -114,7 +114,6 @@ class MainPage(
             content.removeAll()
             content.add(TaskList(serverUrl, routingMainPage, ListType.HIDDEN))
         }).on("/bundle/select-bundle-tasks/:id", { match ->
-            println("I'm alive")
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
                 val id = match.data.id.toString().toIntOrNull()

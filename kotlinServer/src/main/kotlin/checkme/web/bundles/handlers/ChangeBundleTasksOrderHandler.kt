@@ -28,19 +28,15 @@ class ChangeBundleTasksOrderHandler(
         val user = userLens(request)
         val bundleId = request.idOrNull()
         val selectedTasksAndOrder = objectMapper.readValue<List<TaskAndOrder>>(request.bodyString())
-        println(selectedTasksAndOrder)
         return when {
             user == null || !user.isAdmin() ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.USER_CANT_VIEW_THIS_BUNDLE.errorText)
-                    .also { println("000") }
 
             bundleId == null ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.NO_BUNDLE_ID_ERROR.errorText)
-                    .also { println("111") }
 
             selectedTasksAndOrder.isEmpty() ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.TASKS_IDS_LIST_IS_EMPTY_ERROR.errorText)
-                    .also { println("222") }
 
             else -> tryUpdateTasksOrders(
                 tasksAndOrders = selectedTasksAndOrder,

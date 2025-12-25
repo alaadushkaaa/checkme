@@ -41,10 +41,6 @@ class Header(
                         "Пользователи",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/user-list") }
-                    button(
-                        "Добавить задания 1 группе",
-                        className = "navigation-button"
-                    ).onClick { routingMainPage.navigate("bundle/select-bundle-tasks/1") }
                 }
             }
             val userName = UserInformationStorage.getUserInformation()

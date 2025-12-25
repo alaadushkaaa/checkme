@@ -1,0 +1,10 @@
+.Bundle .usually-button {
+    height: 40px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.Bundle .button-row {
+    display: flex;
+    gap: 15px;
+}

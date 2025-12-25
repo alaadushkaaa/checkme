@@ -17,7 +17,7 @@ class BundleHiddenButton(
     private var isActual: Boolean,
     private val bundleId: Int,
     private val hPanel: HPanel? = null
-) : Button("", className = "hidden-button") {
+) : Button("", className = "usually-button") {
     init {
         text = if (isActual) "Скрыть группу" else "Показать группу"
         this.onClick {

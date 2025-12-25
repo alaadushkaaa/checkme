@@ -42,6 +42,9 @@ external val cssBundleList: dynamic
 @JsModule("./css/Task.css")
 external val cssTask: dynamic
 
+@JsModule("./css/Bundle.css")
+external val cssBundle: dynamic
+
 @JsModule("./css/UserList.css")
 external val cssUserList: dynamic
 
@@ -53,6 +56,9 @@ external val cssLoading: dynamic
 
 @JsModule("./css/Table.css")
 external val cssTable: dynamic
+
+@JsModule("./js/task-permutations.js")
+external val jsTasks: dynamic
 
 class CheckMe : Application() {
     init {
@@ -66,10 +72,12 @@ class CheckMe : Application() {
         useModule(cssTasksList)
         useModule(cssBundleList)
         useModule(cssTask)
+        useModule(cssBundle)
         useModule(cssUserList)
         useModule(cssResult)
         useModule(cssLoading)
         useModule(cssTable)
+        useModule(jsTasks)
     }
     override fun start() {
         val serverUrl = js("SERVER_URL").toString()

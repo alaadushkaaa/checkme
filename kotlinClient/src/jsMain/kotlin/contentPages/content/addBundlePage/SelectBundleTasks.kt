@@ -29,8 +29,6 @@ class SelectBundleTasks(
 
     init {
         h2("Выбор задач")
-        console.log("I'm alive")
-        println("Я жив")
         val saveButton = button(
             "Далее",
             className = "usually-button"
@@ -87,7 +85,6 @@ class SelectBundleTasks(
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
-                    console.log("Полученный JSON:", jsonString)
                     val taskList = Json.decodeFromString<List<TaskFormatForList>>(jsonString)
                     if (taskList.isEmpty()) {
                         this.add(Div("Задачи не найдены"))
