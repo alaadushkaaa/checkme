@@ -5,6 +5,8 @@ import checkme.domain.models.TaskAndOrder
 import checkme.domain.models.User
 import checkme.domain.operations.bundles.BundleOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
@@ -28,7 +30,6 @@ class SelectBundleTasks(
         val user = userLens(request)
         val bundleId = request.idOrNull()
         val selectedTasksIds = objectMapper.readValue<List<String>>(request.bodyString())
-        println(selectedTasksIds)
         return when {
             user == null || !user.isAdmin() ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.USER_CANT_VIEW_THIS_BUNDLE.errorText)
@@ -40,6 +41,7 @@ class SelectBundleTasks(
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.TASKS_IDS_LIST_IS_EMPTY_ERROR.errorText)
 
             else -> tryFetchSelectedTasks(
+                user = user,
                 tasksIds = selectedTasksIds,
                 bundleId = bundleId,
                 objectMapper = objectMapper,
@@ -49,7 +51,9 @@ class SelectBundleTasks(
         }
     }
 
+    @Suppress("LongParameterList")
     private fun tryFetchSelectedTasks(
+        user: User,
         tasksIds: List<String>,
         bundleId: Int,
         objectMapper: ObjectMapper,
@@ -61,6 +65,12 @@ class SelectBundleTasks(
             when (val task = taskOperations.fetchTaskById(id.toInt())) {
                 is Success -> fetchedTasks.add(task.value)
                 is Failure -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Add bundle tasks error",
+                        message = "Error: ${ViewSelectedTasksError.SELECT_TASK_ERROR.errorText}",
+                        type = LoggerType.INFO
+                    )
                     return objectMapper.sendBadRequestError(
                         ViewSelectedTasksError.SELECT_TASK_ERROR.errorText
                     )
@@ -74,11 +84,26 @@ class SelectBundleTasks(
                 bundleOperations = bundleOperations
             )
         ) {
-            is Failure -> objectMapper.sendBadRequestError(
-                insertedTasks.reason.errorText
-            )
+            is Failure -> {
+                ServerLogger.log(
+                    user = user,
+                    action = "Add bundle tasks error",
+                    message = "Error: ${insertedTasks.reason.errorText}",
+                    type = LoggerType.INFO
+                )
+                objectMapper.sendBadRequestError(
+                    insertedTasks.reason.errorText
+                )
+            }
 
-            is Success -> objectMapper.sendOKResponse(insertedTasks.value).also {
+            is Success -> {
+                ServerLogger.log(
+                    user = user,
+                    action = "Add bundle tasks",
+                    message = "Admin is added new bundle tasks for bundle with id $bundleId",
+                    type = LoggerType.INFO
+                )
+                objectMapper.sendOKResponse(insertedTasks.value)
             }
         }
     }

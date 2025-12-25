@@ -3,6 +3,8 @@ package checkme.web.bundles.handlers
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.models.User
 import checkme.domain.operations.bundles.BundleOperationHolder
+import checkme.logging.LoggerType
+import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
@@ -36,6 +38,7 @@ class ChangeBundleTasksOrderHandler(
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.TASKS_IDS_LIST_IS_EMPTY_ERROR.errorText)
 
             else -> tryUpdateTasksOrders(
+                user = user,
                 tasksAndOrders = selectedTasksAndOrder,
                 bundleId = bundleId,
                 objectMapper = objectMapper,
@@ -45,6 +48,7 @@ class ChangeBundleTasksOrderHandler(
     }
 
     private fun tryUpdateTasksOrders(
+        user: User,
         tasksAndOrders: List<TaskAndOrder>,
         bundleId: Int,
         objectMapper: ObjectMapper,
@@ -57,11 +61,27 @@ class ChangeBundleTasksOrderHandler(
                 bundleOperations = bundleOperations
             )
         ) {
-            is Failure -> objectMapper.sendBadRequestError(
-                updatedTasksAndOrders.reason.errorText
-            )
+            is Failure -> {
+                ServerLogger.log(
+                    user = user,
+                    action = "Change bundle task order error",
+                    message = "Error: ${updatedTasksAndOrders.reason.errorText}",
+                    type = LoggerType.INFO
+                )
+                objectMapper.sendBadRequestError(
+                    updatedTasksAndOrders.reason.errorText
+                )
+            }
 
-            is Success -> objectMapper.sendOKResponse(updatedTasksAndOrders.value)
+            is Success -> {
+                ServerLogger.log(
+                    user = user,
+                    action = "Change bundle tasks order",
+                    message = "Admin is changed bundle tasks order for bundle with id $bundleId",
+                    type = LoggerType.INFO
+                )
+                objectMapper.sendOKResponse(updatedTasksAndOrders.value)
+            }
         }
     }
 }
