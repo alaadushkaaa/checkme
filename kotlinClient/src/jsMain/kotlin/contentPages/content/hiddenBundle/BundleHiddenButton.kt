@@ -3,6 +3,7 @@ package ru.yarsu.contentPages.content.hiddenBundle
 import io.kvision.html.Button
 import io.kvision.panel.HPanel
 import io.kvision.rest.HttpMethod
+import io.kvision.routing.Routing
 import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
@@ -16,7 +17,8 @@ class BundleHiddenButton(
     private val serverUrl: String,
     private var isActual: Boolean,
     private val bundleId: Int,
-    private val hPanel: HPanel? = null
+    private val routing: Routing,
+    private val hPanel: HPanel? = null,
 ) : Button("", className = "usually-button") {
     init {
         text = if (isActual) "Скрыть группу" else "Показать группу"
@@ -33,6 +35,7 @@ class BundleHiddenButton(
                         isActual = !isActual
                         text = if (isActual) "Скрыть группу" else "Показать группу"
                     }
+                    js("window.location.reload()")
                 } else if (response.status.toInt() == 400) {
                     response.json().then {
                         val jsonString = JSON.stringify(it)

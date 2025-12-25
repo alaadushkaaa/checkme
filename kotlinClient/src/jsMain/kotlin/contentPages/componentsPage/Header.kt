@@ -21,6 +21,12 @@ class Header(
                     "Группы задач",
                     className = "navigation-button"
                 ).onClick { routingMainPage.navigate("/bundle-list") }
+                if (UserInformationStorage.isAdmin()) {
+                    button(
+                        "Список скрытых групп",
+                        className = "navigation-button"
+                    ).onClick { routingMainPage.navigate("/hidden-bundle-list") }
+                }
                 button("Список задач", className = "navigation-button").onClick { routingMainPage.navigate("/") }
                 if (UserInformationStorage.isAdmin()) {
                     button(

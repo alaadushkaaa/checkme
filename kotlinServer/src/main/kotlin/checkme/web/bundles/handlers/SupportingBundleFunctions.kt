@@ -5,7 +5,6 @@ import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.bundles.BundleFetchingError
 import checkme.domain.operations.bundles.BundleOperationHolder
 import checkme.domain.operations.bundles.CreateBundleError
-import checkme.domain.operations.bundles.CreateBundleTasksError
 import checkme.domain.operations.bundles.ModifyBundleError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
@@ -36,31 +35,6 @@ internal fun selectBundle(
         is Failure -> when (bundle.reason) {
             BundleFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingBundleError.UNKNOWN_DATABASE_ERROR)
             BundleFetchingError.NO_SUCH_BUNDLE -> Failure(FetchingBundleError.NO_SUCH_BUNDLE)
-        }
-    }
-}
-
-internal fun tryInsertBundleTasks(
-    tasksAndOrder: List<TaskAndOrder>,
-    bundleId: Int,
-    bundleOperations: BundleOperationHolder,
-): Result<List<TaskAndOrder>, CreationBundleTasksError> {
-    return when (val validatedTasks = validateBundleTasks(tasksAndOrder)) {
-        is Failure -> Failure(validatedTasks.reason)
-        is Success -> {
-            when (val insertedTasks = bundleOperations.createBundleTasks(bundleId, tasksAndOrder)) {
-                is Success -> Success(insertedTasks.value)
-                is Failure -> when (insertedTasks.reason) {
-                    CreateBundleTasksError.NO_SUCH_BUNDLE_FOR_TASKS ->
-                        Failure(CreationBundleTasksError.NO_SUCH_BUNDLE_FOR_TASKS)
-
-                    CreateBundleTasksError.TASKS_LIST_IS_EMPTY ->
-                        Failure(CreationBundleTasksError.TASKS_LIST_IS_EMPTY)
-
-                    CreateBundleTasksError.UNKNOWN_DATABASE_ERROR ->
-                        Failure(CreationBundleTasksError.UNKNOWN_DATABASE_ERROR)
-                }
-            }
         }
     }
 }
@@ -123,6 +97,21 @@ internal fun tryUpdateBundleTasks(
     }
 }
 
+internal fun changeBundleActuality(
+    bundle: Bundle,
+    bundleOperations: BundleOperationHolder,
+): Result<Bundle, BundleChangingError> {
+    return when (
+        val updatedBundle = bundleOperations.modifyBundleActuality(bundle)
+    ) {
+        is Success -> Success(updatedBundle.value)
+        is Failure -> when (updatedBundle.reason) {
+            ModifyBundleError.NO_SUCH_BUNDLE -> Failure(BundleChangingError.NO_SUCH_BUNDLE)
+            ModifyBundleError.UNKNOWN_DATABASE_ERROR -> Failure(BundleChangingError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
 internal fun validateBundleTasks(tasksOrder: List<TaskAndOrder>): Result<List<TaskAndOrder>, CreationBundleTasksError> {
     val tasks = tasksOrder.map { it.task }
     val orders = tasksOrder.map { it.order }
@@ -144,7 +133,6 @@ enum class CreationBundleTasksError(val errorText: String) {
     ORDERS_NOT_UNIQUE_ERROR("Order must be a unique number"),
     NEGATIVE_ORDERS_ERROR("Order must be a unique number"),
     NO_SUCH_BUNDLE_FOR_TASKS("No such bundle to add tasks"),
-    TASKS_LIST_IS_EMPTY("Tasks list for bundle is empty"),
 }
 
 enum class FetchingBundleTasksError(val errorText: String) {
@@ -161,12 +149,7 @@ enum class AddBundleError(val errorText: String) {
     USER_HAS_NOT_RIGHTS("Not allowed to add task"),
 }
 
-enum class AddBundleTasksError(val errorText: String) {
-    USER_HAS_NOT_RIGHTS("Not allowed to add task"),
-    NO_BUNDLE_ID_TO_ADD_TASKS("No bundle id for adding task"),
+enum class BundleChangingError(val errorText: String) {
+    NO_SUCH_BUNDLE("No bundle id to change bundle actuality"),
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
-}
-
-enum class ValidateBundleTasksError(val errorText: String) {
-
 }

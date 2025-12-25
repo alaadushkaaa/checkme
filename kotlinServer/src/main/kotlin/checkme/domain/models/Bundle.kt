@@ -13,5 +13,5 @@ data class TaskAndOrder(
 
 data class BundleAndTasks(
     val bundle: Bundle,
-    val tasks: List<TaskAndOrder>
+    val tasks: List<TaskAndOrder>,
 )

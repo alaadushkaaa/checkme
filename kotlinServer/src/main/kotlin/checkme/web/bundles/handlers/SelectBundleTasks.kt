@@ -4,8 +4,6 @@ import checkme.domain.models.Task
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.models.User
 import checkme.domain.operations.bundles.BundleOperationHolder
-import checkme.domain.operations.bundles.CreateBundleTasks
-import checkme.domain.operations.bundles.CreateBundleTasksError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
@@ -23,7 +21,7 @@ import org.http4k.lens.RequestContextLens
 class SelectBundleTasks(
     private val userLens: RequestContextLens<User?>,
     private val taskOperations: TaskOperationsHolder,
-    private val bundleOperations: BundleOperationHolder
+    private val bundleOperations: BundleOperationHolder,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
@@ -35,10 +33,8 @@ class SelectBundleTasks(
             user == null || !user.isAdmin() ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.USER_CANT_VIEW_THIS_BUNDLE.errorText)
 
-
             bundleId == null ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.NO_BUNDLE_ID_ERROR.errorText)
-
 
             selectedTasksIds.isEmpty() ->
                 objectMapper.sendBadRequestError(ViewSelectedTasksError.TASKS_IDS_LIST_IS_EMPTY_ERROR.errorText)
@@ -58,7 +54,7 @@ class SelectBundleTasks(
         bundleId: Int,
         objectMapper: ObjectMapper,
         taskOperations: TaskOperationsHolder,
-        bundleOperations: BundleOperationHolder
+        bundleOperations: BundleOperationHolder,
     ): Response {
         val fetchedTasks = mutableListOf<Task>()
         for (id in tasksIds) {
@@ -71,11 +67,13 @@ class SelectBundleTasks(
                 }
             }
         }
-        return when (val insertedTasks = tryUpdateBundleTasks(
-            tasksAndOrder = fetchedTasks.map { TaskAndOrder(it, fetchedTasks.indexOf(it) + 1) },
-            bundleId = bundleId,
-            bundleOperations = bundleOperations
-        )) {
+        return when (
+            val insertedTasks = tryUpdateBundleTasks(
+                tasksAndOrder = fetchedTasks.map { TaskAndOrder(it, fetchedTasks.indexOf(it) + 1) },
+                bundleId = bundleId,
+                bundleOperations = bundleOperations
+            )
+        ) {
             is Failure -> objectMapper.sendBadRequestError(
                 insertedTasks.reason.errorText
             )
@@ -85,7 +83,6 @@ class SelectBundleTasks(
         }
     }
 }
-
 
 enum class ViewSelectedTasksError(val errorText: String) {
     NO_BUNDLE_ID_ERROR("No bundle id to view bundle info"),

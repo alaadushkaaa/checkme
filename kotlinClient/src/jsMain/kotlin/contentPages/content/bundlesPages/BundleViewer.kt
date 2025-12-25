@@ -30,16 +30,23 @@ class BundleViewer(
         if (tasksAndOrders.isEmpty()) div("Задачи не найдены")
         if (UserInformationStorage.isAdmin()) {
             hPanel(className = "button-row") {
-                button("Изменить задачи", className = "usually-button").onClick {
-                    routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
-                }
-                button("Изменить порядок задач", className = "usually-button").onClick {
-                    routing.navigate("/bundle/select-order/${bundle.id}")
+                if (tasksAndOrders.isEmpty()) {
+                    button("Добавить задачи", className = "usually-button").onClick {
+                        routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
+                    }
+                } else {
+                    button("Изменить задачи", className = "usually-button").onClick {
+                        routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
+                    }
+                    button("Изменить порядок задач", className = "usually-button").onClick {
+                        routing.navigate("/bundle/select-order/${bundle.id}")
+                    }
                 }
                 val hiddenButton = BundleHiddenButton(
                     serverUrl,
                     bundle.isActual,
                     bundle.id,
+                    routing
                 )
                 this.add(hiddenButton)
             }

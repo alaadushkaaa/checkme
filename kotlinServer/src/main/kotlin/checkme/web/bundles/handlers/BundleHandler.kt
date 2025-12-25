@@ -46,11 +46,13 @@ private fun tryFetchBundleAndTasks(
         is Success -> {
             if (!bundle.value.isActual && !user.isAdmin()) {
                 objectMapper.sendBadRequestError(ViewBundleError.USER_CANT_VIEW_THIS_BUNDLE.errorText)
-            } else tryFetchBundleTasks(
-                bundle = bundle.value,
-                bundleOperations = bundleOperations,
-                objectMapper = objectMapper
-            )
+            } else {
+                tryFetchBundleTasks(
+                    bundle = bundle.value,
+                    bundleOperations = bundleOperations,
+                    objectMapper = objectMapper
+                )
+            }
         }
     }
 }
@@ -59,7 +61,7 @@ private fun tryFetchBundleTasks(
     bundle: Bundle,
     bundleOperations: BundleOperationHolder,
     objectMapper: ObjectMapper,
-) : Response {
+): Response {
     return when (val bundleTasks = selectBundleTasks(bundle.id, bundleOperations)) {
         is Failure -> objectMapper.sendBadRequestError(bundleTasks.reason.errorText)
         is Success -> objectMapper.sendOKResponse(BundleAndTasks(bundle = bundle, tasks = bundleTasks.value))

@@ -3,11 +3,9 @@ package checkme.web.bundles.handlers
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.models.User
 import checkme.domain.operations.bundles.BundleOperationHolder
-import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.lenses.GeneralWebLenses.idOrNull
-import checkme.web.solution.supportingFiles.task
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -20,8 +18,7 @@ import org.http4k.lens.RequestContextLens
 
 class ChangeBundleTasksOrderHandler(
     private val userLens: RequestContextLens<User?>,
-    private val taskOperations: TaskOperationsHolder,
-    private val bundleOperations: BundleOperationHolder
+    private val bundleOperations: BundleOperationHolder,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
@@ -51,7 +48,7 @@ class ChangeBundleTasksOrderHandler(
         tasksAndOrders: List<TaskAndOrder>,
         bundleId: Int,
         objectMapper: ObjectMapper,
-        bundleOperations: BundleOperationHolder
+        bundleOperations: BundleOperationHolder,
     ): Response {
         return when (
             val updatedTasksAndOrders = tryUpdateBundleTasks(

@@ -51,6 +51,9 @@ class MainPage(
         }).on("/bundle-list", {
             content.removeAll()
             content.add(BundlesList(serverUrl, routingMainPage, ListType.ALL))
+        }).on("/hidden-bundle-list", {
+            content.removeAll()
+            content.add(BundlesList(serverUrl, routingMainPage, ListType.HIDDEN))
         }).on("/add-task", {
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()

@@ -6,6 +6,7 @@ import checkme.web.bundles.handlers.BundleHandler
 import checkme.web.bundles.handlers.BundleHiddenListHandler
 import checkme.web.bundles.handlers.BundleListHandler
 import checkme.web.bundles.handlers.BundleTasksHandler
+import checkme.web.bundles.handlers.ChangeBundleActualityHandler
 import checkme.web.bundles.handlers.ChangeBundleTasksOrderHandler
 import checkme.web.bundles.handlers.SelectBundleTasks
 import checkme.web.context.ContextTools
@@ -18,6 +19,10 @@ fun bundleRouter(
 ): RoutingHttpHandler =
     routes(
         NEW_BUNDLE bind Method.POST to AddBundleHandler(
+            bundleOperations = operations.bundleOperations,
+            userLens = contextTools.userLens,
+        ),
+        "$CHANGE_ACTUALITY/{id}" bind Method.POST to ChangeBundleActualityHandler(
             bundleOperations = operations.bundleOperations,
             userLens = contextTools.userLens,
         ),
@@ -36,7 +41,6 @@ fun bundleRouter(
         ),
         "/select-order/{id}" bind Method.POST to ChangeBundleTasksOrderHandler(
             userLens = contextTools.userLens,
-            taskOperations = operations.taskOperations,
             bundleOperations = operations.bundleOperations
         ),
         "/tasks/{id}" bind Method.GET to BundleTasksHandler(
@@ -51,3 +55,4 @@ fun bundleRouter(
 
 const val BUNDLE_SEGMENT = "/bundle"
 const val NEW_BUNDLE = "/new"
+const val CHANGE_ACTUALITY = "/change-actuality"

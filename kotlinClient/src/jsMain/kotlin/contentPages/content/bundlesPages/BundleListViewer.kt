@@ -35,6 +35,7 @@ class BundleListViewer(
                             serverUrl,
                             bundle.isActual,
                             bundle.id,
+                            routing,
                             this
                         )
                         this.add(hiddenButton)
