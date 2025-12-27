@@ -10,3 +10,8 @@ data class TaskAndOrder(
     val task: Task,
     val order: Int,
 )
+
+data class BundleAndTasks(
+    val bundle: Bundle,
+    val tasks: List<TaskAndOrder>,
+)

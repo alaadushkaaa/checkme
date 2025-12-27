@@ -27,7 +27,7 @@ class UpdateCheckTest : TestcontainerSpec({ context ->
     }
 
     test("Check result can be updated") {
-        val insertedCheck = insertedChecks.first { it.result == null }
+        val insertedCheck = insertedChecks.first { it.result.isEmpty() }
         checkOperations.updateCheckResult(insertedCheck.id, validResult).shouldNotBeNull()
 
         val updatedCheck = checkOperations.selectCheckById(insertedCheck.id).shouldNotBeNull()

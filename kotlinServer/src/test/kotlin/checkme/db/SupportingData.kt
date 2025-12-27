@@ -64,20 +64,20 @@ val validStatusError = "Ошибка выполнения"
 val validChecks: List<Check> = listOf(
     Check(validCheckId, validTaskId, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 1, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
-    Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, null, validStatusError),
-    Check(validCheckId + 3, validTaskId + 1, validUserId, validDate, null, validStatusProcess)
+    Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, emptyMap(), validStatusError),
+    Check(validCheckId + 3, validTaskId + 1, validUserId, validDate, emptyMap(), validStatusProcess)
 )
 
 val validChecksMany: List<Check> = listOf(
     Check(validCheckId, validTaskId, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 1, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
-    Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, null, validStatusError),
-    Check(validCheckId + 3, validTaskId + 1, validUserId, validDate, null, validStatusProcess),
+    Check(validCheckId + 2, validTaskId, validUserId + 1, validDate, emptyMap(), validStatusError),
+    Check(validCheckId + 3, validTaskId + 1, validUserId, validDate, emptyMap(), validStatusProcess),
     Check(validCheckId + 4, validTaskId, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 5, validTaskId + 1, validUserId, validDate, validResult, validStatusCorrect),
-    Check(validCheckId + 6, validTaskId, validUserId + 1, validDate, null, validStatusError),
-    Check(validCheckId + 7, validTaskId, validUserId, validDate, null, validStatusProcess),
-    Check(validCheckId + 8, validTaskId, validUserId, validDate, null, validStatusError),
+    Check(validCheckId + 6, validTaskId, validUserId + 1, validDate, emptyMap(), validStatusError),
+    Check(validCheckId + 7, validTaskId, validUserId, validDate, emptyMap(), validStatusProcess),
+    Check(validCheckId + 8, validTaskId, validUserId, validDate, emptyMap(), validStatusError),
     Check(validCheckId + 9, validTaskId + 2, validUserId, validDate, validResult, validStatusCorrect),
     Check(validCheckId + 10, validTaskId + 2, validUserId, validDate, validResultOne, validStatusCorrect),
     Check(validCheckId + 11, validTaskId, validUserId + 2, validDate, validResultMany, validStatusCorrect)

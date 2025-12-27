@@ -85,7 +85,6 @@ class BundleOperations(
     override fun updateBundle(bundle: Bundle): Bundle? {
         return jooqContext.update(BUNDLES)
             .set(BUNDLES.NAME, bundle.name)
-            .set(BUNDLES.ISACTUAL, bundle.isActual)
             .where(BUNDLES.ID.eq(bundle.id))
             .execute()
             .let { selectBundleById(bundle.id) }
@@ -100,7 +99,6 @@ class BundleOperations(
             jooqContext.deleteFrom(BUNDLE_TASKS)
                 .where(BUNDLE_TASKS.BUNDLE_ID.eq(bundleId))
                 .execute()
-
             savedTasks = setTasks(bundleId, newTasksAndOrder)
             when {
                 savedTasks != null -> commit()

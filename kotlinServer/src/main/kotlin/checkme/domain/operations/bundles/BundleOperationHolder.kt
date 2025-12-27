@@ -44,18 +44,17 @@ class BundleOperationHolder(
     val createBundleTasks: (
         bundleId: Int,
         tasks: List<TaskAndOrder>,
-    ) -> Result<List<TaskAndOrder>, CreateBundleError> =
+    ) -> Result<List<TaskAndOrder>, CreateBundleTasksError> =
         CreateBundleTasks(
             bundleDatabase::selectBundleById,
             bundleDatabase::insertBundleTasks
         )
 
     val removeBundle: (bundle: Bundle) -> Result<Boolean, BundleRemovingError> =
-        RemoveBundle {
-                bundle: Bundle,
-            ->
-            bundleDatabase.deleteBundle(bundle)
-        }
+        RemoveBundle (
+            bundleDatabase::selectBundleById,
+            bundleDatabase::deleteBundle
+        )
 
     val modifyBundleActuality: (bundle: Bundle) -> Result<Bundle, ModifyBundleError> =
         ModifyBundleActuality {
