@@ -23,7 +23,6 @@ import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
 import ru.yarsu.contentPages.content.userListPage.UserList
 import ru.yarsu.enumClasses.ListType
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class MainPage(
@@ -73,9 +72,11 @@ class MainPage(
             }
         }).on("/task/:id", { match ->
             content.removeAll()
-            @OptIn(ExperimentalUuidApi::class)
-            val id = Uuid.parse(match.data.id.toString())
-            @OptIn(ExperimentalUuidApi::class)
+            val id = try {
+                Uuid.parse(match.data.id.toString())
+            } catch (_: IllegalArgumentException) {
+                null
+            }
             content.add(Task(id, serverUrl, routingMainPage))
         }).on("/user-list",{
             if (UserInformationStorage.isAdmin()) {
@@ -89,7 +90,11 @@ class MainPage(
             content.add(MySolutionList(serverUrl, routingMainPage))
         }).on("/solution/:id", { match ->
             content.removeAll()
-            val id = match.data.id.toString().toIntOrNull()
+            val id = try {
+                Uuid.parse(match.data.id.toString())
+            } catch (_: IllegalArgumentException) {
+                null
+            }
             content.add(Solution(id, serverUrl, routingMainPage))
         }).on("/solution-list/:page", { match ->
             if (UserInformationStorage.isAdmin()) {
@@ -110,7 +115,11 @@ class MainPage(
         }).on("/solution-list/user/:id", { match ->
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
-                val id = match.data.id.toString().toIntOrNull()
+                val id = try {
+                    Uuid.parse(match.data.id.toString())
+                } catch (_: IllegalArgumentException) {
+                    null
+                }
                 content.add(TaskOrUserSolutions(id, "user", serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
@@ -118,7 +127,11 @@ class MainPage(
         }).on("/solution-list/task/:id", { match ->
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
-                val id = match.data.id.toString().toIntOrNull()
+                val id = try {
+                    Uuid.parse(match.data.id.toString())
+                } catch (_: IllegalArgumentException) {
+                    null
+                }
                 content.add(TaskOrUserSolutions(id, "task", serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
@@ -132,7 +145,11 @@ class MainPage(
         }).on("/bundle/select-bundle-tasks/:id", { match ->
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
-                val id = match.data.id.toString().toIntOrNull()
+                val id = try {
+                    Uuid.parse(match.data.id.toString())
+                } catch (_: IllegalArgumentException) {
+                    null
+                }
                 content.add(SelectBundleTasks(id.toString(), serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
@@ -140,14 +157,22 @@ class MainPage(
         }).on("bundle/select-order/:id", { match ->
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
-                val id = match.data.id.toString().toIntOrNull()
+                val id = try {
+                    Uuid.parse(match.data.id.toString())
+                } catch (_: IllegalArgumentException) {
+                    null
+                }
                 content.add(ChangeBundleTasksOrder(id.toString(), serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }
         }).on("/bundle/:id", { match ->
             content.removeAll()
-            val id = match.data.id.toString().toIntOrNull()
+            val id = try {
+                Uuid.parse(match.data.id.toString())
+            } catch (_: IllegalArgumentException) {
+                null
+            }
             content.add(Bundle(id, serverUrl, routingMainPage))
         }).resolve()
     }

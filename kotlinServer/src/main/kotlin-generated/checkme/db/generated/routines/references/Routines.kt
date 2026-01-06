@@ -4,7 +4,9 @@
 package checkme.db.generated.routines.references
 
 
-import checkme.db.generated.routines.Score
+import checkme.db.generated.routines.TotalScore
+
+import java.util.UUID
 
 import org.jooq.Configuration
 import org.jooq.Field
@@ -12,39 +14,39 @@ import org.jooq.Field
 
 
 /**
- * Call <code>public.score</code>
+ * Call <code>public.total_score</code>
  */
-fun score(
+fun totalScore(
       configuration: Configuration
-    , row2Id: Int?
+    , rowId: UUID?
 ): Int? {
-    val f = Score()
-    f.setRow2Id(row2Id)
+    val f = TotalScore()
+    f.setRowId(rowId)
 
     f.execute(configuration)
     return f.returnValue
 }
 
 /**
- * Get <code>public.score</code> as a field.
+ * Get <code>public.total_score</code> as a field.
  */
-fun score(
-      row2Id: Int?
+fun totalScore(
+      rowId: UUID?
 ): Field<Int?> {
-    val f = Score()
-    f.setRow2Id(row2Id)
+    val f = TotalScore()
+    f.setRowId(rowId)
 
     return f.asField()
 }
 
 /**
- * Get <code>public.score</code> as a field.
+ * Get <code>public.total_score</code> as a field.
  */
-fun score(
-      row2Id: Field<Int?>
+fun totalScore(
+      rowId: Field<UUID?>
 ): Field<Int?> {
-    val f = Score()
-    f.setRow2Id(row2Id)
+    val f = TotalScore()
+    f.setRowId(rowId)
 
     return f.asField()
 }

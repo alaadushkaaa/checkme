@@ -8,6 +8,7 @@ import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 
 class ModifyCheckTest : FunSpec({
     isolationMode = IsolationMode.InstancePerTest
@@ -16,12 +17,12 @@ class ModifyCheckTest : FunSpec({
     val checkWithResult = validChecks.firstOrNull { it.result != validChecks.first().result && it.result != null }
     val checkWithStatus = validChecks.firstOrNull { it.status != validChecks.first().status }
 
-    val updateCheckResultMock: (Int, Map<String, CheckResult>) -> Check? =
+    val updateCheckResultMock: (UUID, Map<String, CheckResult>) -> Check? =
         { id, result -> validChecks.find { it.id == id }?.copy(result = result) }
-    val updateCheckResultNullMock: (Int, Map<String, CheckResult>) -> Check? = { _, _ -> null }
-    val updateCheckStatusMock: (Int, String) -> Check? =
+    val updateCheckResultNullMock: (UUID, Map<String, CheckResult>) -> Check? = { _, _ -> null }
+    val updateCheckStatusMock: (UUID, String) -> Check? =
         { id, status -> validChecks.find { it.id == id }?.copy(status = status) }
-    val updateCheckStatusNullMock: (Int, String) -> Check? = { _, _ -> null }
+    val updateCheckStatusNullMock: (UUID, String) -> Check? = { _, _ -> null }
 
     val modifyCheckResult = ModifyCheckResult(updateCheckResultMock)
     val modifyCheckResultNull = ModifyCheckResult(updateCheckResultNullMock)

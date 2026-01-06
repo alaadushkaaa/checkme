@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION score(row2_id INTEGER)
+CREATE OR REPLACE FUNCTION total_score(row_id UUID)
 RETURNS INTEGER AS $$
 DECLARE
     total_score INTEGER := 0;
@@ -7,7 +7,7 @@ BEGIN
     SELECT result
     INTO result_jsonb
     FROM checks
-    WHERE id = row2_id;
+    WHERE id = row_id;
     SELECT COALESCE(SUM((value->>'score')::INTEGER), 0)
     INTO total_score
     FROM jsonb_each(result_jsonb);

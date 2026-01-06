@@ -8,7 +8,6 @@ import io.kvision.routing.Routing
 import ru.yarsu.contentPages.content.hiddenTask.TaskHiddenButton
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.TaskFormatForList
-import kotlin.uuid.ExperimentalUuidApi
 
 class TaskListViewer(
     private val serverUrl: String,
@@ -30,13 +29,11 @@ class TaskListViewer(
                         )
                     }.apply {
                         this.onClick {
-                            @OptIn(ExperimentalUuidApi::class)
                             routing.navigate("task/${task.id}")
                         }
                     }
                     this.add(taskItem)
                     if (UserInformationStorage.isAdmin()) {
-                        @OptIn(ExperimentalUuidApi::class)
                         val hiddenButton = TaskHiddenButton(
                             serverUrl,
                             task.isActual,

@@ -1,5 +1,6 @@
 package checkme.domain.operations.tasks
 
+import checkme.db.notExistingId
 import checkme.db.validTasks
 import checkme.domain.models.Task
 import dev.forkhandles.result4k.kotest.shouldBeFailure
@@ -7,16 +8,17 @@ import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 
 class ModifyTaskTest : FunSpec({
     isolationMode = IsolationMode.InstancePerTest
 
     val validTasks = validTasks
 
-    val selectTaskByIdMock: (Int) -> Task? = { id -> validTasks.find { it.id == id } }
-    val selectTaskByIdNullMock: (Int) -> Task? = { null }
-    val deleteTaskMock: (Int) -> Int? = { id -> validTasks.find { it.id == id }?.id }
-    val deleteNullTaskMock: (Int) -> Int? = { null }
+    val selectTaskByIdMock: (UUID) -> Task? = { id -> validTasks.find { it.id == id } }
+    val selectTaskByIdNullMock: (UUID) -> Task? = { null }
+    val deleteTaskMock: (UUID) -> Int? = { id -> validTasks.indexOf(validTasks.find { it.id == id }) } // возможно не правильно изменил
+    val deleteNullTaskMock: (UUID) -> Int? = { null }
     val updateTaskActualityMock: (Task) -> Task? =
         { task -> validTasks.find { it.id == task.id }?.copy(isActual = task.isActual) }
 
@@ -32,7 +34,7 @@ class ModifyTaskTest : FunSpec({
     test("Task cant be deleted if task doesn't exists") {
         deleteTaskIdNotExist(
             validTasks.first()
-                .copy(id = validTasks.maxOf { it.id } + 1)
+                .copy(id = notExistingId)
         ).shouldBeFailure(TaskRemovingError.TASK_NOT_EXISTS)
     }
 
@@ -48,7 +50,7 @@ class ModifyTaskTest : FunSpec({
     }
 
     test("Task actuality cant be changed if task doesnt exists") {
-        updateTaskActuality(validTasks.first().copy(id = 15, isActual = false))
+        updateTaskActuality(validTasks.first().copy(id = notExistingId, isActual = false))
             .shouldBeFailure(ModifyTaskError.UNKNOWN_DATABASE_ERROR)
     }
 })

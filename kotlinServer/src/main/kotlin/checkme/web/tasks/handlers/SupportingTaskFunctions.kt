@@ -135,7 +135,7 @@ fun MultipartForm.validateForm(taskId: UUID?): Result<Task, ValidateTaskError> {
     }
     return Success(
         Task(
-            id = taskId, //TODO тут была заглушка в виде -1 если null возможно это было важно
+            id = UUID.fromString("00000000-0000-7000-8000-000000000000"), //тут была заглушка в виде -1 если null возможно это было важно
             name = taskName,
             criterions = criterions,
             answerFormat = answerFormatBd,

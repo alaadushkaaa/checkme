@@ -11,13 +11,11 @@ import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class TaskHiddenButton(
     private val serverUrl: String,
     private var isActual: Boolean,
-    @OptIn(ExperimentalUuidApi::class)
     private val taskId: Uuid,
     private val hPanel: HPanel? = null
 ) : Button("", className = "hidden-button") {
@@ -28,7 +26,6 @@ class TaskHiddenButton(
             requestInit.method = HttpMethod.POST.name
             requestInit.headers = js("{}")
             requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-            @OptIn(ExperimentalUuidApi::class)
             window.fetch(serverUrl + "task/change-actuality/$taskId", requestInit).then { response ->
                 if (response.status.toInt() == 200) {
                     if (hPanel != null)

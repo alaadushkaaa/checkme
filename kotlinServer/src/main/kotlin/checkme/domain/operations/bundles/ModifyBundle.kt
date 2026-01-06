@@ -73,7 +73,7 @@ class ModifyBundleTasks(
 }
 
 class RemoveBundle(
-    private val selectBundleById: (bundleId: Int) -> Bundle?,
+    private val selectBundleById: (bundleId: UUID) -> Bundle?,
     private val removeBundle: (Bundle) -> Result4k<Boolean, BundleDatabaseError>,
 ) : (Bundle) -> Result<Boolean, BundleRemovingError> {
     override fun invoke(bundle: Bundle): Result<Boolean, BundleRemovingError> {
@@ -90,7 +90,7 @@ class RemoveBundle(
         }
     }
 
-    private fun bundleNotExists(bundleId: Int): Boolean =
+    private fun bundleNotExists(bundleId: UUID): Boolean =
         when (selectBundleById(bundleId)) {
             is Bundle -> false
             else -> true

@@ -19,7 +19,7 @@ data class Check(
     val taskId: UUID,
     val userId: UUID,
     val date: LocalDateTime,
-    val result: Map<String, CheckResult>?,
+    val result: Map<String, CheckResult>,
     val status: String,
     val totalScore: Int? = null,
 ) {

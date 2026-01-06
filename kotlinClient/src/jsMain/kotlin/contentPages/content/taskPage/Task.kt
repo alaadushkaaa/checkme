@@ -10,11 +10,9 @@ import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskFormat
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class Task(
-    @OptIn(ExperimentalUuidApi::class)
     taskId: Uuid?,
     serverUrl: String,
     private val routing: Routing
@@ -24,7 +22,6 @@ class Task(
         requestInit.method = HttpMethod.GET.name
         requestInit.headers = js("{}")
         requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-        @OptIn(ExperimentalUuidApi::class)
         window.fetch(serverUrl + "task/$taskId", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.json().then {

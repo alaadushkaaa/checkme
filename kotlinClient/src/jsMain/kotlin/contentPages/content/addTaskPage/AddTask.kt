@@ -48,7 +48,6 @@ import ru.yarsu.serializableClasses.task.FormAddTaskFileSelection
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskId
 import kotlin.io.encoding.Base64
-import kotlin.uuid.ExperimentalUuidApi
 
 class AddTask(
     private val serverUrl: String,
@@ -133,9 +132,9 @@ class AddTask(
                 requiredMessage = ""
             )
             add(Label("Скрипт", className = "separate-form-label"))
-            val addedScriptFileViewer = Div("Файл не выбран", className = "files-viewer")
+            val addedScriptsFileViewer = Div("Файлы не выбран", className = "files-viewer")
             add(
-                Label("Выберите файл", forId = "input-file-1", className = "file-upload")
+                Label("Выберите файлы", forId = "input-file-1", className = "file-upload")
             )
             add(
                 FormAddTask::script,
@@ -143,9 +142,8 @@ class AddTask(
                     this.input.id = "input-file-1"
                     onChangeLaunch {
                         val scriptListFile = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
-                        scriptFile.clear()
                         scriptFile.addAll(scriptListFile)
-                        updateFilesViewer(addedScriptFileViewer, scriptFile, this@formPanel)
+                        updateFilesViewer(addedScriptsFileViewer, scriptFile, this@formPanel)
                         this@Upload.clearInput()
                         this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
                         this@formPanel.validate()
@@ -156,9 +154,8 @@ class AddTask(
                 scriptFile.isNotEmpty()
             }
             this.validate()
-
             add(
-                addedScriptFileViewer
+                addedScriptsFileViewer
             )
             add(Label("Файлы тестов", className = "separate-form-label"))
             val addedFilesViewer = Div("Файлы не выбраны", className = "files-viewer")
@@ -330,7 +327,6 @@ class AddTask(
                     response.json().then {
                         val jsonString = JSON.stringify(it)
                         val taskId = Json.Default.decodeFromString<TaskId>(jsonString)
-                        @OptIn(ExperimentalUuidApi::class)
                         routing.navigate("/task/${taskId.taskId}")
                     }
                 } else if (response.status.toInt() == 400) {

@@ -1,5 +1,6 @@
 package checkme.domain.operations.tasks
 
+import checkme.db.notExistingId
 import checkme.db.validTasks
 import checkme.domain.models.Task
 import checkme.web.solution.forms.TaskNameForAllResults
@@ -8,6 +9,7 @@ import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 
 class FetchTaskTest : FunSpec({
     val tasks = validTasks
@@ -17,8 +19,8 @@ class FetchTaskTest : FunSpec({
     val fetchAllTasksMock: () -> List<Task> = { tasks.filter { it.isActual } }
     val fetchHiddenTasksMock: () -> List<Task> = { tasks.filter { !it.isActual } }
     val fetchOneTaskMock: () -> List<Task> = { listOf(task) }
-    val fetchTaskByIdMock: (Int) -> Task? = { id -> tasks.firstOrNull { it.id == id } }
-    val fetchTaskNameMock: (Int) -> TaskNameForAllResults? = { id ->
+    val fetchTaskByIdMock: (UUID) -> Task? = { id -> tasks.firstOrNull { it.id == id } }
+    val fetchTaskNameMock: (UUID) -> TaskNameForAllResults? = { id ->
         tasks.firstOrNull { it.id == id }
             ?.let { TaskNameForAllResults(it.name) }
     }
@@ -46,7 +48,7 @@ class FetchTaskTest : FunSpec({
     }
 
     test("Fetch Task by id should return an error if id is not valid") {
-        fetchTaskById(tasks.maxOf { it.id } + 1).shouldBeFailure(TaskFetchingError.NO_SUCH_TASK)
+        fetchTaskById(notExistingId).shouldBeFailure(TaskFetchingError.NO_SUCH_TASK)
     }
 
     test("Fetch task name by task id should return task name if id is valid") {
@@ -54,6 +56,6 @@ class FetchTaskTest : FunSpec({
     }
 
     test("Fetch task name by task id should return an error if id is not valid") {
-        fetchTaskName(tasks.maxOf { it.id } + 1).shouldBeFailure(TaskFetchingError.NO_SUCH_TASK)
+        fetchTaskName(notExistingId).shouldBeFailure(TaskFetchingError.NO_SUCH_TASK)
     }
 })

@@ -11,9 +11,10 @@ import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.solution.TaskOrUserSolutionsFormat
+import kotlin.uuid.Uuid
 
 class TaskOrUserSolutions(
-    taskOrUserId: Int?,
+    taskOrUserId: Uuid?,
     private val taskOrUser: String,
     serverUrl: String,
     private val routing: Routing
