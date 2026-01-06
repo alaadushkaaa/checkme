@@ -27,10 +27,10 @@ class BundleListViewer(
                         }
                     }
                     this.add(bundleItem)
-                    button("Изменить задачи", className = "usually-button").onClick {
-                        routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
-                    }
                     if (UserInformationStorage.isAdmin()) {
+                        button("Изменить задачи", className = "usually-button").onClick {
+                            routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
+                        }
                         val hiddenButton = BundleHiddenButton(
                             serverUrl,
                             bundle.isActual,

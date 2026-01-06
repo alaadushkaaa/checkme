@@ -1,5 +1,6 @@
 package checkme.db.checks
 
+import checkme.db.generated.routines.references.totalScore
 import checkme.db.generated.tables.references.CHECKS
 import checkme.db.utils.safeLet
 import checkme.domain.forms.CheckResult
@@ -10,8 +11,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
 import org.jooq.JSONB.jsonb
 import org.jooq.Record
-import org.jooq.impl.DSL
-import org.jooq.impl.SQLDataType
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -112,7 +111,7 @@ class CheckOperations(
                 CHECKS.DATE,
                 CHECKS.RESULT,
                 CHECKS.STATUS,
-                DSL.function("score", SQLDataType.INTEGER, CHECKS.ID).`as`("total_score")
+                totalScore(CHECKS.ID)
             )
             .from(CHECKS)
 }
@@ -138,7 +137,7 @@ internal fun Record.toCheck(): Check? =
             taskId = taskId,
             userId = userId,
             date = date,
-            result = jacksonObjectMapper().readValue<Map<String, CheckResult>?>(result.data()),
+            result = jacksonObjectMapper().readValue<Map<String, CheckResult>>(result.data()),
             status = status,
         )
     }
@@ -166,7 +165,7 @@ internal fun Record.toCheckWithScore(): Check? =
             taskId = taskId,
             userId = userId,
             date = date,
-            result = jacksonObjectMapper().readValue<Map<String, CheckResult>?>(result.data()),
+            result = jacksonObjectMapper().readValue<Map<String, CheckResult>>(result.data()),
             status = status,
             totalScore = score
         )

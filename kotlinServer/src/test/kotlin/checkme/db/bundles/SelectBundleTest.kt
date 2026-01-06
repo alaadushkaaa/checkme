@@ -11,6 +11,7 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 
 class SelectBundleTest : TestcontainerSpec({ context ->
     val tasksOperations = TasksOperations(context)
@@ -48,7 +49,7 @@ class SelectBundleTest : TestcontainerSpec({ context ->
     }
 
     test("Select bundle by invalid id should return null") {
-        bundleOperations.selectBundleById(insertedBundles.maxOf { it.id } + 1).shouldBeNull()
+        bundleOperations.selectBundleById(UUID.fromString("019b8ebf-1cba-7736-80a2-b2024d9485db")).shouldBeNull()
     }
 
     test("Select all bundles should return all of this inserted bundles") {

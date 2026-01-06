@@ -9,9 +9,12 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 
 class SelectCheckTest : TestcontainerSpec({ context ->
     val checkOperations = CheckOperations(context)
+
+    val notExistingId = UUID.fromString("00000000-0000-7736-80a2-b2024d9485db")
 
     lateinit var insertedChecks: List<Check>
 
@@ -40,7 +43,7 @@ class SelectCheckTest : TestcontainerSpec({ context ->
     }
 
     test("Select check by invalid id should return null") {
-        checkOperations.selectCheckById(insertedChecks.maxOf { it.id } + 1).shouldBeNull()
+        checkOperations.selectCheckById(notExistingId).shouldBeNull()
     }
 
     test("Select checks by valid userId should return this checks") {
@@ -50,7 +53,7 @@ class SelectCheckTest : TestcontainerSpec({ context ->
     }
 
     test("Select checks by invalid userId should return empty list") {
-        checkOperations.selectChecksByUserId(insertedChecks.maxOf { it.userId } + 1)
+        checkOperations.selectChecksByUserId(notExistingId)
             .shouldBeEmpty()
     }
 
@@ -61,7 +64,7 @@ class SelectCheckTest : TestcontainerSpec({ context ->
     }
 
     test("Select checks by invalid taskId should return empty list") {
-        checkOperations.selectChecksByTaskId(insertedChecks.maxOf { it.taskId } + 1)
+        checkOperations.selectChecksByTaskId(notExistingId)
             .shouldBeEmpty()
     }
 

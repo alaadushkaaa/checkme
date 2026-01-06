@@ -13,7 +13,6 @@ import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
-import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 import ru.yarsu.serializableClasses.solution.SolutionsGroupByTask
 
 class AllSolutionsGroupByTask(

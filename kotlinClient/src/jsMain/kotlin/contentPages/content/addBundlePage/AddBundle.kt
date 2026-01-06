@@ -1,7 +1,5 @@
 package ru.yarsu.contentPages.content.addBundlePage
 
-import io.kvision.core.onClickLaunch
-import io.kvision.core.onInput
 import io.kvision.form.formPanel
 import io.kvision.html.Label
 import io.kvision.panel.VPanel

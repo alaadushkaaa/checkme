@@ -62,10 +62,10 @@ class CheckSolutionHandlerTest : FunSpec({
     val contexts = RequestContexts()
     val objectMapper = jacksonObjectMapper()
 
-    val validCheckResult = Check(validCheckId, validTaskId, validUserId, validDate, validResult, validStatusCorrect)
+    val validCheckResult = Check(validCheckId[0], validTaskId[0], validUserId[0], validDate, validResult, validStatusCorrect)
     val validTaskResult = validTasks.first()
     val validUser = User(
-        validUserId,
+        validUserId[0],
         validLogin,
         validName,
         validSurname,

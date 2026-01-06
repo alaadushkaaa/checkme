@@ -1,12 +1,14 @@
 package checkme.db.tasks
 
 import checkme.db.TestcontainerSpec
+import checkme.db.notExistingId
 import checkme.db.validTasks
 import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 
 class SelectTaskTest : TestcontainerSpec ({ context ->
     val taskOperations = TasksOperations(context)
@@ -56,7 +58,7 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
 
     test("Task cant be fetched by invalid id") {
         taskOperations
-            .selectTaskById(validTasks.first().id + validTasks.size)
+            .selectTaskById(notExistingId)
             .shouldBeNull()
     }
 
@@ -69,7 +71,7 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
 
     test("Task name cant be fetched by invalid task id") {
         taskOperations
-            .selectTaskName(validTasks.first().id + validTasks.size)
+            .selectTaskName(notExistingId)
             .shouldBeNull()
     }
 })

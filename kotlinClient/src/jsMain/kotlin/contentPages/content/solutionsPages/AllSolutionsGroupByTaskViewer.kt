@@ -8,10 +8,8 @@ import io.kvision.html.tag
 import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
-import io.kvision.snabbdom.classModule
 import kotlinx.datetime.LocalDateTime
 import ru.yarsu.serializableClasses.solution.SolutionsGroupByTask
-import kotlin.uuid.ExperimentalUuidApi
 
 class AllSolutionsGroupByTaskViewer(
     solutionsGroupByTask: List<SolutionsGroupByTask>,
@@ -21,7 +19,6 @@ class AllSolutionsGroupByTaskViewer(
         for (taskSolutions in solutionsGroupByTask) {
             vPanel(className = "block") {
                 h4("Задача ${taskSolutions.task.name}") {
-                    @OptIn(ExperimentalUuidApi::class)
                     onClick {
                         routing.navigate("task/${taskSolutions.task.id}")
                     }

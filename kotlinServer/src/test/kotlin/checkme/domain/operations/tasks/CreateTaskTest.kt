@@ -1,5 +1,6 @@
 package checkme.domain.operations.tasks
 
+import checkme.db.validTaskId
 import checkme.db.validTasks
 import checkme.domain.checks.Criterion
 import checkme.domain.models.AnswerType
@@ -28,7 +29,7 @@ class CreateTaskTest : FunSpec({
         ->
         val task =
             Task(
-                id = tasks.size + 1,
+                id = validTaskId[0],
                 name = name,
                 criterions = criterions,
                 answerFormat = answerFormat,

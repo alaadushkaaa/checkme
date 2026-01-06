@@ -34,7 +34,7 @@ class SqlCheckService(
     ): Result4k<Pair<String, String>, String> {
         val studentUser = "student_${checkId}${user.id}"
         val studentPass = "student_pass_${checkId}${user.id}"
-        val uniqueDatabaseName = "check${checkId}_user${user.id}${firstScript.name}"
+        val uniqueDatabaseName = "check${checkId}_${firstScript.name}"
         try {
             createTempDatabase(uniqueDatabaseName)
             createDatabaseUser(

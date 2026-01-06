@@ -17,6 +17,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class ChangeBundleTasksOrderHandler(
     private val userLens: RequestContextLens<User?>,
@@ -50,7 +51,7 @@ class ChangeBundleTasksOrderHandler(
     private fun tryUpdateTasksOrders(
         user: User,
         tasksAndOrders: List<TaskAndOrder>,
-        bundleId: Int,
+        bundleId: UUID,
         objectMapper: ObjectMapper,
         bundleOperations: BundleOperationHolder,
     ): Response {
