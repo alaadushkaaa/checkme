@@ -1,9 +1,10 @@
 package checkme.domain.models
 
 import checkme.domain.checks.Criterion
+import java.util.UUID
 
 data class Task(
-    val id: Int,
+    val id: UUID,
     val name: String,
     val criterions: Map<String, Criterion>,
     val answerFormat: Map<String, AnswerType>,

@@ -10,9 +10,10 @@ import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskFormat
+import kotlin.uuid.Uuid
 
 class Task(
-    taskId: Int?,
+    taskId: Uuid?,
     serverUrl: String,
     private val routing: Routing
 ) : SimplePanel() {

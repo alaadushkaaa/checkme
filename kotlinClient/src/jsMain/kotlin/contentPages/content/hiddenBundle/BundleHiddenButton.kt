@@ -12,11 +12,12 @@ import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
+import kotlin.uuid.Uuid
 
 class BundleHiddenButton(
     private val serverUrl: String,
     private var isActual: Boolean,
-    private val bundleId: Int,
+    private val bundleId: Uuid,
     private val routing: Routing,
     private val hPanel: HPanel? = null,
 ) : Button("", className = "usually-button") {

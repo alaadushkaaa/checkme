@@ -4,13 +4,14 @@ import checkme.domain.models.Bundle
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.dependencies.bundles.BundlesDatabase
 import dev.forkhandles.result4k.Result
+import java.util.UUID
 
 class BundleOperationHolder(
     private val bundleDatabase: BundlesDatabase,
 ) {
-    val fetchBundleById: (Int) -> Result<Bundle, BundleFetchingError> =
+    val fetchBundleById: (UUID) -> Result<Bundle, BundleFetchingError> =
         FetchBundleById {
-                bundleId: Int,
+                bundleId: UUID,
             ->
             bundleDatabase.selectBundleById(bundleId)
         }
@@ -25,7 +26,7 @@ class BundleOperationHolder(
             bundleDatabase.selectHiddenBundles()
         }
 
-    val fetchBundleTasksById: (bundleId: Int) -> Result<List<TaskAndOrder>, BundleFetchingError> =
+    val fetchBundleTasksById: (bundleId: UUID) -> Result<List<TaskAndOrder>, BundleFetchingError> =
         FetchBundleTasks {
                 bundleId,
             ->
@@ -42,7 +43,7 @@ class BundleOperationHolder(
         }
 
     val createBundleTasks: (
-        bundleId: Int,
+        bundleId: UUID,
         tasks: List<TaskAndOrder>,
     ) -> Result<List<TaskAndOrder>, CreateBundleTasksError> =
         CreateBundleTasks(
@@ -71,7 +72,7 @@ class BundleOperationHolder(
         }
 
     val modifyBundleTasks: (
-        bundleId: Int,
+        bundleId: UUID,
         newTasksAndOrder: List<TaskAndOrder>,
     ) -> Result<List<TaskAndOrder>, ModifyBundleError> =
         ModifyBundleTasks(

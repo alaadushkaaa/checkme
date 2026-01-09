@@ -20,6 +20,9 @@ val kotlinxVersion: String = "0.7.1"
 
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
+    }
     js(IR) {
         browser {
             useEsModules()

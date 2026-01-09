@@ -12,6 +12,7 @@ import checkme.web.solution.handlers.SOLUTIONS_DIR
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import java.io.File
+import java.util.UUID
 
 @Suppress("LongParameterList")
 data class CheckDataSQL(
@@ -24,7 +25,7 @@ data class CheckDataSQL(
             task: Task,
             checkDataSQL: CheckDataSQL,
             user: User,
-            checkId: Int,
+            checkId: UUID,
             criterion: Criterion,
             overall: Boolean,
             config: CheckDatabaseConfig,
@@ -76,7 +77,7 @@ data class CheckDataSQL(
             checkDataSQL: CheckDataSQL,
             task: Task,
             user: User,
-            checkId: Int,
+            checkId: UUID,
             criterion: Criterion,
             overall: Boolean,
             config: CheckDatabaseConfig,
@@ -122,7 +123,7 @@ data class CheckDataSQL(
             checkDataSQL: CheckDataSQL,
             studentQuery: String,
             user: User,
-            checkId: Int,
+            checkId: UUID,
             criterion: Criterion,
             overall: Boolean,
             config: CheckDatabaseConfig,

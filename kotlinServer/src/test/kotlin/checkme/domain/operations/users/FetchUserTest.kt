@@ -1,9 +1,13 @@
 package checkme.domain.operations.users
 
+import checkme.db.notExistingId
+import checkme.db.notExistingIdForAdmin
+import checkme.db.notExistingIdForUser
 import checkme.db.validName
 import checkme.db.validPassword
 import checkme.db.validRole
 import checkme.db.validSurname
+import checkme.db.validUserId
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import checkme.web.solution.forms.UserDataForUsersList
@@ -14,12 +18,13 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 
 class FetchUserTest : FunSpec({
 
     val users = listOf(
         User(
-            id = 1,
+            id = validUserId[0],
             login = "user1",
             name = validName,
             surname = validSurname,
@@ -27,7 +32,7 @@ class FetchUserTest : FunSpec({
             role = validRole,
         ),
         User(
-            id = 2,
+            id = validUserId[1],
             login = "user2",
             name = validName,
             surname = validSurname,
@@ -35,7 +40,7 @@ class FetchUserTest : FunSpec({
             role = validRole,
         ),
         User(
-            id = -1,
+            id = notExistingIdForAdmin,
             login = "admin",
             name = validName,
             surname = validSurname,
@@ -44,7 +49,7 @@ class FetchUserTest : FunSpec({
         )
     )
 
-    val fetchUserByIdMock: (Int) -> User? = { userId ->
+    val fetchUserByIdMock: (UUID) -> User? = { userId ->
         users.firstOrNull { it.id == userId }
     }
     val fetchUserByLoginMock: (String) -> User? = { login ->
@@ -56,7 +61,7 @@ class FetchUserTest : FunSpec({
     val fetchNoOneUsersByRoleMock: (Role) -> List<User>? = { userRole ->
         listOf(users.first()).filter { it.role == userRole }
     }
-    val fetchUserNameSurnameMock: (Int) -> UserNameSurnameForAllResults? = { userId ->
+    val fetchUserNameSurnameMock: (UUID) -> UserNameSurnameForAllResults? = { userId ->
         val user = users.firstOrNull { it.id == userId }
         user?.let {
             UserNameSurnameForAllResults(
@@ -90,8 +95,8 @@ class FetchUserTest : FunSpec({
     }
 
     listOf(
-        users.minOf { it.id } - 1,
-        users.maxOf { it.id } + 1,
+        notExistingIdForUser,
+        notExistingId,
     ).forEach { userID ->
         test("User can't be fetched by invalid id == $userID") {
             fetchUserById(userID)
@@ -130,8 +135,8 @@ class FetchUserTest : FunSpec({
     }
 
     listOf(
-        users.minOf { it.id } - 1,
-        users.maxOf { it.id } + 1,
+        notExistingIdForUser,
+        notExistingId,
     ).forEach { userId ->
         test("User name and surname can't be fetched by invalid id == $userId") {
             fetchUserNameSurname(userId)

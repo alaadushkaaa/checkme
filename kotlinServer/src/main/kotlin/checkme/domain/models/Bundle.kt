@@ -1,7 +1,9 @@
 package checkme.domain.models
 
+import java.util.UUID
+
 data class Bundle(
-    val id: Int,
+    val id: UUID,
     val name: String,
     val isActual: Boolean,
 )

@@ -4,6 +4,7 @@ import checkme.db.validName
 import checkme.db.validPassword
 import checkme.db.validRole
 import checkme.db.validSurname
+import checkme.db.validUserId
 import checkme.domain.accounts.Role
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -11,7 +12,7 @@ import io.kotest.matchers.shouldBe
 class UserTest : FunSpec({
     val validUsers = listOf(
         User(
-            id = 1,
+            id = validUserId[0],
             login = "user1",
             name = validName,
             surname = validSurname,
@@ -19,7 +20,7 @@ class UserTest : FunSpec({
             role = validRole,
         ),
         User(
-            id = 2,
+            id = validUserId[1],
             login = "admin",
             name = validName,
             surname = validSurname,

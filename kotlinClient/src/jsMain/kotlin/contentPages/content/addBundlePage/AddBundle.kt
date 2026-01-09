@@ -1,7 +1,5 @@
 package ru.yarsu.contentPages.content.addBundlePage
 
-import io.kvision.core.onClickLaunch
-import io.kvision.core.onInput
 import io.kvision.form.formPanel
 import io.kvision.html.Label
 import io.kvision.panel.VPanel
@@ -14,10 +12,8 @@ import io.kvision.routing.Routing
 import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
-import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.dom.events.KeyboardEvent
 import org.w3c.fetch.RequestInit
 import org.w3c.xhr.FormData
 import ru.yarsu.localStorage.UserInformationStorage
