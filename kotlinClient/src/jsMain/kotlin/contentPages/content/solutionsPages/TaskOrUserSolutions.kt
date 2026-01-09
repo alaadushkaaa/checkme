@@ -30,7 +30,6 @@ class TaskOrUserSolutions(
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
-                    console.log(jsonString)
                     val taskOrUserSolutions = Json.Default.decodeFromString<TaskOrUserSolutionsFormat>(jsonString)
                     if (taskOrUser == "user"){
                         title.content = "Решения пользователя: ${taskOrUserSolutions.name} ${taskOrUserSolutions.surname}"

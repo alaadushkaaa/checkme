@@ -47,7 +47,6 @@ class ChangeBundleTasksOrder(
                                 onClick {
                                     val indices: List<String> =
                                         js("getTasksInOrder()").unsafeCast<Array<String>>().toList()
-                                    console.log(indices)
                                     val orderedTasks = indices.mapNotNull { index ->
                                         taskList.find { it.task.id.toString() == index }?.let { taskWithOrder ->
                                             TaskFormatWithOrder(
