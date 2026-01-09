@@ -42,7 +42,6 @@ class AllSolutionsGroupByTask(
                 if (response.status.toInt() == 200) {
                     response.json().then {
                         val jsonString = JSON.stringify(it)
-                        console.log(jsonString)
                         if (UserInformationStorage.isAdmin()) {
                             val solutionList = Json.Default.decodeFromString<List<SolutionsGroupByTask>>(jsonString)
                             if (solutionList.isEmpty()) {
