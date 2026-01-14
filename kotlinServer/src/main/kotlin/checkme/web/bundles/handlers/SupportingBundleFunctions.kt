@@ -112,6 +112,21 @@ internal fun changeBundleActuality(
     }
 }
 
+internal fun changeBundleName(
+    bundle: Bundle,
+    bundleOperations: BundleOperationHolder,
+): Result<Bundle, BundleChangingError> {
+    return when (
+        val updatedBundle = bundleOperations.modifyBundle(bundle)
+    ) {
+        is Success -> Success(updatedBundle.value)
+        is Failure -> when (updatedBundle.reason) {
+            ModifyBundleError.NO_SUCH_BUNDLE -> Failure(BundleChangingError.NO_SUCH_BUNDLE)
+            ModifyBundleError.UNKNOWN_DATABASE_ERROR -> Failure(BundleChangingError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
 internal fun validateBundleTasks(tasksOrder: List<TaskAndOrder>): Result<List<TaskAndOrder>, CreationBundleTasksError> {
     val tasks = tasksOrder.map { it.task }
     val orders = tasksOrder.map { it.order }
@@ -152,4 +167,5 @@ enum class AddBundleError(val errorText: String) {
 enum class BundleChangingError(val errorText: String) {
     NO_SUCH_BUNDLE("No bundle id to change bundle actuality"),
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
+    NO_BUNDLE_ID_FOR_CHANGE("No bundle id to change bundle"),
 }

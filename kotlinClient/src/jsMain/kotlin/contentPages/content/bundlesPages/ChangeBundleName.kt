@@ -1,4 +1,4 @@
-package ru.yarsu.contentPages.content.addBundlePage
+package ru.yarsu.contentPages.content.bundlesPages
 
 import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
@@ -23,12 +23,13 @@ import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.BundleId
 import ru.yarsu.serializableClasses.bundle.FormAddBundle
 
-class AddBundle(
+class ChangeBundleName(
     private val serverUrl: String,
+    bundleId: String,
     private val routing: Routing
-) : VPanel(className = "BundleAdd"){
+) : VPanel(className = "BundleAdd") {
     init {
-        h2("Создание набора")
+        h2("Редактирование набора")
         val formPanelAddBundle = formPanel<FormAddBundle>(className = "base-form") {
             add(Label("Название набора", className = "separate-form-label"))
             add(
@@ -51,7 +52,7 @@ class AddBundle(
                     requestInit.headers["Authentication"] =
                         "Bearer ${UserInformationStorage.getUserInformation()?.token}"
                     requestInit.body = formData
-                    window.fetch(serverUrl + "bundle/new", requestInit).then { response ->
+                    window.fetch(serverUrl + "bundle/change-name/$bundleId", requestInit).then { response ->
                         if (response.status.toInt() == 200) {
                             response.json().then {
                                 val jsonString = JSON.stringify(it)

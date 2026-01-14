@@ -23,6 +23,11 @@ class BundleViewer(
     init {
         h2(bundle.name)
         if (UserInformationStorage.isAdmin()) {
+            button("Изменить название набора", className = "change-button").onClick {
+                routing.navigate("/bundle/change-name/${bundle.id}")
+            }
+        }
+        if (UserInformationStorage.isAdmin()) {
             if (bundle.isActual == true) h4("Набор актуален")
             else h4("Набор не является актуальным")
         }
