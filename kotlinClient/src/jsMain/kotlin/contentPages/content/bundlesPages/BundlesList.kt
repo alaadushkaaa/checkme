@@ -21,13 +21,13 @@ class BundlesList(
 ) : SimplePanel(){
     init {
         if (listType.ordinal == 0) {
-            h2("Список групп заданий")
+            h2("Список наборов заданий")
         } else {
-            h2("Список скрытых групп")
+            h2("Список скрытых наборов")
         }
         if (UserInformationStorage.isAdmin()) {
             button(
-                "Cоздать группу",
+                "Cоздать набор",
                 className = "usually-button"
             ).onClick { routing.navigate("/add-bundle") }
         }
@@ -41,7 +41,7 @@ class BundlesList(
                     val jsonString = JSON.stringify(it)
                     val bundleList = Json.decodeFromString<List<BundleFormat>>(jsonString)
                     if (bundleList.isEmpty()){
-                        this.add(Div("Группы не найдены"))
+                        this.add(Div("Наборы не найдены"))
                     } else {
                         this.add(BundleListViewer(serverUrl, routing, bundleList))
                     }

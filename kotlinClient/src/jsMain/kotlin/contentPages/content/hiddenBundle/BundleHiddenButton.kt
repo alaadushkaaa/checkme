@@ -21,7 +21,7 @@ class BundleHiddenButton(
     private val hPanel: HPanel? = null,
 ) : Button("", className = "usually-button") {
     init {
-        text = if (isActual) "Скрыть группу" else "Показать группу"
+        text = if (isActual) "Скрыть набор" else "Показать набор"
         this.onClick {
             val requestInit = RequestInit()
             requestInit.method = HttpMethod.POST.name
@@ -33,7 +33,7 @@ class BundleHiddenButton(
                         hPanel.visible = false
                     else {
                         isActual = !isActual
-                        text = if (isActual) "Скрыть группу" else "Показать группу"
+                        text = if (isActual) "Скрыть набор" else "Показать набор"
                     }
                     js("window.location.reload()")
                 } else if (response.status.toInt() == 400) {
