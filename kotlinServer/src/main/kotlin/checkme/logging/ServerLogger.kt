@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 object ServerLogger {
     private val logger = LoggerFactory.getLogger("SERVER_LOGGER")
@@ -20,7 +21,7 @@ object ServerLogger {
         val logObject = LogObject(
             level = type.code,
             date = LocalDateTime.now().format(dateFormatter),
-            userId = user?.id ?: -404,
+            userId = (user?.id ?: -404).toString(),
             userName = user?.name ?: "unknown",
             userSurname = user?.surname ?: "unknown",
             action = action,
@@ -37,7 +38,7 @@ object ServerLogger {
 data class LogObject(
     val level: String,
     val date: String,
-    val userId: Int,
+    val userId: String,
     val userName: String,
     val userSurname: String,
     val action: String,

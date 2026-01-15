@@ -13,6 +13,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class BundleHandler(
     private val userLens: RequestContextLens<User?>,
@@ -36,7 +37,7 @@ class BundleHandler(
 }
 
 private fun tryFetchBundleAndTasks(
-    bundleId: Int,
+    bundleId: UUID,
     objectMapper: ObjectMapper,
     bundleOperations: BundleOperationHolder,
     user: User,

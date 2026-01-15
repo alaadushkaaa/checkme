@@ -19,6 +19,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class SelectBundleTasks(
     private val userLens: RequestContextLens<User?>,
@@ -55,14 +56,14 @@ class SelectBundleTasks(
     private fun tryFetchSelectedTasks(
         user: User,
         tasksIds: List<String>,
-        bundleId: Int,
+        bundleId: UUID,
         objectMapper: ObjectMapper,
         taskOperations: TaskOperationsHolder,
         bundleOperations: BundleOperationHolder,
     ): Response {
         val fetchedTasks = mutableListOf<Task>()
         for (id in tasksIds) {
-            when (val task = taskOperations.fetchTaskById(id.toInt())) {
+            when (val task = taskOperations.fetchTaskById(UUID.fromString(id))) {
                 is Success -> fetchedTasks.add(task.value)
                 is Failure -> {
                     ServerLogger.log(

@@ -11,11 +11,12 @@ import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
+import kotlin.uuid.Uuid
 
 class TaskHiddenButton(
     private val serverUrl: String,
     private var isActual: Boolean,
-    private val taskId: Int,
+    private val taskId: Uuid,
     private val hPanel: HPanel? = null
 ) : Button("", className = "hidden-button") {
     init {

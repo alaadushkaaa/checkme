@@ -9,6 +9,7 @@ data class CheckWithAllData(
     val result: Map<String, CheckResult>?,
     val user: UserNameSurnameForAllResults,
     val task: TaskNameForAllResults,
+    val totalScore: Int,
 )
 
 data class CheckWithTaskData(

@@ -5,15 +5,16 @@ import checkme.domain.models.Check
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
+import java.util.UUID
 
 class ModifyCheckResult(
     private val updateCheckResult: (
-        checkId: Int,
+        checkId: UUID,
         result: Map<String, CheckResult>,
     ) -> Check?,
-) : (Int, Map<String, CheckResult>) -> Result4k<Check, ModifyCheckError> {
+) : (UUID, Map<String, CheckResult>) -> Result4k<Check, ModifyCheckError> {
     override fun invoke(
-        checkId: Int,
+        checkId: UUID,
         result: Map<String, CheckResult>,
     ): Result4k<Check, ModifyCheckError> =
         when (
@@ -31,12 +32,12 @@ class ModifyCheckResult(
 
 class ModifyCheckStatus(
     private val updateCheckStatus: (
-        checkId: Int,
+        checkId: UUID,
         status: String,
     ) -> Check?,
-) : (Int, String) -> Result4k<Check, ModifyCheckError> {
+) : (UUID, String) -> Result4k<Check, ModifyCheckError> {
     override fun invoke(
-        checkId: Int,
+        checkId: UUID,
         status: String,
     ): Result4k<Check, ModifyCheckError> =
         when (

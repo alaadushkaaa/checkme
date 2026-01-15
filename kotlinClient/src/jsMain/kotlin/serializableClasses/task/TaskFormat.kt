@@ -2,10 +2,11 @@ package ru.yarsu.serializableClasses.task
 
 import io.kvision.types.KFile
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 @Serializable
 data class TaskFormat(
-    val id: Int,
+    val id: Uuid,
     val name: String,
     val criterions: Map<String, Criterion>,
     val answerFormat: List<AnswerFormat>,
@@ -15,7 +16,7 @@ data class TaskFormat(
 
 @Serializable
 data class TaskFormatForList(
-    val id: Int,
+    val id: Uuid,
     val name: String,
     val criterions: Map<String, Criterion>,
     val answerFormat: Map<String, String>,
@@ -30,5 +31,5 @@ data class SolutionFileList(
 
 @Serializable
 data class CheckId(
-    val checkId: Int
+    val checkId: Uuid
 )

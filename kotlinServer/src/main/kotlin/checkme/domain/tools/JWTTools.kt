@@ -11,6 +11,7 @@ import com.ibm.icu.util.Calendar
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import java.util.UUID
 
 class JWTTools(
     private val secret: String,
@@ -23,7 +24,7 @@ class JWTTools(
             .build()
 
     fun createUserJwt(
-        userId: Int,
+        userId: UUID,
         lifeTimeInDays: Int = 7,
     ): Result<String, TokenError> =
         Calendar.getInstance()

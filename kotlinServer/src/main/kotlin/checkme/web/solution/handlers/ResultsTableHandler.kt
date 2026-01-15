@@ -18,6 +18,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class ResultsTableHandler(
     private val checkOperations: CheckOperationHolder,
@@ -66,7 +67,7 @@ private fun tryGetSolutionsWithData(
             objectMapper.sendBadRequestError(ResultsTableError.FETCH_SOLUTIONS_ERROR.errorText)
 
         else -> {
-            val usersAndSolutions: Map<Int, List<Check>> =
+            val usersAndSolutions: Map<UUID, List<Check>> =
                 solutionsData.valueOrNull()?.groupBy { it.userId } ?: emptyMap()
             objectMapper.sendOKResponse(
                 TableSolutionsResponse(

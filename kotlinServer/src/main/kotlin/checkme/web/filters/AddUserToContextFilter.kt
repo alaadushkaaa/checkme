@@ -6,6 +6,7 @@ import checkme.domain.tools.JWTTools
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class AddUserToContextFilter(
     private val userLens: RequestContextLens<User?>,
@@ -20,7 +21,7 @@ class AddUserToContextFilter(
                         is Success -> Success(
                             next(
                                 request.with(
-                                    userLens of when (val result = userOperations.fetchUserById(id.value.toInt())) {
+                                    userLens of when (val result = userOperations.fetchUserById(UUID.fromString(id.value))) {
                                         is Success -> result.value
                                         else -> null
                                     }

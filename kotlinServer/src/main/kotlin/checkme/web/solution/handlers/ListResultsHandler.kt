@@ -19,6 +19,7 @@ import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.valueOrNull
 import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class ListResultsHandler(
     private val forTable: Boolean,
@@ -54,7 +55,7 @@ class ListResultsHandler(
 }
 
 private fun tryFetchUserSolutions(
-    userId: Int,
+    userId: UUID,
     objectMapper: ObjectMapper,
     checkOperations: CheckOperationHolder,
     taskOperations: TaskOperationsHolder,
@@ -116,7 +117,8 @@ private fun tryFetchAllSolutionsByAdmin(
                     date = check.date.toString(),
                     result = check.result,
                     user = userData.valueOrNull()!!,
-                    task = taskData.valueOrNull()!!
+                    task = taskData.valueOrNull()!!,
+                    totalScore = check.totalScore ?: 0
                 )
             }
             objectMapper.sendOKResponse(checksWithAllData)

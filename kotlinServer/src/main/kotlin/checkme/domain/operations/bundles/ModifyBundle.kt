@@ -8,6 +8,7 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
+import java.util.UUID
 
 class ModifyBundle(
     private val updateBundle: (
@@ -40,14 +41,14 @@ class ModifyBundleActuality(
 }
 
 class ModifyBundleTasks(
-    private val selectBundleById: (bundleId: Int) -> Bundle?,
+    private val selectBundleById: (bundleId: UUID) -> Bundle?,
     private val updateBundleTasks: (
-        bundleId: Int,
+        bundleId: UUID,
         newTasksAndOrder: List<TaskAndOrder>,
     ) -> List<TaskAndOrder>?,
-) : (Int, List<TaskAndOrder>) -> Result4k<List<TaskAndOrder>, ModifyBundleError> {
+) : (UUID, List<TaskAndOrder>) -> Result4k<List<TaskAndOrder>, ModifyBundleError> {
     override fun invoke(
-        bundleId: Int,
+        bundleId: UUID,
         newTasksAndOrder: List<TaskAndOrder>,
     ): Result4k<List<TaskAndOrder>, ModifyBundleError> =
         try {
@@ -64,7 +65,7 @@ class ModifyBundleTasks(
             Failure(ModifyBundleError.UNKNOWN_DATABASE_ERROR)
         }
 
-    private fun bundleNotExists(bundleId: Int): Boolean =
+    private fun bundleNotExists(bundleId: UUID): Boolean =
         when (selectBundleById(bundleId)) {
             is Bundle -> false
             else -> true
@@ -72,7 +73,7 @@ class ModifyBundleTasks(
 }
 
 class RemoveBundle(
-    private val selectBundleById: (bundleId: Int) -> Bundle?,
+    private val selectBundleById: (bundleId: UUID) -> Bundle?,
     private val removeBundle: (Bundle) -> Result4k<Boolean, BundleDatabaseError>,
 ) : (Bundle) -> Result<Boolean, BundleRemovingError> {
     override fun invoke(bundle: Bundle): Result<Boolean, BundleRemovingError> {
@@ -89,7 +90,7 @@ class RemoveBundle(
         }
     }
 
-    private fun bundleNotExists(bundleId: Int): Boolean =
+    private fun bundleNotExists(bundleId: UUID): Boolean =
         when (selectBundleById(bundleId)) {
             is Bundle -> false
             else -> true

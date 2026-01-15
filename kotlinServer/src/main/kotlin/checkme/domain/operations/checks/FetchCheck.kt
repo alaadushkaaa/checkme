@@ -5,12 +5,13 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
+import java.util.UUID
 
 class FetchCheckById(
-    private val fetchCheckById: (Int) -> Check?,
-) : (Int) -> Result4k<Check, CheckFetchingError> {
+    private val fetchCheckById: (UUID) -> Check?,
+) : (UUID) -> Result4k<Check, CheckFetchingError> {
 
-    override fun invoke(checkId: Int): Result4k<Check, CheckFetchingError> =
+    override fun invoke(checkId: UUID): Result4k<Check, CheckFetchingError> =
         try {
             when (val check = fetchCheckById(checkId)) {
                 is Check -> Success(check)
@@ -22,10 +23,10 @@ class FetchCheckById(
 }
 
 class FetchChecksByUserId(
-    private val fetchChecksByUserId: (Int) -> List<Check>?,
-) : (Int) -> Result4k<List<Check>, CheckFetchingError> {
+    private val fetchChecksByUserId: (UUID) -> List<Check>?,
+) : (UUID) -> Result4k<List<Check>, CheckFetchingError> {
 
-    override fun invoke(userId: Int): Result4k<List<Check>, CheckFetchingError> =
+    override fun invoke(userId: UUID): Result4k<List<Check>, CheckFetchingError> =
         try {
             when (val checks = fetchChecksByUserId(userId)) {
                 is List<Check> -> Success(checks)
@@ -37,10 +38,10 @@ class FetchChecksByUserId(
 }
 
 class FetchChecksByTaskId(
-    private val fetchChecksByTaskId: (Int) -> List<Check>?,
-) : (Int) -> Result4k<List<Check>, CheckFetchingError> {
+    private val fetchChecksByTaskId: (UUID) -> List<Check>?,
+) : (UUID) -> Result4k<List<Check>, CheckFetchingError> {
 
-    override fun invoke(taskId: Int): Result4k<List<Check>, CheckFetchingError> =
+    override fun invoke(taskId: UUID): Result4k<List<Check>, CheckFetchingError> =
         try {
             when (val checks = fetchChecksByTaskId(taskId)) {
                 is List<Check> -> Success(checks)
