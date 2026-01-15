@@ -24,7 +24,6 @@ class SqlCheckService(
     private val user: User,
     private val overall: Boolean,
 ) {
-    // todo журнал
     @Suppress("TooGenericExceptionCaught")
     fun getSqlResults(
         firstScript: File,

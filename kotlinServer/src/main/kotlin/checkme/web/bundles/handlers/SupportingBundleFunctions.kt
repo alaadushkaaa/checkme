@@ -4,6 +4,7 @@ import checkme.domain.models.Bundle
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.bundles.BundleFetchingError
 import checkme.domain.operations.bundles.BundleOperationHolder
+import checkme.domain.operations.bundles.BundleRemovingError
 import checkme.domain.operations.bundles.CreateBundleError
 import checkme.domain.operations.bundles.ModifyBundleError
 import dev.forkhandles.result4k.Failure
@@ -127,6 +128,22 @@ internal fun changeBundleName(
     }
 }
 
+internal fun deleteBundle(
+    bundle: Bundle,
+    bundleOperations: BundleOperationHolder
+) : Result<Boolean, RemovingBundleError> {
+    return when (
+        val deletedBundle = bundleOperations.removeBundle(bundle)
+    ) {
+        is Success -> Success(deletedBundle.value)
+        is Failure -> when (deletedBundle.reason) {
+            BundleRemovingError.BUNDLE_NOT_EXISTS -> Failure(RemovingBundleError.NO_SUCH_BUNDLE)
+            BundleRemovingError.UNKNOWN_DATABASE_ERROR -> Failure(RemovingBundleError.UNKNOWN_DATABASE_ERROR)
+            BundleRemovingError.UNKNOWN_DELETE_ERROR -> Failure(RemovingBundleError.UNKNOWN_DELETE_ERROR)
+        }
+    }
+}
+
 internal fun validateBundleTasks(tasksOrder: List<TaskAndOrder>): Result<List<TaskAndOrder>, CreationBundleTasksError> {
     val tasks = tasksOrder.map { it.task }
     val orders = tasksOrder.map { it.order }
@@ -168,4 +185,10 @@ enum class BundleChangingError(val errorText: String) {
     NO_SUCH_BUNDLE("No bundle id to change bundle actuality"),
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
     NO_BUNDLE_ID_FOR_CHANGE("No bundle id to change bundle"),
+}
+
+enum class RemovingBundleError(val errorText: String) {
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
+    NO_SUCH_BUNDLE("The bundle does not exist"),
+    UNKNOWN_DELETE_ERROR("Something was wrong until bundle deleting. Please try again later."),
 }
