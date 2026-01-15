@@ -13,6 +13,7 @@ import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
 import ru.yarsu.contentPages.content.bundlesPages.Bundle
 import ru.yarsu.contentPages.content.bundlesPages.BundlesList
+import ru.yarsu.contentPages.content.bundlesPages.ChangeBundleName
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
 import ru.yarsu.contentPages.content.solutionPage.Solution
 import ru.yarsu.contentPages.content.taskPage.Task
@@ -66,6 +67,14 @@ class MainPage(
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
                 content.add(AddBundle(serverUrl, routingMainPage))
+            } else {
+                routingMainPage.navigate("/")
+            }
+        }).on("/bundle/change-name/:id", {match ->
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                val id = match.data.id.toString()
+                content.add(ChangeBundleName(serverUrl, id, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }

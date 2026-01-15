@@ -14,10 +14,8 @@ import io.kvision.routing.Routing
 import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
-import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.dom.events.KeyboardEvent
 import org.w3c.fetch.RequestInit
 import org.w3c.xhr.FormData
 import ru.yarsu.localStorage.UserInformationStorage
@@ -30,14 +28,14 @@ class AddBundle(
     private val routing: Routing
 ) : VPanel(className = "BundleAdd"){
     init {
-        h2("Создание группы")
+        h2("Создание набора")
         val formPanelAddBundle = formPanel<FormAddBundle>(className = "base-form") {
-            add(Label("Имя группы", className = "separate-form-label"))
+            add(Label("Название набора", className = "separate-form-label"))
             add(
                 FormAddBundle::name,
                 Text(),
                 required = true,
-                requiredMessage = "Пожалуйста, введите имя группы"
+                requiredMessage = "Пожалуйста, введите название набора"
             )
         }
         formPanelAddBundle.add(HPanel(className = "add-bundle-buttons-panel") {

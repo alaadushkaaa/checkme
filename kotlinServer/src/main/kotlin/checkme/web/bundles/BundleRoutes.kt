@@ -7,6 +7,7 @@ import checkme.web.bundles.handlers.BundleHiddenListHandler
 import checkme.web.bundles.handlers.BundleListHandler
 import checkme.web.bundles.handlers.BundleTasksHandler
 import checkme.web.bundles.handlers.ChangeBundleActualityHandler
+import checkme.web.bundles.handlers.ChangeBundleNameHandler
 import checkme.web.bundles.handlers.ChangeBundleTasksOrderHandler
 import checkme.web.bundles.handlers.SelectBundleTasks
 import checkme.web.context.ContextTools
@@ -25,6 +26,10 @@ fun bundleRouter(
         "$CHANGE_ACTUALITY/{id}" bind Method.POST to ChangeBundleActualityHandler(
             bundleOperations = operations.bundleOperations,
             userLens = contextTools.userLens,
+        ),
+        "$CHANGE_NAME/{id}" bind Method.POST to ChangeBundleNameHandler(
+            bundleOperations = operations.bundleOperations,
+            userLens = contextTools.userLens
         ),
         "/all" bind Method.GET to BundleListHandler(
             bundleOperations = operations.bundleOperations,
@@ -56,3 +61,4 @@ fun bundleRouter(
 const val BUNDLE_SEGMENT = "/bundle"
 const val NEW_BUNDLE = "/new"
 const val CHANGE_ACTUALITY = "/change-actuality"
+const val CHANGE_NAME = "/change-name"

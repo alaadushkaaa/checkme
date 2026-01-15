@@ -30,7 +30,7 @@ class ChangeBundleTasksOrder(
     private val routing: Routing,
 ) : SimplePanel() {
     init {
-        h2("Укажите порядок заданий в группе")
+        h2("Укажите порядок заданий в наборе")
         val requestInit = RequestInit()
         requestInit.method = HttpMethod.GET.name
         requestInit.headers = js("{}")

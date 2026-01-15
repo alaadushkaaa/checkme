@@ -4,6 +4,12 @@
     width: 100%;
 }
 
+.Bundle .change-button {
+    height: 40px;
+    flex-wrap: wrap;
+    width: 300px;
+}
+
 .Bundle .button-row {
     display: flex;
     gap: 15px;

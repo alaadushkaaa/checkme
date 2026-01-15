@@ -23,10 +23,15 @@ class BundleViewer(
     init {
         h2(bundle.name)
         if (UserInformationStorage.isAdmin()) {
+            button("Переименовать", className = "change-button").onClick {
+                routing.navigate("/bundle/change-name/${bundle.id}")
+            }
+        }
+        if (UserInformationStorage.isAdmin()) {
             if (bundle.isActual == true) h4("Набор актуален")
             else h4("Набор не является актуальным")
         }
-        h3("Задания набора")
+        h3("Задачи набора")
         if (tasksAndOrders.isEmpty()) div("Задачи не найдены")
         if (UserInformationStorage.isAdmin()) {
             hPanel(className = "button-row") {
