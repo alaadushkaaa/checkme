@@ -130,8 +130,8 @@ internal fun changeBundleName(
 
 internal fun deleteBundle(
     bundle: Bundle,
-    bundleOperations: BundleOperationHolder
-) : Result<Boolean, RemovingBundleError> {
+    bundleOperations: BundleOperationHolder,
+): Result<Boolean, RemovingBundleError> {
     return when (
         val deletedBundle = bundleOperations.removeBundle(bundle)
     ) {

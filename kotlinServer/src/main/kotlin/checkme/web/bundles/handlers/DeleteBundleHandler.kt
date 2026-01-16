@@ -53,7 +53,7 @@ private fun tryDeleteBundle(
     user: User,
     bundleToDelete: Bundle,
     objectMapper: ObjectMapper,
-    bundleOperations: BundleOperationHolder
+    bundleOperations: BundleOperationHolder,
 ): Response {
     return when (
         val deletedFlag = deleteBundle(
