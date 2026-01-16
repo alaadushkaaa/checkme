@@ -37,7 +37,10 @@ class DeleteBundleHandler(
                     is Failure -> objectMapper.sendBadRequestError(DeleteBundleError.BUNDLE_NOT_EXISTS.errorText)
 
                     is Success -> tryDeleteBundle(
-
+                        user = user,
+                        bundleToDelete = bundleToDelete.value,
+                        objectMapper = objectMapper,
+                        bundleOperations = bundleOperations
                     )
                 }
 
@@ -51,7 +54,7 @@ private fun tryDeleteBundle(
     bundleToDelete: Bundle,
     objectMapper: ObjectMapper,
     bundleOperations: BundleOperationHolder
-) : Response {
+): Response {
     return when (
         val deletedFlag = deleteBundle(
             bundle = bundleToDelete,
@@ -63,9 +66,10 @@ private fun tryDeleteBundle(
             ServerLogger.log(
                 user = user,
                 action = "Bundle deletion",
-                message = "User delete bundle ${taskToDelete.id}-${taskToDelete.name}",
+                message = "User delete bundle ${bundleToDelete.id}-${bundleToDelete.name}",
                 type = LoggerType.INFO
             )
+            objectMapper.sendOKResponse(mapOf("status" to "complete"))
         }
     }
 }
