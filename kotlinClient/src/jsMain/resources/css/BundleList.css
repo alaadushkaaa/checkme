@@ -1,8 +1,9 @@
 .bundle-in-list {
     display: flex;
-    margin-top: 22px;
+    margin-top: 20px;
     align-items:center;
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .bundle-in-list .bundle-item {

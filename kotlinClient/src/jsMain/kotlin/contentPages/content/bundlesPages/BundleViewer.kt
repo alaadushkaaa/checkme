@@ -8,9 +8,17 @@ import io.kvision.html.h3
 import io.kvision.html.h4
 import io.kvision.panel.VPanel
 import io.kvision.panel.hPanel
+import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
+import io.kvision.toast.Toast
+import io.kvision.toast.ToastOptions
+import io.kvision.toast.ToastPosition
 import ru.yarsu.contentPages.content.hiddenBundle.BundleHiddenButton
+import kotlinx.browser.window
+import kotlinx.serialization.json.Json
+import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
+import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.BundleFormat
 import ru.yarsu.serializableClasses.bundle.TaskFormatWithOrder
 
@@ -75,6 +83,43 @@ class BundleViewer(
                 this.add(taskItem)
             }
         }
+        if (UserInformationStorage.isAdmin()) {
+            button("Удалить набор", className = "usually-button warning-button").onClick {
+                tryDeleteBundle()
+            }
+        }
     }
 
+    private fun tryDeleteBundle() {
+        val requestInit = RequestInit()
+        requestInit.method = HttpMethod.DELETE.name
+        requestInit.headers = js("{}")
+        requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+        window.fetch(serverUrl + "bundle/delete/${bundle.id}", requestInit).then { response ->
+            if (response.status.toInt() == 200) {
+                routing.navigate("/")
+            } else if (response.status.toInt() == 400) {
+                response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val responseError =
+                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                    Toast.danger(
+                        responseError.error,
+                        ToastOptions(
+                            duration = 3000,
+                            position = ToastPosition.TOPRIGHT,
+                        )
+                    )
+                }
+            } else {
+                Toast.danger(
+                    "Код ошибки ${response.status}: ${response.statusText}",
+                    ToastOptions(
+                        duration = 5000,
+                        position = ToastPosition.TOPRIGHT,
+                    )
+                )
+            }
+        }
+    }
 }

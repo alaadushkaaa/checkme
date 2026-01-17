@@ -9,6 +9,7 @@ import checkme.web.bundles.handlers.BundleTasksHandler
 import checkme.web.bundles.handlers.ChangeBundleActualityHandler
 import checkme.web.bundles.handlers.ChangeBundleNameHandler
 import checkme.web.bundles.handlers.ChangeBundleTasksOrderHandler
+import checkme.web.bundles.handlers.DeleteBundleHandler
 import checkme.web.bundles.handlers.SelectBundleTasks
 import checkme.web.context.ContextTools
 import org.http4k.core.*
@@ -28,6 +29,10 @@ fun bundleRouter(
             userLens = contextTools.userLens,
         ),
         "$CHANGE_NAME/{id}" bind Method.POST to ChangeBundleNameHandler(
+            bundleOperations = operations.bundleOperations,
+            userLens = contextTools.userLens
+        ),
+        "$DELETE_BUNDLE/{id}" bind Method.DELETE to DeleteBundleHandler(
             bundleOperations = operations.bundleOperations,
             userLens = contextTools.userLens
         ),
@@ -62,3 +67,4 @@ const val BUNDLE_SEGMENT = "/bundle"
 const val NEW_BUNDLE = "/new"
 const val CHANGE_ACTUALITY = "/change-actuality"
 const val CHANGE_NAME = "/change-name"
+const val DELETE_BUNDLE = "/delete"

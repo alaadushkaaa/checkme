@@ -18,12 +18,12 @@ class Header(
             div("CheckMe", className = "app-title")
             div(className = "navigation") {
                 button(
-                    "Группы задач",
+                    "Наборы задач",
                     className = "navigation-button"
                 ).onClick { routingMainPage.navigate("/bundle-list") }
                 if (UserInformationStorage.isAdmin()) {
                     button(
-                        "Список скрытых групп",
+                        "Список скрытых наборов",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/hidden-bundle-list") }
                 }
