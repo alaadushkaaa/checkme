@@ -94,14 +94,14 @@ open class BundleTasks(
     val TASK_ORDER: TableField<BundleTasksRecord, Int?> = createField(DSL.name("task_order"), SQLDataType.INTEGER.nullable(false), this, "")
 
     /**
-     * The column <code>public.bundle_tasks.task_id</code>.
-     */
-    val TASK_ID: TableField<BundleTasksRecord, UUID?> = createField(DSL.name("task_id"), SQLDataType.UUID.nullable(false), this, "")
-
-    /**
      * The column <code>public.bundle_tasks.bundle_id</code>.
      */
     val BUNDLE_ID: TableField<BundleTasksRecord, UUID?> = createField(DSL.name("bundle_id"), SQLDataType.UUID.nullable(false), this, "")
+
+    /**
+     * The column <code>public.bundle_tasks.task_id</code>.
+     */
+    val TASK_ID: TableField<BundleTasksRecord, UUID?> = createField(DSL.name("task_id"), SQLDataType.UUID.nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<BundleTasksRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<BundleTasksRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -136,22 +136,7 @@ open class BundleTasks(
     }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getUniqueKeys(): List<UniqueKey<BundleTasksRecord>> = listOf(BUNDLE_TASKS_TASK_ID_BUNDLE_ID_KEY)
-    override fun getReferences(): List<ForeignKey<BundleTasksRecord, *>> = listOf(BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_NEW_FKEY, BUNDLE_TASKS__BUNDLE_TASKS_BUNDLE_ID_NEW_FKEY)
-
-    private lateinit var _tasks: TasksPath
-
-    /**
-     * Get the implicit join path to the <code>public.tasks</code> table.
-     */
-    fun tasks(): TasksPath {
-        if (!this::_tasks.isInitialized)
-            _tasks = TasksPath(this, BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_NEW_FKEY, null)
-
-        return _tasks;
-    }
-
-    val tasks: TasksPath
-        get(): TasksPath = tasks()
+    override fun getReferences(): List<ForeignKey<BundleTasksRecord, *>> = listOf(BUNDLE_TASKS__BUNDLE_TASKS_BUNDLE_ID_NEW_FKEY, BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_NEW_FKEY)
 
     private lateinit var _bundles: BundlesPath
 
@@ -167,6 +152,21 @@ open class BundleTasks(
 
     val bundles: BundlesPath
         get(): BundlesPath = bundles()
+
+    private lateinit var _tasks: TasksPath
+
+    /**
+     * Get the implicit join path to the <code>public.tasks</code> table.
+     */
+    fun tasks(): TasksPath {
+        if (!this::_tasks.isInitialized)
+            _tasks = TasksPath(this, BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_NEW_FKEY, null)
+
+        return _tasks;
+    }
+
+    val tasks: TasksPath
+        get(): TasksPath = tasks()
     override fun `as`(alias: String): BundleTasks = BundleTasks(DSL.name(alias), this)
     override fun `as`(alias: Name): BundleTasks = BundleTasks(alias, this)
     override fun `as`(alias: Table<*>): BundleTasks = BundleTasks(alias.qualifiedName, this)

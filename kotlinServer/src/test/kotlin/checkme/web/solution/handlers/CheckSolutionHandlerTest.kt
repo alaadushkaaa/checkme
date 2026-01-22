@@ -139,12 +139,12 @@ class CheckSolutionHandlerTest : FunSpec({
             errors = emptyList()
         )
         val lens = Body.multipartForm(Validator.Feedback, MultipartFormFile.multi.required("ans")).toLens()
-        val request = Request(Method.POST, "$SOLUTION_DIR$NEW_SOLUTION/1")
+        val request = Request(Method.POST, "$SOLUTION_DIR$NEW_SOLUTION/019b8eb2-139b-7f00-a205-7430d3448420")
             .header("Content-Type", "multipart/form-data")
             .let { lens(form, it) }
         val response = handler(request)
         response.status.shouldBe(Status.OK)
         val responseBody = objectMapper.readValue<Map<String, String>>(response.body.toString())
-        responseBody["checkId"].shouldMatch(Regex("([0-9]+)"))
+        responseBody["checkId"].shouldMatch(Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))
     }
 })

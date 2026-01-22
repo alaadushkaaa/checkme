@@ -37,7 +37,8 @@ val validCheckId = listOf(
     UUID.fromString("019b8eb3-323a-7b3b-ba9c-2c4614538e3e"),
     UUID.fromString("019b8eb3-4d90-7784-8ec5-04c07161dfa7"),
     UUID.fromString("019b8eb3-63e0-70a7-8612-11f7139f7245"),
-    UUID.fromString("019b8eb3-922a-723d-9a99-0b3a7f41ae55")
+    UUID.fromString("019b8eb3-922a-723d-9a99-0b3a7f41ae55"),
+    UUID.fromString("019be09d-edbd-706b-b0fb-18d2009ec801")
 )
 
 val validTaskId = listOf(

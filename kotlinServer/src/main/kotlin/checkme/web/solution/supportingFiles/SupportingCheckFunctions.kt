@@ -204,21 +204,16 @@ internal fun fetchCheckByUserId(
 }
 
 internal fun fetchCheckByTaskId(
-    taskId: UUID?,
+    taskId: UUID,
     checkOperations: CheckOperationHolder,
 ): Result4k<List<Check>, FetchingCheckError> {
-    if (taskId != null) {
-        return when (
-            val fetchedChecks = checkOperations.fetchChecksByTaskId(taskId)
-        ) {
-            is Failure -> when (fetchedChecks.reason) {
-                CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
-                CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
-            }
-
-            is Success -> Success(fetchedChecks.value)
+    return when (
+        val fetchedChecks = checkOperations.fetchChecksByTaskId(taskId)
+    ) {
+        is Failure -> when (fetchedChecks.reason) {
+            CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
+            CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
         }
-    } else {
-        return Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
+        is Success -> Success(fetchedChecks.value)
     }
 }

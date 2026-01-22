@@ -7,8 +7,8 @@ ALTER TABLE bundles ADD COLUMN id_new UUID NOT NULL UNIQUE DEFAULT UUIDV7();
 ALTER TABLE checks ADD COLUMN id_new UUID NOT NULL UNIQUE DEFAULT UUIDV7();
 ALTER TABLE checks ADD COLUMN taskid_new UUID;
 ALTER TABLE checks ADD COLUMN userid_new UUID;
-ALTER TABLE bundle_tasks ADD COLUMN task_id_new UUID NOT NULL references tasks(id_new);
 ALTER TABLE bundle_tasks ADD COLUMN bundle_id_new UUID NOT NULL references bundles(id_new);
+ALTER TABLE bundle_tasks ADD COLUMN task_id_new UUID NOT NULL references tasks(id_new);
 
 ALTER TABLE users DROP id;
 ALTER TABLE tasks DROP id;
