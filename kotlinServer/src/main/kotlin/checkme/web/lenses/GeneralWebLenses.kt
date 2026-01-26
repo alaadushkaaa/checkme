@@ -14,6 +14,7 @@ import org.http4k.lens.Validator
 import org.http4k.lens.WebForm
 import org.http4k.lens.int
 import org.http4k.lens.uuid
+import org.http4k.lens.string
 import org.http4k.lens.webForm
 
 @Suppress("TooManyFunctions")
@@ -29,6 +30,7 @@ object GeneralWebLenses {
     val idFromPathField = Path.uuid().of("id")
     val checkIdFromPathField = Path.uuid().of("checkId")
     val pageCountFromPathField = Path.int().of("page")
+    val fileNameFromPathField = Path.string().of("fileName")
 
     /**
      * Invoke lens to value
@@ -87,4 +89,6 @@ object GeneralWebLenses {
     fun Request.checkIdOrNull() = lensOrNull(checkIdFromPathField, this)
 
     fun Request.pageCountOrNull() = lensOrNull(pageCountFromPathField, this)
+
+    fun Request.fileNameOrNull() = lensOrNull(fileNameFromPathField, this)
 }

@@ -45,6 +45,9 @@ external val cssTask: dynamic
 @JsModule("./css/Bundle.css")
 external val cssBundle: dynamic
 
+@JsModule("./css/Journal.css")
+external val cssJournal: dynamic
+
 @JsModule("./css/UserList.css")
 external val cssUserList: dynamic
 
@@ -69,6 +72,7 @@ class CheckMe : Application() {
         useModule(cssApp)
         useModule(cssTaskForm)
         useModule(cssBundleForm)
+        useModule(cssJournal)
         useModule(cssTasksList)
         useModule(cssBundleList)
         useModule(cssTask)

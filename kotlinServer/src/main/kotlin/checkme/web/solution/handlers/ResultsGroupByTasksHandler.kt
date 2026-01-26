@@ -31,7 +31,7 @@ class ResultsGroupByTasksHandler(
         return when {
             page == null ->
                 objectMapper
-                    .sendBadRequestError(ViewCheckResultError.NO_TASK_ID_ERROR.errorText)
+                    .sendBadRequestError(ViewCheckResultError.NO_PAGE_ERROR.errorText)
 
             user?.isAdmin() == false ->
                 objectMapper

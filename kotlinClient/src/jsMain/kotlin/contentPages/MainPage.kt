@@ -14,6 +14,8 @@ import ru.yarsu.contentPages.content.addTaskPage.AddTask
 import ru.yarsu.contentPages.content.bundlesPages.Bundle
 import ru.yarsu.contentPages.content.bundlesPages.BundlesList
 import ru.yarsu.contentPages.content.bundlesPages.ChangeBundleName
+import ru.yarsu.contentPages.content.journalPage.Journal
+import ru.yarsu.contentPages.content.journalPage.LogFile
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
 import ru.yarsu.contentPages.content.solutionPage.Solution
 import ru.yarsu.contentPages.content.taskPage.Task
@@ -183,6 +185,14 @@ class MainPage(
                 null
             }
             content.add(Bundle(id, serverUrl, routingMainPage))
+        }).on("/journal/file/:name", { match ->
+            content.removeAll()
+            val name = match.data.name.toString()
+            content.add(LogFile(serverUrl, routingMainPage, name))
+        }).on("/journal/:page", { match ->
+            content.removeAll()
+            val page = match.data.page.toString().toIntOrNull()
+            content.add(Journal(page, serverUrl, routingMainPage))
         }).resolve()
     }
 }

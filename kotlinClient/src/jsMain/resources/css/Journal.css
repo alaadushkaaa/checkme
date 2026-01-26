@@ -1,0 +1,42 @@
+.warn-block {
+    margin-top: 22px;
+    background: #e62d2d;
+    padding: 15px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+}
+
+.info-block {
+    margin-top: 22px;
+    background: #EBEBEB;
+    padding: 15px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+}
+
+.date-item {
+   text-align: right;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.file-name-item {
+    font-weight: bold;
+    font-size: 18px;
+    padding-bottom: 7px;
+}
+
+.action-item {
+    font-weight: bold;
+    font-size: 18px;
+    padding-top: 7px;
+}
+
+.button-min {
+    margin-right: 15px;
+    font-size: 15px;
+    background-color: #7699D4;
+    text-align: right;
+}

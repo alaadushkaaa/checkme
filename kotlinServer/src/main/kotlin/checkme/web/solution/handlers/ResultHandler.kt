@@ -108,6 +108,7 @@ enum class ViewCheckResultError(val errorText: String) {
     USER_HAS_NOT_RIGHTS("You has not rights to see this result"),
     NO_USER_ID_ERROR("No user id for check list"),
     NO_TASK_ID_ERROR("No task id for check list"),
+    NO_PAGE_ERROR("No page to show check list"),
 }
 
 enum class FetchingCheckError(val errorText: String) {

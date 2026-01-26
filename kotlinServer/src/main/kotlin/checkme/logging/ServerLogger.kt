@@ -35,17 +35,3 @@ object ServerLogger {
     }
 }
 
-data class LogObject(
-    val level: String,
-    val date: String,
-    val userId: String,
-    val userName: String,
-    val userSurname: String,
-    val action: String,
-    val message: String,
-)
-
-enum class LoggerType (val code: String) {
-    INFO("INFO"),
-    WARN("WARN"),
-}
