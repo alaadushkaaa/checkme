@@ -3,6 +3,8 @@ package checkme.web
 import checkme.config.AppConfig
 import checkme.domain.operations.OperationHolder
 import checkme.domain.tools.JWTTools
+import checkme.web.admin.ADMIN_SEGMENT
+import checkme.web.admin.adminRoutes
 import checkme.web.auth.AUTH_SEGMENT
 import checkme.web.auth.authRouter
 import checkme.web.bundles.BUNDLE_SEGMENT
@@ -41,6 +43,9 @@ private fun createMainRouter(
     ),
     BUNDLE_SEGMENT bind bundleRouter(
         operations = operations,
+        contextTools = contextTools
+    ),
+    ADMIN_SEGMENT bind adminRoutes(
         contextTools = contextTools
     )
 )
