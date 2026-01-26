@@ -50,6 +50,10 @@ class Header(
                         "Пользователи",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/user-list") }
+                    button(
+                        "Журнал",
+                        className = "navigation-button"
+                    ).onClick { routingMainPage.navigate("/journal/1") }
                 }
             }
             val userName = UserInformationStorage.getUserInformation()

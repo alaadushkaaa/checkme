@@ -1,7 +1,6 @@
 package ru.yarsu.serializableClasses.bundle
 
 import kotlinx.serialization.Serializable
-import ru.yarsu.serializableClasses.task.TaskFormat
 import ru.yarsu.serializableClasses.task.TaskFormatForList
 
 @Serializable
