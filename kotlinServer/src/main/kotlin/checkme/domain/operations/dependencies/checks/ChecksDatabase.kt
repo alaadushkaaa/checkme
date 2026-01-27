@@ -3,33 +3,34 @@ package checkme.domain.operations.dependencies.checks
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
 import java.time.LocalDateTime
+import java.util.UUID
 
 interface ChecksDatabase {
-    fun selectCheckById(checkId: Int): Check?
+    fun selectCheckById(checkId: UUID): Check?
 
-    fun selectChecksByUserId(userId: Int): List<Check>
+    fun selectChecksByUserId(userId: UUID): List<Check>
 
-    fun selectChecksByTaskId(taskId: Int): List<Check>
+    fun selectChecksByTaskId(taskId: UUID): List<Check>
 
     fun selectAllChecks(): List<Check>
 
     fun selectAllChecksPagination(page: Int): List<Check>
 
     fun insertCheck(
-        taskId: Int,
-        userId: Int,
+        taskId: UUID,
+        userId: UUID,
         date: LocalDateTime,
         result: Map<String, CheckResult>?,
         status: String,
     ): Check?
 
     fun updateCheckStatus(
-        checkId: Int,
+        checkId: UUID,
         status: String,
     ): Check?
 
     fun updateCheckResult(
-        checkId: Int,
+        checkId: UUID,
         result: Map<String, CheckResult>?,
     ): Check?
 }

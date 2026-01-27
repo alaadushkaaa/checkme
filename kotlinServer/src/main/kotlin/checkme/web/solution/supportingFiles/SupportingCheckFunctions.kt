@@ -23,6 +23,7 @@ import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import java.time.LocalDateTime
+import java.util.UUID
 
 internal fun setStatusError(
     check: Check,
@@ -73,8 +74,8 @@ internal fun setStatusChecked(
 }
 
 internal fun createNewCheck(
-    taskId: Int,
-    userId: Int,
+    taskId: UUID,
+    userId: UUID,
     checkOperations: CheckOperationHolder,
     taskOperations: TaskOperationsHolder,
 ): Result<Check, CreationCheckError> {
@@ -104,7 +105,7 @@ internal fun createNewCheck(
 }
 
 internal fun updateCheckResult(
-    checkId: Int,
+    checkId: UUID,
     checkResult: Map<String, CheckResult>,
     checkOperations: CheckOperationHolder,
 ): Result<Check, ModifyingCheckError> {
@@ -123,7 +124,7 @@ internal fun updateCheckResult(
 }
 
 internal fun updateCheckStatus(
-    checkId: Int,
+    checkId: UUID,
     checkStatus: String,
     checkOperations: CheckOperationHolder,
 ): Result<Check, ModifyingCheckError> {
@@ -142,7 +143,7 @@ internal fun updateCheckStatus(
 }
 
 internal fun fetchCheckById(
-    checkId: Int,
+    checkId: UUID,
     checkOperations: CheckOperationHolder,
 ): Result<Check, FetchingCheckError> {
     return when (
@@ -187,7 +188,7 @@ internal fun fetchAllChecksPagination(
 }
 
 internal fun fetchCheckByUserId(
-    userId: Int,
+    userId: UUID,
     checkOperations: CheckOperationHolder,
 ): Result4k<List<Check>, FetchingCheckError> {
     return when (
@@ -203,7 +204,7 @@ internal fun fetchCheckByUserId(
 }
 
 internal fun fetchCheckByTaskId(
-    taskId: Int,
+    taskId: UUID,
     checkOperations: CheckOperationHolder,
 ): Result4k<List<Check>, FetchingCheckError> {
     return when (
@@ -213,7 +214,6 @@ internal fun fetchCheckByTaskId(
             CheckFetchingError.NO_SUCH_CHECK -> Failure(FetchingCheckError.NO_CHECK_IN_DB)
             CheckFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingCheckError.UNKNOWN_DATABASE_ERROR)
         }
-
         is Success -> Success(fetchedChecks.value)
     }
 }

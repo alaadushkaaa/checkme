@@ -50,8 +50,8 @@ class AllSolutionsTableViewer(
         }
     }
 
-    private fun getColorScore(score: Int, result: Map<String, ResultScoreMessage>?): String {
-        return if ((score == 0) || (result == null)) {
+    private fun getColorScore(score: Int?, result: Map<String, ResultScoreMessage>?): String {
+        return if ((score == null) || (score == 0) || (result == null)) {
             "table-criteria-failed"
         } else {
             val criteriaScore = result.map { Pair(it.key, it.value.score) }.toMap()
@@ -82,7 +82,7 @@ class AllSolutionsTableViewer(
                 VPanel().apply {
                     this.addAll(
                         solutions.map { solution ->
-                            val score = solution.result?.values?.map { it.score }?.toList()?.sum() ?: 0
+                            val score = solution.totalScore
                             Div("${solution.status}: $score", className = getColorScore(score, solution.result)).apply {
                                 this.onClick {
                                     routing.navigate("/solution/${solution.id}")

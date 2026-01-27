@@ -7,6 +7,7 @@ import checkme.db.validName
 import checkme.db.validPassword
 import checkme.db.validRole
 import checkme.db.validSurname
+import checkme.db.validUserId
 import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import dev.forkhandles.result4k.kotest.shouldBeFailure
@@ -29,7 +30,7 @@ class CreateUserTest : FunSpec({
     ) -> User? = { login, name, surname, password, role ->
         val user =
             User(
-                id = users.size + 1,
+                id = validUserId[0],
                 login = login,
                 name = name,
                 surname = surname,

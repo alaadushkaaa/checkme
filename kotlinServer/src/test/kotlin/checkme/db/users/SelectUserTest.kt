@@ -2,6 +2,7 @@ package checkme.db.users
 
 import checkme.db.TestcontainerSpec
 import checkme.db.appConfiguredPasswordHasher
+import checkme.db.notExistingId
 import checkme.db.validAdminLogin
 import checkme.db.validLogin
 import checkme.db.validName
@@ -118,7 +119,7 @@ class SelectUserTest : TestcontainerSpec({ context ->
 
     test("User cant be fetched by invalid id") {
         userOperations
-            .selectUserById(insertedUser.id + 2)
+            .selectUserById(notExistingId)
             .shouldBeNull()
     }
 
@@ -137,7 +138,7 @@ class SelectUserTest : TestcontainerSpec({ context ->
 
     test("Cant select user name and surname by invalid user id") {
         userOperations
-            .selectUserNameSurname(insertedUser.id + 2)
+            .selectUserNameSurname(notExistingId)
             .shouldBeNull()
     }
 

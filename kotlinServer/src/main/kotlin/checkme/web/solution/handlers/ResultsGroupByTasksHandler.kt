@@ -10,7 +10,6 @@ import checkme.web.lenses.GeneralWebLenses.pageCountOrNull
 import checkme.web.solution.forms.CheckForTasksSolutions
 import checkme.web.solution.forms.SolutionsGroupByTask
 import checkme.web.solution.supportingFiles.fetchCheckByTaskId
-import checkme.web.solution.supportingFiles.task
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.forkhandles.result4k.Failure
@@ -77,7 +76,8 @@ private fun tryGetSolutionsGroupedByTask(
                                     date = check.date.toString(),
                                     status = check.status,
                                     result = check.result,
-                                    user = userForCheck.value
+                                    user = userForCheck.value,
+                                    totalScore = check.totalScore
                                 )
                             }
                         }

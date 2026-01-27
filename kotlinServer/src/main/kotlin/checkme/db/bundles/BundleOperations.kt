@@ -17,6 +17,7 @@ import org.jooq.exception.DataAccessException
 import org.jooq.exception.IntegrityConstraintViolationException
 import org.jooq.impl.DSL.commit
 import org.jooq.impl.DSL.rollback
+import java.util.UUID
 
 @Suppress("TooManyFunctions")
 class BundleOperations(
@@ -24,7 +25,7 @@ class BundleOperations(
     private val taskOperations: TasksOperations,
 ) : BundlesDatabase {
 
-    override fun selectBundleById(bundleId: Int): Bundle? =
+    override fun selectBundleById(bundleId: UUID): Bundle? =
         selectFromBundles()
             .where(BUNDLES.ID.eq(bundleId))
             .fetchOne()
@@ -46,7 +47,7 @@ class BundleOperations(
                 record.toBundle()
             }
 
-    override fun selectBundleTasksById(id: Int): List<TaskAndOrder> = selectBundleTasksByIDRecords(id)
+    override fun selectBundleTasksById(id: UUID): List<TaskAndOrder> = selectBundleTasksByIDRecords(id)
 
     override fun insertBundle(name: String): Bundle? {
         return jooqContext.insertInto(BUNDLES)
@@ -58,7 +59,7 @@ class BundleOperations(
     }
 
     override fun insertBundleTasks(
-        bundleId: Int,
+        bundleId: UUID,
         tasksAndOrder: List<TaskAndOrder>,
     ): List<TaskAndOrder>? {
         var savedTasks: List<TaskAndOrder>? = null
@@ -91,7 +92,7 @@ class BundleOperations(
     }
 
     override fun updateBundleTasks(
-        bundleId: Int,
+        bundleId: UUID,
         newTasksAndOrder: List<TaskAndOrder>,
     ): List<TaskAndOrder>? {
         var savedTasks: List<TaskAndOrder>? = null
@@ -130,7 +131,7 @@ class BundleOperations(
         return result
     }
 
-    private fun selectBundleTasksByIDRecords(id: Int) =
+    private fun selectBundleTasksByIDRecords(id: UUID) =
         jooqContext.select(
             BUNDLE_TASKS.TASK_ID,
             BUNDLE_TASKS.TASK_ORDER,
@@ -142,7 +143,7 @@ class BundleOperations(
             }
 
     private fun setTasks(
-        bundleId: Int,
+        bundleId: UUID,
         tasksAndOrder: List<TaskAndOrder>,
     ): List<TaskAndOrder>? =
         tasksAndOrder.map { (task, order) ->

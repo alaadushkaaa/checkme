@@ -8,7 +8,6 @@ import io.kvision.html.tag
 import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
-import io.kvision.snabbdom.classModule
 import kotlinx.datetime.LocalDateTime
 import ru.yarsu.serializableClasses.solution.SolutionsGroupByTask
 
@@ -31,7 +30,7 @@ class AllSolutionsGroupByTaskViewer(
                             div("Пользователь: ${solution.user.surname} ${solution.user.name}")
                             div("Статус: ${solution.status}")
                             if ((solution.status == "Проверено")) {
-                                val score = solution.result?.values?.map { it.score }?.toList()?.sum()
+                                val score = solution.totalScore
                                 div("Результат: $score")
                             }
                             val dateTime = LocalDateTime.parse(solution.date)

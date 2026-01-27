@@ -1,9 +1,6 @@
 package ru.yarsu.contentPages.content.addBundlePage
 
 import io.kvision.core.Container
-import io.kvision.core.onClick
-import io.kvision.form.check.CheckBox
-import io.kvision.html.Button
 import io.kvision.html.Div
 import io.kvision.html.button
 import io.kvision.html.div
@@ -18,11 +15,9 @@ import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
-import ru.yarsu.jsTasks
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.TaskFormatWithOrder
-import ru.yarsu.serializableClasses.task.TaskFormatForList
 
 class ChangeBundleTasksOrder(
     bundleId: String,
@@ -52,7 +47,6 @@ class ChangeBundleTasksOrder(
                                 onClick {
                                     val indices: List<String> =
                                         js("getTasksInOrder()").unsafeCast<Array<String>>().toList()
-                                    console.log(indices)
                                     val orderedTasks = indices.mapNotNull { index ->
                                         taskList.find { it.task.id.toString() == index }?.let { taskWithOrder ->
                                             TaskFormatWithOrder(

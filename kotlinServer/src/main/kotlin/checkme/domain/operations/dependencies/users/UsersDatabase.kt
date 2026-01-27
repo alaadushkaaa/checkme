@@ -4,10 +4,11 @@ import checkme.domain.accounts.Role
 import checkme.domain.models.User
 import checkme.web.solution.forms.UserDataForUsersList
 import checkme.web.solution.forms.UserNameSurnameForAllResults
+import java.util.UUID
 
 interface UsersDatabase {
 
-    fun selectUserById(userId: Int): User?
+    fun selectUserById(userId: UUID): User?
 
     fun selectUsersByRole(userRole: Role): List<User>
 
@@ -15,7 +16,7 @@ interface UsersDatabase {
 
     fun selectAllUsers(): List<User>
 
-    fun selectUserNameSurname(userId: Int): UserNameSurnameForAllResults?
+    fun selectUserNameSurname(userId: UUID): UserNameSurnameForAllResults?
 
     fun selectAllUsersWithoutPassword(): List<UserDataForUsersList>
 

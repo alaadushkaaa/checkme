@@ -26,10 +26,14 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
-val BUNDLE_TASKS_BUNDLE_ID_TASK_ID_KEY: UniqueKey<BundleTasksRecord> = Internal.createUniqueKey(BundleTasks.BUNDLE_TASKS, DSL.name("bundle_tasks_bundle_id_task_id_key"), arrayOf(BundleTasks.BUNDLE_TASKS.BUNDLE_ID, BundleTasks.BUNDLE_TASKS.TASK_ID), true)
+val BUNDLE_TASKS_TASK_ID_BUNDLE_ID_KEY: UniqueKey<BundleTasksRecord> = Internal.createUniqueKey(BundleTasks.BUNDLE_TASKS, DSL.name("bundle_tasks_task_id_bundle_id_key"), arrayOf(BundleTasks.BUNDLE_TASKS.TASK_ID, BundleTasks.BUNDLE_TASKS.BUNDLE_ID), true)
+val BUNDLES_ID_NEW_KEY: UniqueKey<BundlesRecord> = Internal.createUniqueKey(Bundles.BUNDLES, DSL.name("bundles_id_new_key"), arrayOf(Bundles.BUNDLES.ID), true)
 val BUNDLES_PKEY: UniqueKey<BundlesRecord> = Internal.createUniqueKey(Bundles.BUNDLES, DSL.name("bundles_pkey"), arrayOf(Bundles.BUNDLES.ID), true)
+val CHECKS_ID_NEW_KEY: UniqueKey<ChecksRecord> = Internal.createUniqueKey(Checks.CHECKS, DSL.name("checks_id_new_key"), arrayOf(Checks.CHECKS.ID), true)
 val CHECKS_PKEY: UniqueKey<ChecksRecord> = Internal.createUniqueKey(Checks.CHECKS, DSL.name("checks_pkey"), arrayOf(Checks.CHECKS.ID), true)
+val TASKS_ID_NEW_KEY: UniqueKey<TasksRecord> = Internal.createUniqueKey(Tasks.TASKS, DSL.name("tasks_id_new_key"), arrayOf(Tasks.TASKS.ID), true)
 val TASKS_PKEY: UniqueKey<TasksRecord> = Internal.createUniqueKey(Tasks.TASKS, DSL.name("tasks_pkey"), arrayOf(Tasks.TASKS.ID), true)
+val USERS_ID_NEW_KEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_id_new_key"), arrayOf(Users.USERS.ID), true)
 val USERS_LOGIN_KEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_login_key"), arrayOf(Users.USERS.LOGIN), true)
 val USERS_PKEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), arrayOf(Users.USERS.ID), true)
 
@@ -37,5 +41,5 @@ val USERS_PKEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, D
 // FOREIGN KEY definitions
 // -------------------------------------------------------------------------
 
-val BUNDLE_TASKS__BUNDLE_TASKS_BUNDLE_ID_FKEY: ForeignKey<BundleTasksRecord, BundlesRecord> = Internal.createForeignKey(BundleTasks.BUNDLE_TASKS, DSL.name("bundle_tasks_bundle_id_fkey"), arrayOf(BundleTasks.BUNDLE_TASKS.BUNDLE_ID), checkme.db.generated.keys.BUNDLES_PKEY, arrayOf(Bundles.BUNDLES.ID), true)
-val BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_FKEY: ForeignKey<BundleTasksRecord, TasksRecord> = Internal.createForeignKey(BundleTasks.BUNDLE_TASKS, DSL.name("bundle_tasks_task_id_fkey"), arrayOf(BundleTasks.BUNDLE_TASKS.TASK_ID), checkme.db.generated.keys.TASKS_PKEY, arrayOf(Tasks.TASKS.ID), true)
+val BUNDLE_TASKS__BUNDLE_TASKS_BUNDLE_ID_NEW_FKEY: ForeignKey<BundleTasksRecord, BundlesRecord> = Internal.createForeignKey(BundleTasks.BUNDLE_TASKS, DSL.name("bundle_tasks_bundle_id_new_fkey"), arrayOf(BundleTasks.BUNDLE_TASKS.BUNDLE_ID), checkme.db.generated.keys.BUNDLES_ID_NEW_KEY, arrayOf(Bundles.BUNDLES.ID), true)
+val BUNDLE_TASKS__BUNDLE_TASKS_TASK_ID_NEW_FKEY: ForeignKey<BundleTasksRecord, TasksRecord> = Internal.createForeignKey(BundleTasks.BUNDLE_TASKS, DSL.name("bundle_tasks_task_id_new_fkey"), arrayOf(BundleTasks.BUNDLE_TASKS.TASK_ID), checkme.db.generated.keys.TASKS_ID_NEW_KEY, arrayOf(Tasks.TASKS.ID), true)

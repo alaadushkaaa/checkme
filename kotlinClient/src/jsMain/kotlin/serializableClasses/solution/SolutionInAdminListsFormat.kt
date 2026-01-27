@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import ru.yarsu.serializableClasses.task.TaskFormat
 import ru.yarsu.serializableClasses.task.TaskFormatForList
 import ru.yarsu.serializableClasses.task.TaskName
+import kotlin.uuid.Uuid
 
 @Serializable
 data class UserNameSurname(
@@ -13,12 +14,13 @@ data class UserNameSurname(
 
 @Serializable
 data class SolutionInAdminListsFormat(
-    val id: Int,
+    val id: Uuid,
     val date: String,
     val status: String,
     val result: Map<String, ResultScoreMessage>?,
     val user: UserNameSurname? = null,
-    val task: TaskName? = null
+    val task: TaskName? = null,
+    val totalScore: Int?,
 )
 
 @Serializable

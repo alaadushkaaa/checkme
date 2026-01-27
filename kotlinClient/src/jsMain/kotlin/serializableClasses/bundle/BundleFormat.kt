@@ -1,12 +1,12 @@
 package ru.yarsu.serializableClasses.bundle
 
 import kotlinx.serialization.Serializable
-import ru.yarsu.serializableClasses.task.TaskFormat
 import ru.yarsu.serializableClasses.task.TaskFormatForList
+import kotlin.uuid.Uuid
 
 @Serializable
 data class BundleFormat(
-    val id: Int,
+    val id: Uuid,
     val name: String,
     val isActual: Boolean,
 )

@@ -1,6 +1,7 @@
 package checkme.db.tasks
 
 import checkme.db.TestcontainerSpec
+import checkme.db.notExistingId
 import checkme.db.validTasks
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -34,7 +35,7 @@ class RemoveTaskTest : TestcontainerSpec({ context ->
     }
 
     test("Cant delete task by invalid id") {
-        taskOperations.deleteTask(validTasks.size + 1).shouldBe(0)
+        taskOperations.deleteTask(notExistingId).shouldBe(0)
     }
 
     test("Task actuality can bu updated") {

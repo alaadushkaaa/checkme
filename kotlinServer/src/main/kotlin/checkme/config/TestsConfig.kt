@@ -26,7 +26,7 @@ class TestsConfig (
 
         private val postgresImageLens = EnvironmentKey.nonBlankString().defaulted(
             "tests.postgresImage",
-            "postgres:16.3",
+            "postgres:18.1",
             "Docker image to run testcontainers with"
         )
 

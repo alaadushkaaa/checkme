@@ -10,9 +10,10 @@ import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.solution.SolutionFormat
+import kotlin.uuid.Uuid
 
 class Solution(
-    solutionId: Int?,
+    solutionId: Uuid?,
     serverUrl: String,
     private val routing: Routing
 ) : SimplePanel() {

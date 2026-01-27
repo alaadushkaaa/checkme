@@ -1,5 +1,6 @@
 package checkme.db.checks
 
+import checkme.db.generated.routines.references.totalScore
 import checkme.db.generated.tables.references.CHECKS
 import checkme.db.utils.safeLet
 import checkme.domain.forms.CheckResult
@@ -11,6 +12,7 @@ import org.jooq.DSLContext
 import org.jooq.JSONB.jsonb
 import org.jooq.Record
 import java.time.LocalDateTime
+import java.util.UUID
 
 const val CHECKS_LIMIT = 10
 
@@ -23,31 +25,31 @@ class CheckOperations(
         selectFromChecks()
             .fetch()
             .mapNotNull { record: Record ->
-                record.toCheck()
+                record.toCheckWithScore()
             }
 
-    override fun selectCheckById(checkId: Int): Check? =
+    override fun selectCheckById(checkId: UUID): Check? =
         selectFromChecks()
             .where(CHECKS.ID.eq(checkId))
             .fetchOne()
-            ?.toCheck()
+            ?.toCheckWithScore()
 
-    override fun selectChecksByUserId(userId: Int): List<Check> =
+    override fun selectChecksByUserId(userId: UUID): List<Check> =
         selectFromChecks()
-            .where(CHECKS.USERID.eq(userId))
+            .where(CHECKS.USER_ID.eq(userId))
             .orderBy(CHECKS.ID)
             .fetch()
             .mapNotNull { record: Record ->
-                record.toCheck()
+                record.toCheckWithScore()
             }
 
-    override fun selectChecksByTaskId(taskId: Int): List<Check> =
+    override fun selectChecksByTaskId(taskId: UUID): List<Check> =
         selectFromChecks()
-            .where(CHECKS.TASKID.eq(taskId))
+            .where(CHECKS.TASK_ID.eq(taskId))
             .orderBy(CHECKS.ID)
             .fetch()
             .mapNotNull { record: Record ->
-                record.toCheck()
+                record.toCheckWithScore()
             }
 
     override fun selectAllChecksPagination(page: Int): List<Check> =
@@ -56,10 +58,10 @@ class CheckOperations(
             .limit(CHECKS_LIMIT)
             .offset((page - 1) * CHECKS_LIMIT)
             .fetch()
-            .mapNotNull { record: Record -> record.toCheck() }
+            .mapNotNull { record: Record -> record.toCheckWithScore() }
 
     override fun updateCheckStatus(
-        checkId: Int,
+        checkId: UUID,
         status: String,
     ): Check? {
         return jooqContext.update(CHECKS)
@@ -71,7 +73,7 @@ class CheckOperations(
     }
 
     override fun updateCheckResult(
-        checkId: Int,
+        checkId: UUID,
         result: Map<String, CheckResult>?,
     ): Check? {
         return jooqContext.update(CHECKS)
@@ -83,15 +85,15 @@ class CheckOperations(
     }
 
     override fun insertCheck(
-        taskId: Int,
-        userId: Int,
+        taskId: UUID,
+        userId: UUID,
         date: LocalDateTime,
         result: Map<String, CheckResult>?,
         status: String,
     ): Check? {
         return jooqContext.insertInto(CHECKS)
-            .set(CHECKS.TASKID, taskId)
-            .set(CHECKS.USERID, userId)
+            .set(CHECKS.TASK_ID, taskId)
+            .set(CHECKS.USER_ID, userId)
             .set(CHECKS.DATE, date)
             .set(CHECKS.RESULT, jsonb(objectMapper.writeValueAsString(result)))
             .set(CHECKS.STATUS, status)
@@ -104,11 +106,12 @@ class CheckOperations(
         jooqContext
             .select(
                 CHECKS.ID,
-                CHECKS.TASKID,
-                CHECKS.USERID,
+                CHECKS.TASK_ID,
+                CHECKS.USER_ID,
                 CHECKS.DATE,
                 CHECKS.RESULT,
-                CHECKS.STATUS
+                CHECKS.STATUS,
+                totalScore(CHECKS.ID)
             )
             .from(CHECKS)
 }
@@ -116,11 +119,11 @@ class CheckOperations(
 internal fun Record.toCheck(): Check? =
     safeLet(
         this[CHECKS.ID],
-        this[CHECKS.TASKID],
-        this[CHECKS.USERID],
+        this[CHECKS.TASK_ID],
+        this[CHECKS.USER_ID],
         this[CHECKS.DATE],
         this[CHECKS.RESULT],
-        this[CHECKS.STATUS],
+        this[CHECKS.STATUS]
     ) {
             id,
             taskId,
@@ -135,6 +138,35 @@ internal fun Record.toCheck(): Check? =
             userId = userId,
             date = date,
             result = jacksonObjectMapper().readValue<Map<String, CheckResult>>(result.data()),
-            status
+            status = status,
+        )
+    }
+
+internal fun Record.toCheckWithScore(): Check? =
+    safeLet(
+        this[CHECKS.ID],
+        this[CHECKS.TASK_ID],
+        this[CHECKS.USER_ID],
+        this[CHECKS.DATE],
+        this[CHECKS.RESULT],
+        this[CHECKS.STATUS],
+        this["total_score"] as Int,
+    ) {
+            id,
+            taskId,
+            userId,
+            date,
+            result,
+            status,
+            score,
+        ->
+        Check(
+            id = id,
+            taskId = taskId,
+            userId = userId,
+            date = date,
+            result = jacksonObjectMapper().readValue<Map<String, CheckResult>>(result.data()),
+            status = status,
+            totalScore = score
         )
     }

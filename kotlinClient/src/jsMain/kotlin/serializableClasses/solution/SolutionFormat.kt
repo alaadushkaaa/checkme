@@ -7,5 +7,6 @@ import ru.yarsu.serializableClasses.task.TaskIdName
 data class SolutionFormat(
     val status: String,
     val result: Map<String, ResultScoreMessage>?,
-    val task: TaskIdName
+    val task: TaskIdName,
+    val totalScore: Int?
 )

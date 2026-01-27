@@ -10,6 +10,7 @@ import checkme.domain.operations.bundles.ModifyBundleError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import java.util.UUID
 
 internal fun addBundle(
     bundleName: String,
@@ -26,7 +27,7 @@ internal fun addBundle(
 }
 
 internal fun selectBundle(
-    bundleId: Int,
+    bundleId: UUID,
     bundleOperations: BundleOperationHolder,
 ): Result<Bundle, FetchingBundleError> {
     return when (
@@ -41,7 +42,7 @@ internal fun selectBundle(
 }
 
 internal fun selectBundleTasks(
-    bundleId: Int,
+    bundleId: UUID,
     bundleOperations: BundleOperationHolder,
 ): Result<List<TaskAndOrder>, FetchingBundleTasksError> {
     return when (
@@ -81,7 +82,7 @@ internal fun selectHiddenBundles(bundleOperations: BundleOperationHolder): Resul
 
 internal fun tryUpdateBundleTasks(
     tasksAndOrder: List<TaskAndOrder>,
-    bundleId: Int,
+    bundleId: UUID,
     bundleOperations: BundleOperationHolder,
 ): Result<List<TaskAndOrder>, CreationBundleTasksError> {
     return when (val validatedTasks = validateBundleTasks(tasksAndOrder)) {

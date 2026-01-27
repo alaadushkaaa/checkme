@@ -6,12 +6,13 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import org.jooq.exception.DataAccessException
+import java.util.UUID
 
 class FetchBundleById(
-    private val fetchBundleById: (Int) -> Bundle?,
-) : (Int) -> Result4k<Bundle, BundleFetchingError> {
+    private val fetchBundleById: (UUID) -> Bundle?,
+) : (UUID) -> Result4k<Bundle, BundleFetchingError> {
 
-    override fun invoke(bundleId: Int): Result4k<Bundle, BundleFetchingError> =
+    override fun invoke(bundleId: UUID): Result4k<Bundle, BundleFetchingError> =
         try {
             when (val bundle = fetchBundleById(bundleId)) {
                 is Bundle -> Success(bundle)
@@ -53,9 +54,9 @@ class FetchHiddenBundles(
 }
 
 class FetchBundleTasks(
-    private val selectBundleTasks: (Int) -> List<TaskAndOrder>?,
-) : (Int) -> Result4k<List<TaskAndOrder>, BundleFetchingError> {
-    override fun invoke(bundleId: Int): Result4k<List<TaskAndOrder>, BundleFetchingError> {
+    private val selectBundleTasks: (UUID) -> List<TaskAndOrder>?,
+) : (UUID) -> Result4k<List<TaskAndOrder>, BundleFetchingError> {
+    override fun invoke(bundleId: UUID): Result4k<List<TaskAndOrder>, BundleFetchingError> {
         return when (val tasks = selectBundleTasks(bundleId)) {
             is List<TaskAndOrder> -> Success(tasks)
             else -> Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)

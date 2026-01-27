@@ -1,5 +1,6 @@
 package checkme.domain.operations.checks
 
+import checkme.db.validCheckId
 import checkme.db.validChecks
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
@@ -8,14 +9,15 @@ import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import java.time.LocalDateTime
+import java.util.UUID
 
 class CreateCheckTest : FunSpec({
     val checks = mutableListOf<Check>()
     isolationMode = IsolationMode.InstancePerTest
 
     val insertCheckMock: (
-        taskId: Int,
-        userId: Int,
+        taskId: UUID,
+        userId: UUID,
         date: LocalDateTime,
         result: Map<String, CheckResult>,
         status: String,
@@ -28,7 +30,7 @@ class CreateCheckTest : FunSpec({
         ->
         val check =
             Check(
-                id = checks.size + 1,
+                id = validCheckId[0],
                 taskId = taskId,
                 userId = userId,
                 date = date,
@@ -38,7 +40,7 @@ class CreateCheckTest : FunSpec({
 
         checks.add(
             Check(
-                id = checks.size + 1,
+                id = validCheckId[0],
                 taskId = taskId,
                 userId = userId,
                 date = date,
@@ -49,8 +51,8 @@ class CreateCheckTest : FunSpec({
         check
     }
     val insertCheckNullMock: (
-        taskId: Int,
-        userId: Int,
+        taskId: UUID,
+        userId: UUID,
         date: LocalDateTime,
         result: Map<String, CheckResult>?,
         status: String,
