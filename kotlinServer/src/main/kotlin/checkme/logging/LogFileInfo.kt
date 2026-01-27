@@ -10,7 +10,7 @@ data class LogFileInfo(
 data class LogObject(
     val level: String,
     val date: String,
-    val userId: Int,
+    val userId: String,
     val userName: String,
     val userSurname: String,
     val action: String,
