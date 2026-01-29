@@ -62,7 +62,15 @@ class CheckSolutionHandlerTest : FunSpec({
     val contexts = RequestContexts()
     val objectMapper = jacksonObjectMapper()
 
-    val validCheckResult = Check(validCheckId[0], validTaskId[0], validUserId[0], validDate, validResult, validStatusCorrect)
+    val validCheckResult =
+        Check(
+            validCheckId[0],
+            validTaskId[0],
+            validUserId[0],
+            validDate,
+            validResult,
+            validStatusCorrect
+        )
     val validTaskResult = validTasks.first()
     val validUser = User(
         validUserId[0],
@@ -145,6 +153,8 @@ class CheckSolutionHandlerTest : FunSpec({
         val response = handler(request)
         response.status.shouldBe(Status.OK)
         val responseBody = objectMapper.readValue<Map<String, String>>(response.body.toString())
-        responseBody["checkId"].shouldMatch(Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))
+        responseBody["checkId"].shouldMatch(
+            Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+        )
     }
 })

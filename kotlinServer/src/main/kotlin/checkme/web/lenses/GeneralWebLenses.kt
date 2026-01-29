@@ -13,8 +13,8 @@ import org.http4k.lens.RequestContextLens
 import org.http4k.lens.Validator
 import org.http4k.lens.WebForm
 import org.http4k.lens.int
-import org.http4k.lens.uuid
 import org.http4k.lens.string
+import org.http4k.lens.uuid
 import org.http4k.lens.webForm
 
 @Suppress("TooManyFunctions")

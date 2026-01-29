@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 
 object ServerLogger {
     private val logger = LoggerFactory.getLogger("SERVER_LOGGER")
@@ -34,4 +33,3 @@ object ServerLogger {
         }
     }
 }
-

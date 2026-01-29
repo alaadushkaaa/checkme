@@ -21,7 +21,9 @@ class AddUserToContextFilter(
                         is Success -> Success(
                             next(
                                 request.with(
-                                    userLens of when (val result = userOperations.fetchUserById(UUID.fromString(id.value))) {
+                                    userLens of when (
+                                        val result = userOperations.fetchUserById(UUID.fromString(id.value))
+                                    ) {
                                         is Success -> result.value
                                         else -> null
                                     }
