@@ -3,24 +3,13 @@ package checkme.db.checks
 import checkme.db.TestcontainerSpec
 import checkme.db.validChecks
 import checkme.db.validChecksMany
-import checkme.domain.forms.CheckResult
 import checkme.domain.models.Check
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import java.time.LocalDateTime
 import java.util.UUID
-
-data class CheckWithoutId(
-    val taskId: UUID,
-    val userId: UUID,
-    val date: LocalDateTime,
-    val result: Map<String, CheckResult>,
-    val status: String,
-    val totalScore: Int? = null,
-)
 
 class SelectCheckTest : TestcontainerSpec({ context ->
     val checkOperations = CheckOperations(context)
