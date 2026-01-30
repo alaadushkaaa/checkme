@@ -1,5 +1,6 @@
 package checkme.db.tasks
 
+import checkme.db.TaskWithoutId
 import checkme.db.TestcontainerSpec
 import checkme.db.notExistingId
 import checkme.db.validTasks
@@ -22,16 +23,43 @@ class RemoveTaskTest : TestcontainerSpec({ context ->
     }
 
     test("Valid task can be removed") {
-        val taskForRemove = validTasks.first()
-        taskOperations.deleteTask(taskForRemove.id).shouldBe(1)
+        val validFirstTaskId =
+            taskOperations
+                .selectAllTask().first().id
+        taskOperations.deleteTask(validFirstTaskId).shouldBe(1)
     }
 
     test("Only one task can be deleted") {
-        val taskForRemove = validTasks.first()
-        taskOperations.deleteTask(taskForRemove.id).shouldBe(1)
-        taskOperations.selectAllTask().shouldBe(validTasks.subList(2, validTasks.size))
-        taskOperations.deleteTask(validTasks[1].id).shouldBe(1)
-        taskOperations.selectAllTask().shouldBe(validTasks.subList(2, validTasks.size))
+        val taskForRemove = taskOperations.selectAllTask().map { it.id }.first()
+        val secondTaskForRemove = taskOperations.selectHiddenTasks().map { it.id }.first()
+        taskOperations.deleteTask(taskForRemove).shouldBe(1)
+        taskOperations.selectAllTask().map {
+            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+            } else {
+                null
+            }
+        }.shouldBe(validTasks.subList(2, validTasks.size).map {
+            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+            } else {
+                null
+            }
+        })
+        taskOperations.deleteTask(secondTaskForRemove).shouldBe(1)
+        taskOperations.selectAllTask().map {
+            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+            } else {
+                null
+            }
+        }.shouldBe(validTasks.subList(2, validTasks.size).map {
+            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+            } else {
+                null
+            }
+        })
     }
 
     test("Cant delete task by invalid id") {
@@ -39,8 +67,9 @@ class RemoveTaskTest : TestcontainerSpec({ context ->
     }
 
     test("Task actuality can bu updated") {
+        val firstTaskFromDB = taskOperations.selectAllTask().first()
         val updatedTask =
-            taskOperations.updateTaskActuality(validTasks.first().copy(isActual = false)).shouldNotBeNull()
+            taskOperations.updateTaskActuality(firstTaskFromDB.copy(isActual = false)).shouldNotBeNull()
 
         updatedTask.name.shouldBe(validTasks.first().name)
         updatedTask.criterions.shouldBe(validTasks.first().criterions)

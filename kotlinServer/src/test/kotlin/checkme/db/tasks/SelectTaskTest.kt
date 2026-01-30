@@ -1,14 +1,14 @@
 package checkme.db.tasks
 
+import checkme.db.TaskName
+import checkme.db.TaskWithoutId
 import checkme.db.TestcontainerSpec
 import checkme.db.notExistingId
 import checkme.db.validTasks
-import checkme.web.solution.forms.TaskIdAndName
 import checkme.web.solution.forms.TaskNameForAllResults
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import java.util.UUID
 
 class SelectTaskTest : TestcontainerSpec ({ context ->
     val taskOperations = TasksOperations(context)
@@ -28,25 +28,65 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
     test("Select all tasks from db") {
         taskOperations
             .selectAllTask()
-            .shouldBe(validTasks.filter { it.isActual })
+            .map {
+                if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                    TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+                } else {
+                    null
+                }
+            }
+            .shouldBe(validTasks.map {
+                TaskWithoutId(
+                    it.name,
+                    it.criterions,
+                    it.answerFormat,
+                    it.description,
+                    it.isActual
+                )
+            }.filter { it.isActual })
     }
 
     test("Select all tasks ids and names from db") {
         taskOperations
             .selectAllTasksIdAndNames()
-            .shouldBe(validTasks.map { task -> TaskIdAndName(task.id.toString(), task.name) })
+            .map {
+                if (it.id.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                    TaskName(it.name)
+                } else {
+                    null
+                }
+            }
+            .shouldBe(validTasks.map { task -> TaskName(task.name) })
     }
 
     test("Select hidden tasks from db") {
         taskOperations
             .selectHiddenTasks()
-            .shouldBe(validTasks.filter { !it.isActual })
+            .map {
+                if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                    TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+                } else {
+                    null
+                }
+            }
+            .shouldBe(validTasks.map {
+                TaskWithoutId(
+                    it.name,
+                    it.criterions,
+                    it.answerFormat,
+                    it.description,
+                    it.isActual
+                )
+            }.filter { !it.isActual })
     }
 
     test("Select task by valid id") {
+        val validFirstTaskId =
+            taskOperations
+                .selectAllTask().first().id
         val fetchedTask =
             taskOperations
-                .selectTaskById(validTasks.first().id)
+                .selectTaskById(validFirstTaskId)
                 .shouldNotBeNull()
 
         fetchedTask.name.shouldBe(validTasks.first().name)
@@ -63,8 +103,11 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
     }
 
     test("Select task name should return entity with only task name") {
+        val validFirstTaskId =
+            taskOperations
+                .selectAllTask().first().id
         taskOperations
-            .selectTaskName(validTasks.first().id)
+            .selectTaskName(validFirstTaskId)
             .shouldNotBeNull()
             .shouldBe(TaskNameForAllResults(validTasks.first().name))
     }

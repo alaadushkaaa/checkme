@@ -95,8 +95,8 @@ val validStatusProcess = "В процессе"
 val validStatusError = "Ошибка выполнения"
 
 val validChecks: List<Check> = listOf(
-    Check(validCheckId[0], validTaskId[0], validUserId[0], validDate, validResult, validStatusCorrect),
-    Check(validCheckId[1], validTaskId[1], validUserId[0], validDate, validResult, validStatusCorrect),
+    Check(validCheckId[0], validTaskId[0], validUserId[0], validDate, validResult, validStatusCorrect, 10),
+    Check(validCheckId[1], validTaskId[1], validUserId[0], validDate, validResult, validStatusCorrect, 10),
     Check(validCheckId[2], validTaskId[0], validUserId[1], validDate, emptyMap(), validStatusError),
     Check(validCheckId[3], validTaskId[1], validUserId[0], validDate, emptyMap(), validStatusProcess)
 )
@@ -207,3 +207,15 @@ val validBundleTasks: List<TaskAndOrder> = listOf(
 
 val appConfig = AppConfig.fromEnvironment()
 val appConfiguredPasswordHasher = PasswordHasher(appConfig.authConfig)
+
+data class TaskWithoutId(
+    val name: String,
+    val criterions: Map<String, Criterion>,
+    val answerFormat: Map<String, AnswerType>,
+    val description: String,
+    val isActual: Boolean,
+)
+
+data class TaskName(
+    val name: String
+)

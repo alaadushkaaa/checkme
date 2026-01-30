@@ -2,7 +2,6 @@ package checkme.db.bundles
 
 import checkme.db.TestcontainerSpec
 import checkme.db.tasks.TasksOperations
-import checkme.db.validBundleTasks
 import checkme.db.validBundles
 import checkme.db.validTasks
 import checkme.domain.models.Bundle
@@ -36,6 +35,13 @@ class SelectBundleTest : TestcontainerSpec({ context ->
                     it.name,
                 ).shouldNotBeNull()
             }
+        val tasksIdInDB = tasksOperations.selectAllTask()
+        val hiddenTasksIdInDB = tasksOperations.selectHiddenTasks()
+        val validBundleTasks : List<TaskAndOrder> = listOf(
+            TaskAndOrder(tasksIdInDB[0], 1),
+            TaskAndOrder(hiddenTasksIdInDB[0], 2),
+            TaskAndOrder(tasksIdInDB[1], 3),
+        )
         insertedBundleTasks =
             bundleOperations.insertBundleTasks(insertedBundles.first().id, validBundleTasks).shouldNotBeNull()
     }
