@@ -48,8 +48,9 @@ class SelectCheckTest : TestcontainerSpec({ context ->
 
     test("Select checks by valid userId should return this checks") {
         val selectedChecks = checkOperations.selectChecksByUserId(insertedChecks.first().userId).shouldNotBeNull()
-        selectedChecks shouldContainExactlyInAnyOrder insertedChecks
-            .filter { it.userId == insertedChecks.first().userId }
+        selectedChecks.map {
+            Check(it.id, it.taskId, it.userId, it.date, it.result, it.status, null)
+        } shouldContainExactlyInAnyOrder insertedChecks.filter { it.userId == insertedChecks.first().userId }
     }
 
     test("Select checks by invalid userId should return empty list") {
@@ -59,7 +60,9 @@ class SelectCheckTest : TestcontainerSpec({ context ->
 
     test("Select checks by valid taskId should return this checks") {
         val selectedChecks = checkOperations.selectChecksByTaskId(insertedChecks.first().taskId).shouldNotBeNull()
-        selectedChecks shouldContainExactlyInAnyOrder insertedChecks
+        selectedChecks.map {
+            Check(it.id, it.taskId, it.userId, it.date, it.result, it.status, null)
+        } shouldContainExactlyInAnyOrder insertedChecks
             .filter { it.taskId == insertedChecks.first().taskId }
     }
 
@@ -70,7 +73,9 @@ class SelectCheckTest : TestcontainerSpec({ context ->
 
     test("Select all checks should return all of this inserted checks") {
         val selectedChecks = checkOperations.selectAllChecks().shouldNotBeNull()
-        selectedChecks shouldContainExactlyInAnyOrder insertedChecks
+        selectedChecks.map {
+            Check(it.id, it.taskId, it.userId, it.date, it.result, it.status, null)
+        } shouldContainExactlyInAnyOrder insertedChecks
     }
 
     test(

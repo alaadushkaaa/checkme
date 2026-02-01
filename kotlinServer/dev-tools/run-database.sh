@@ -9,5 +9,5 @@ podman run -d --name checkme-db \
   -e PGDATA=/var/lib/postgresql/data/pgdata \
   -v ./postgres-data:/var/lib/postgresql/data \
   -p 5432:5432 \
-  docker.io/library/postgres:17.5
+  docker.io/library/postgres:18.1
 

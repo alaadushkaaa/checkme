@@ -2,7 +2,6 @@ package checkme.db.bundles
 
 import checkme.db.TestcontainerSpec
 import checkme.db.tasks.TasksOperations
-import checkme.db.validBundleTasks
 import checkme.db.validBundles
 import checkme.db.validTasks
 import checkme.domain.models.Bundle
@@ -35,6 +34,13 @@ class UpdateBundleTest : TestcontainerSpec({ context ->
                     it.name,
                 ).shouldNotBeNull()
             }
+        val tasksIdInDB = tasksOperations.selectAllTask()
+        val hiddenTasksIdInDB = tasksOperations.selectHiddenTasks()
+        val validBundleTasks : List<TaskAndOrder> = listOf(
+            TaskAndOrder(tasksIdInDB[0], 1),
+            TaskAndOrder(hiddenTasksIdInDB[0], 2),
+            TaskAndOrder(tasksIdInDB[1], 3),
+        )
         insertedBundleTasks =
             bundleOperations.insertBundleTasks(insertedBundles.first().id, validBundleTasks).shouldNotBeNull()
     }
@@ -45,30 +51,30 @@ class UpdateBundleTest : TestcontainerSpec({ context ->
     }
 
     test("Only one bundle can be deleted") {
-        val bundleForRemove = validBundles.first()
+        val bundleForRemove = insertedBundles.first()
         bundleOperations.deleteBundle(bundleForRemove).shouldBe(Success(true))
-        bundleOperations.selectAllBundles().shouldBe(validBundles.subList(1, validBundles.size))
-        bundleOperations.deleteBundle(validBundles[1]).shouldBe(Success(true))
-        bundleOperations.selectAllBundles().shouldBe(validBundles.subList(2, validBundles.size))
+        bundleOperations.selectAllBundles().shouldBe(insertedBundles.subList(1, validBundles.size))
+        bundleOperations.deleteBundle(insertedBundles[1]).shouldBe(Success(true))
+        bundleOperations.selectAllBundles().shouldBe(insertedBundles.subList(2, validBundles.size))
     }
 
     test("Bundle can be updated") {
-        val newBundle = validBundles.first().copy(id = validBundles[1].id)
+        val newBundle = insertedBundles.first().copy(id = insertedBundles[1].id)
         bundleOperations.updateBundle(newBundle).shouldNotBeNull()
-        val updatedBundle = bundleOperations.selectBundleById(validBundles[1].id).shouldNotBeNull()
+        val updatedBundle = bundleOperations.selectBundleById(insertedBundles[1].id).shouldNotBeNull()
 
-        updatedBundle.id shouldBe validBundles[1].id
-        updatedBundle.name shouldBe validBundles.first().name
-        updatedBundle.isActual shouldBe validBundles.first().isActual
+        updatedBundle.id shouldBe insertedBundles[1].id
+        updatedBundle.name shouldBe insertedBundles.first().name
+        updatedBundle.isActual shouldBe insertedBundles.first().isActual
     }
 
     test("Bundle actuality can be updated") {
         val bundleWithUpdatedActuality =
-            bundleOperations.updateBundleActuality(validBundles.first().copy(isActual = false)).shouldNotBeNull()
+            bundleOperations.updateBundleActuality(insertedBundles.first().copy(isActual = false)).shouldNotBeNull()
 
-        bundleWithUpdatedActuality.id shouldBe validBundles[0].id
-        bundleWithUpdatedActuality.name shouldBe validBundles.first().name
-        bundleWithUpdatedActuality.isActual shouldBe !validBundles.first().isActual
+        bundleWithUpdatedActuality.id shouldBe insertedBundles[0].id
+        bundleWithUpdatedActuality.name shouldBe insertedBundles.first().name
+        bundleWithUpdatedActuality.isActual shouldBe !insertedBundles.first().isActual
     }
 
     test("Bundle tasks can be updated") {
