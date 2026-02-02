@@ -17,4 +17,4 @@ app.properties
 logs
 reports
 solutions
-tasks
+/tasks
