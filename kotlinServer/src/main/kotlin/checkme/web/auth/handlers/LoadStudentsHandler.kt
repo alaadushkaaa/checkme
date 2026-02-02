@@ -40,7 +40,9 @@ class LoadStudentsHandler(
                 objectMapper.sendBadRequestError(RegistrationsStudentsError.NOT_SUPPORTED_FILE_CONTENT_TYPE.errorText)
 
             else -> when (val studentsFromCsv = extractStudentsData(fileForRegistration)) {
-                is
+                is Failure -> objectMapper.sendBadRequestError(studentsFromCsv.reason.errorText)
+
+                is Success -> sendLoadUsersResponse()
             }
         }
     }
@@ -48,12 +50,12 @@ class LoadStudentsHandler(
 
 private fun extractStudentsData(
     file: MultipartFormFile
-): Result4k<List<StudentRegistrationsData>, RegistrationsStudentsError> {
+): Result4k<List<SignUpRequest>, RegistrationsStudentsError> {
     val csvFileStream = file.content
     return when (val studentsData = loadStudentsFromCSV(csvFileStream)) {
         is Success -> Success(studentsData.value)
 
-        is Failure -> Failure(LoadStudentError.INVALID_FILE_FORMAT)
+        is Failure -> Failure(studentsData.reason)
     }
 
 }
@@ -61,39 +63,65 @@ private fun extractStudentsData(
 private fun loadStudentsFromCSV(
     csvFileStream: InputStream,
 ): Result4k<List<SignUpRequest>, RegistrationsStudentsError> {
+    val students = mutableListOf<SignUpRequest>()
     return csvFileStream.bufferedReader().use { reader ->
         reader.forEachLine { line ->
             if (line.isNotBlank()) {
                 val parts = line.split(',')
                     .map { it.trim().removeSurrounding("\"") }
-                if (parts.size >= 3) {
-                    val firstName = parts[0]
-                    val lastName = parts[1]
-                    val email = parts[2]
+                when {
+                    parts.size == 3 -> {
+                        val firstName = parts[0]
+                        val lastName = parts[1]
+                        val email = parts[2]
 
-                    if (User.validateUserDataEmail(email) == ValidateUserEmailResult.ALL_OK) {
-                        val username = email.substringBefore("@")
+                        when {
+                            !firstName.matches(User.namePattern) ->
+                                Failure(RegistrationsStudentsError.INCORRECT_USER_NAME)
 
-                        SignUpRequest(
-                            username = username,
-                            firstName = firstName,
-                            lastName = lastName,
-                            email = email
-                        )
+                            !lastName.matches(User.namePattern) ->
+                                Failure(RegistrationsStudentsError.INCORRECT_USER_SURNAME)
+
+                            User.validateUserDataEmail(email) != ValidateUserEmailResult.ALL_OK ->
+                                Failure(RegistrationsStudentsError.INCORRECT_USER_EMAIL)
+
+                            else -> {
+                                val username = email.substringBefore("@")
+
+                                students.add(
+                                    SignUpRequest(
+                                        username = username,
+                                        name = firstName,
+                                        surname = lastName,
+                                        password = email
+                                    )
+                                )
+                            }
+                        }
                     }
+
+                    else -> Failure(RegistrationsStudentsError.INCORRECT_FILE_DATA)
                 }
             }
         }
+        Success(students.distinct())
     }
+}
 
-    enum class RegistrationsStudentsError(val errorText: String) {
-        UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
-        USER_HAS_NOT_RIGHTS("Not allowed to registration students"),
-        NOT_SUPPORTED_FILE_CONTENT_TYPE("File with this content type is not supported for students registration"),
-        EMAIL_IS_BLANK_OR_EMPTY("Адрес электронной почты не должен быть пустым"),
-        NO_SUCH_USER("Пользователь не найден"),
-        UNKNOWN_DATABASE_ERROR("Что-то пошло не так, попробуйте позже"),
-        IS_NOT_STUDENT("Этот пользователь не является студентом"),
-        ALREADY_THERE("Этот студент уже в этой группе"),
-        INVALID_FILE_FORMAT("Неверный формат файла"),
-    }
+private fun insertLoadedUsers(
+    users: List<SignUpRequest>
+) {
+    
+}
+
+enum class RegistrationsStudentsError(val errorText: String) {
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
+    USER_HAS_NOT_RIGHTS("Not allowed to registration students"),
+    NOT_SUPPORTED_FILE_CONTENT_TYPE("File with this content type is not supported for students registration"),
+    NO_SUCH_USER("Can not find user"),
+    IS_NOT_STUDENT("This user is not a student"),
+    INCORRECT_USER_NAME("Incorrect user name"),
+    INCORRECT_USER_SURNAME("Incorrect user surname"),
+    INCORRECT_USER_EMAIL("User email is incorrect"),
+    INCORRECT_FILE_DATA("Incorrect data in file")
+}
