@@ -17,7 +17,8 @@ class ModifyTaskTest : FunSpec({
 
     val selectTaskByIdMock: (UUID) -> Task? = { id -> validTasks.find { it.id == id } }
     val selectTaskByIdNullMock: (UUID) -> Task? = { null }
-    val deleteTaskMock: (UUID) -> Int? = { id -> validTasks.indexOf(validTasks.find { it.id == id }) } // возможно не правильно изменил
+    // возможно не правильно изменил
+    val deleteTaskMock: (UUID) -> Int? = { id -> validTasks.indexOf(validTasks.find { it.id == id }) }
     val deleteNullTaskMock: (UUID) -> Int? = { null }
     val updateTaskActualityMock: (Task) -> Task? =
         { task -> validTasks.find { it.id == task.id }?.copy(isActual = task.isActual) }

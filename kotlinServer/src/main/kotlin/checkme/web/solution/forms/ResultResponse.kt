@@ -6,7 +6,7 @@ data class ResultResponse(
     val status: String,
     val result: Map<String, CheckResult>?,
     val task: TaskResultResponse,
-    val totalScore: Int?
+    val totalScore: Int?,
 )
 
 data class TaskResultResponse(

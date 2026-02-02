@@ -8,7 +8,6 @@ import checkme.logging.LoggerType
 import checkme.logging.ServerLogger
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
-import checkme.web.lenses.GeneralWebLenses.idOrNull
 import checkme.web.lenses.TaskLenses
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -28,7 +27,6 @@ class AddTaskHandler(
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
-        val taskId = request.idOrNull()
         val form: MultipartForm = TaskLenses.multipartFormFieldsAll(request)
         return when {
             user == null || !user.isAdmin() ->
@@ -36,7 +34,7 @@ class AddTaskHandler(
 
             else -> {
                 when (
-                    val validatedNewTask = form.validateForm(taskId)
+                    val validatedNewTask = form.validateForm()
                 ) {
                     is Failure -> {
                         ServerLogger.log(

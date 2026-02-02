@@ -70,7 +70,6 @@ internal fun deleteTask(
             TaskRemovingError.TASK_NOT_EXISTS -> Failure(RemovingTaskError.NO_SUCH_TASK)
             TaskRemovingError.UNKNOWN_DELETE_ERROR -> Failure(RemovingTaskError.UNKNOWN_DELETE_ERROR)
             TaskRemovingError.UNKNOWN_DATABASE_ERROR -> Failure(RemovingTaskError.UNKNOWN_DATABASE_ERROR)
-            TaskRemovingError.TASK_ID_IS_NULL -> Failure(RemovingTaskError.NO_SUCH_TASK)
         }
     }
 }
@@ -110,7 +109,7 @@ internal fun taskExists(
 }
 
 @Suppress("ReturnCount")
-fun MultipartForm.validateForm(taskId: UUID?): Result<Task, ValidateTaskError> {
+fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
     val jacksonMapper = jacksonObjectMapper()
     val taskName = TaskLenses.nameField(this).value
     val description = TaskLenses.descriptionField(this).value
@@ -135,7 +134,7 @@ fun MultipartForm.validateForm(taskId: UUID?): Result<Task, ValidateTaskError> {
     }
     return Success(
         Task(
-            id = UUID.fromString("00000000-0000-7000-8000-000000000000"), //тут была заглушка в виде -1 если null возможно это было важно
+            id = UUID.fromString("00000000-0000-7000-8000-000000000000"),
             name = taskName,
             criterions = criterions,
             answerFormat = answerFormatBd,

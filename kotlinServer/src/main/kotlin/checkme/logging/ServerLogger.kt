@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 
 object ServerLogger {
     private val logger = LoggerFactory.getLogger("SERVER_LOGGER")
@@ -33,19 +32,4 @@ object ServerLogger {
             LoggerType.WARN.code -> logger.warn(objectMapper.writeValueAsString(logObject))
         }
     }
-}
-
-data class LogObject(
-    val level: String,
-    val date: String,
-    val userId: String,
-    val userName: String,
-    val userSurname: String,
-    val action: String,
-    val message: String,
-)
-
-enum class LoggerType (val code: String) {
-    INFO("INFO"),
-    WARN("WARN"),
 }

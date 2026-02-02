@@ -13,16 +13,12 @@ class RemoveTask(
 ) : (Task) -> Result<UUID?, TaskRemovingError> {
     override fun invoke(task: Task): Result<UUID?, TaskRemovingError> {
         return try {
-            if (task.id != null) {
-                when {
-                    taskNotExists(task.id) -> Failure(TaskRemovingError.TASK_NOT_EXISTS)
-                    else -> when (removeTask(task.id)) {
-                        is Int -> Success(task.id)
-                        else -> Failure(TaskRemovingError.UNKNOWN_DELETE_ERROR)
-                    }
+            when {
+                taskNotExists(task.id) -> Failure(TaskRemovingError.TASK_NOT_EXISTS)
+                else -> when (removeTask(task.id)) {
+                    is Int -> Success(task.id)
+                    else -> Failure(TaskRemovingError.UNKNOWN_DELETE_ERROR)
                 }
-            } else {
-                Failure(TaskRemovingError.TASK_ID_IS_NULL)
             }
         } catch (_: DataAccessException) {
             Failure(TaskRemovingError.UNKNOWN_DATABASE_ERROR)
@@ -36,7 +32,7 @@ class RemoveTask(
         }
 }
 
-class ModifyTaskActuality (
+class ModifyTaskActuality(
     private val updateTaskActuality: (
         task: Task,
     ) -> Task?,
@@ -58,7 +54,6 @@ enum class TaskRemovingError {
     UNKNOWN_DATABASE_ERROR,
     UNKNOWN_DELETE_ERROR,
     TASK_NOT_EXISTS,
-    TASK_ID_IS_NULL
 }
 
 enum class ModifyTaskError {
