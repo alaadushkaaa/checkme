@@ -51,7 +51,7 @@ private fun sendLogFileContentResponse(
         val logFile = File("logs", fileName)
         when {
             !logFile.exists() -> objectMapper.sendBadRequestError(ViewJournalError.LOG_FILE_NOT_EXISTS.errorText)
-            !logFile.name.matches(Regex("server(\\.\\d{4}-\\d{2}-\\d{2}\\.\\d+)?\\.log(\\.gz)?")) ->
+            !logFile.name.matches(Regex("""server(\.\d{4}-\d{2}-\d{2}\.\d+)?\.log(\.gz)?""")) ->
                 objectMapper.sendBadRequestError(ViewJournalError.INCORRECT_LOG_FILE_NAME.errorText)
 
             else -> {

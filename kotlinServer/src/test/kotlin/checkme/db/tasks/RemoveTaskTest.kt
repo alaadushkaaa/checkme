@@ -34,32 +34,53 @@ class RemoveTaskTest : TestcontainerSpec({ context ->
         val secondTaskForRemove = taskOperations.selectHiddenTasks().map { it.id }.first()
         taskOperations.deleteTask(taskForRemove).shouldBe(1)
         taskOperations.selectAllTask().map {
-            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+            if (it.id.toString()
+                    .matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())
+            ) {
                 TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
             } else {
                 null
             }
-        }.shouldBe(validTasks.subList(2, validTasks.size).map {
-            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
-                TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
-            } else {
-                null
+        }.shouldBe(
+            validTasks.subList(2, validTasks.size).map {
+                if (it.id.toString()
+                        .matches(
+                            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                .toRegex()
+                        )
+                ) {
+                    TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+                } else {
+                    null
+                }
             }
-        })
+        )
         taskOperations.deleteTask(secondTaskForRemove).shouldBe(1)
         taskOperations.selectAllTask().map {
-            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+            if (it.id.toString()
+                    .matches(
+                        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                            .toRegex()
+                    )
+            ) {
                 TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
             } else {
                 null
             }
-        }.shouldBe(validTasks.subList(2, validTasks.size).map {
-            if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
-                TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
-            } else {
-                null
+        }.shouldBe(
+            validTasks.subList(2, validTasks.size).map {
+                if (it.id.toString()
+                        .matches(
+                            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                .toRegex()
+                        )
+                ) {
+                    TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
+                } else {
+                    null
+                }
             }
-        })
+        )
     }
 
     test("Cant delete task by invalid id") {

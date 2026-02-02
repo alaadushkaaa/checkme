@@ -10,7 +10,7 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
-class SelectTaskTest : TestcontainerSpec ({ context ->
+class SelectTaskTest : TestcontainerSpec({ context ->
     val taskOperations = TasksOperations(context)
 
     beforeEach {
@@ -29,28 +29,40 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
         taskOperations
             .selectAllTask()
             .map {
-                if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                if (it.id.toString()
+                        .matches(
+                            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                .toRegex()
+                        )
+                ) {
                     TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
                 } else {
                     null
                 }
             }
-            .shouldBe(validTasks.map {
-                TaskWithoutId(
-                    it.name,
-                    it.criterions,
-                    it.answerFormat,
-                    it.description,
-                    it.isActual
-                )
-            }.filter { it.isActual })
+            .shouldBe(
+                validTasks.map {
+                    TaskWithoutId(
+                        it.name,
+                        it.criterions,
+                        it.answerFormat,
+                        it.description,
+                        it.isActual
+                    )
+                }.filter { it.isActual }
+            )
     }
 
     test("Select all tasks ids and names from db") {
         taskOperations
             .selectAllTasksIdAndNames()
             .map {
-                if (it.id.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                if (it.id
+                        .matches(
+                            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                .toRegex()
+                        )
+                ) {
                     TaskName(it.name)
                 } else {
                     null
@@ -63,21 +75,28 @@ class SelectTaskTest : TestcontainerSpec ({ context ->
         taskOperations
             .selectHiddenTasks()
             .map {
-                if (it.id.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".toRegex())) {
+                if (it.id.toString()
+                        .matches(
+                            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                .toRegex()
+                        )
+                ) {
                     TaskWithoutId(it.name, it.criterions, it.answerFormat, it.description, it.isActual)
                 } else {
                     null
                 }
             }
-            .shouldBe(validTasks.map {
-                TaskWithoutId(
-                    it.name,
-                    it.criterions,
-                    it.answerFormat,
-                    it.description,
-                    it.isActual
-                )
-            }.filter { !it.isActual })
+            .shouldBe(
+                validTasks.map {
+                    TaskWithoutId(
+                        it.name,
+                        it.criterions,
+                        it.answerFormat,
+                        it.description,
+                        it.isActual
+                    )
+                }.filter { !it.isActual }
+            )
     }
 
     test("Select task by valid id") {

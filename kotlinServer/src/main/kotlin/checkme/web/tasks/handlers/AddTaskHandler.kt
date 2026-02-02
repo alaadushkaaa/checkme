@@ -22,7 +22,7 @@ const val TASKS_DIR = "/tasks"
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
-    private val loggingConfig: LoggingConfig,       val taskId = request.idOrNull()
+    private val loggingConfig: LoggingConfig,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()

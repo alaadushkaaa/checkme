@@ -217,5 +217,5 @@ data class TaskWithoutId(
 )
 
 data class TaskName(
-    val name: String
+    val name: String,
 )
