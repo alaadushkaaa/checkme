@@ -32,9 +32,7 @@ data class User(
                 else -> ValidateUserResult.ALL_OK
             }
 
-        fun validateUserDataEmail(
-            email: String,
-        ): ValidateUserEmailResult =
+        fun validateUserDataEmail(email: String): ValidateUserEmailResult =
             when {
                 email.isBlank() -> ValidateUserEmailResult.EMAIL_IS_BLANK_OR_EMPTY
                 email.length > MAX_EMAIL_LENGTH -> ValidateUserEmailResult.EMAIL_IS_TOO_LONG
@@ -73,5 +71,5 @@ enum class ValidateUserEmailResult {
     EMAIL_IS_BLANK_OR_EMPTY,
     EMAIL_IS_TOO_LONG,
     EMAIL_PATTERN_MISMATCH,
-    ALL_OK
+    ALL_OK,
 }

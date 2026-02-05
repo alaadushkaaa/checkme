@@ -1,6 +1,7 @@
 auth.generalPass = pass
 auth.secret = ssecret
 auth.salt = ssalt
+auth.seed = sseed
 db.host = localhost
 db.port = 5432
 db.base = checkmedb
