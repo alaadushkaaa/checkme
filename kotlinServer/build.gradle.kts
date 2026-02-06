@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.bundles.scribeJava)
     implementation(libs.mariaDb)
     implementation(libs.jacksonDataType)
+    implementation(libs.csvPareser)
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.bundles.http4kTesting)
     testImplementation(libs.mockito)

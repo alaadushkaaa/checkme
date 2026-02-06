@@ -5,7 +5,6 @@ import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
 import io.kvision.form.FormPanel
 import io.kvision.form.formPanel
-import io.kvision.form.text.TextArea
 import io.kvision.form.upload.Upload
 import io.kvision.form.upload.getFileWithContent
 import io.kvision.html.Button
@@ -33,21 +32,21 @@ import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.signUp.FormLoadStudents
 import ru.yarsu.serializableClasses.task.FormAddTask
-import ru.yarsu.serializableClasses.task.TaskId
 import ru.yarsu.serializableClasses.user.UserInList
 import kotlin.io.encoding.Base64
 
 class UserList(
     serverUrl: String,
     routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "AddUserAutomatically") {
     init {
         val studentsDataFile = mutableListOf<KFile>()
+        h2("Список пользователей")
         val formAutomaticRegistration = formPanel<FormLoadStudents>(className = "base-form") {
             add(Label("Автоматическая регистрация", className = "separate-form-label"))
             val addedFileViewer = Div("Файл не выбран", className = "files-viewer")
             add(
-                Label("Выберите файл", forId = "data-file", className = "file-upload")
+                Label("Выберите csv-файл", forId = "data-file", className = "file-upload")
             )
             add(
                 FormLoadStudents::studentsData,
@@ -58,30 +57,35 @@ class UserList(
                             this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
                         studentsDataFile.clear()
                         studentsDataFile.addAll(dataFile)
-                        updateFileViewer(addedFileViewer, studentsDataFile, this@formPanel)
+                        updateFilesViewer(addedFileViewer, studentsDataFile, this@formPanel)
                         this@Upload.clearInput()
                         this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
                         this@formPanel.validate()
                     }
-                }, validatorMessage = { "Файл не выбран" }
+                }, validatorMessage = { "" }
             ) {
                 studentsDataFile.isNotEmpty()
             }
+            add(
+                addedFileViewer
+            )
             this.validate()
-
-            add(addedFileViewer)
+            add(
+                addedFileViewer
+            )
         }
 
         val buttonSend = button("Загрузить", disabled = true, className = "usually-button")
+
         formAutomaticRegistration.onInput {
-            studentsDataFile.clear()
-            buttonSend.disabled = true
+            buttonSend.disabled = studentsDataFile.isEmpty()
         }
+
         buttonSend.onClickLaunch {
             buttonSend.disabled = true
             val formData = FormData().apply {
                 val dataFilesWithContent = if (studentsDataFile.isEmpty()) null else studentsDataFile
-                if (dataFilesWithContent != null && !dataFilesWithContent.isEmpty()) {
+                if (dataFilesWithContent != null) {
                     val csvFile = dataFilesWithContent[0]
                     val csvEncodedContent = csvFile.base64Encoded
                     val csvDecodedContent = if (csvEncodedContent != null) {
@@ -89,15 +93,13 @@ class UserList(
                     } else {
                         ""
                     }
-                    val csvName = csvFile.name
-                    val csvExpansion = csvName.split(".").last()
-                    val csvContentType = if (csvExpansion == "csv") "application/csv" else csvFile.contentType
+                    val contentType = csvFile.contentType
                     append(
-                        name = "csv",
+                        name = "file",
                         value = File(
                             arrayOf(csvDecodedContent),
-                            csvName,
-                            FilePropertyBag(type = csvContentType)
+                            csvFile.name,
+                            FilePropertyBag(type = contentType)
                         ),
                     )
                 }
@@ -109,7 +111,9 @@ class UserList(
             requestInit.body = formData
             window.fetch(serverUrl + "user/automatic-registration", requestInit).then { response ->
                 if (response.status.toInt() == 200) {
-                    routing.navigate("/user-list")
+                    studentsDataFile.clear()
+                    formAutomaticRegistration.clearData()
+                    js("window.location.reload()")
                 } else if (response.status.toInt() == 400) {
                     response.json().then {
                         val jsonString = JSON.stringify(it)
@@ -135,7 +139,6 @@ class UserList(
             }
 
         }
-        h2("Список пользователей")
         val requestInit = RequestInit()
         requestInit.method = HttpMethod.GET.name
         requestInit.headers = js("{}")
@@ -160,24 +163,26 @@ class UserList(
         }
     }
 
-    fun updateFileViewer(fileViewer: Div, fileList: MutableList<KFile>, form: FormPanel<FormLoadStudents>) {
-        fileViewer.removeAll()
-        if (fileList.isEmpty()) {
-            fileViewer.content = "Файл не выбран"
+    fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormLoadStudents>) {
+        filesViewer.removeAll()
+        if (files.isEmpty()) {
+            filesViewer.content = "Файл не выбран"
         } else {
-            fileViewer.content = ""
-            val file = Div().apply {
-                add(Div(fileList[0].name))
-                add(Button("Удалить файл", className = "delete-file-button") {
-                    onClick {
-                        fileList.clear()
-                        updateFileViewer(fileViewer, fileList, form)
-                        form.getElement()?.dispatchEvent(InputEvent("input"))
-                        form.validate()
-                    }
-                })
+            files.forEach { kFile ->
+                filesViewer.content = ""
+                val fileViewer = Div().apply {
+                    add(Div(kFile.name))
+                    add(Button("Удалить файл", className = "delete-file-button"){
+                        onClick {
+                            files.remove(kFile)
+                            updateFilesViewer(filesViewer, files, form)
+                            form.getElement()?.dispatchEvent(InputEvent("input"))
+                            form.validate()
+                        }
+                    })
+                }
+                filesViewer.add(fileViewer)
             }
-            fileViewer.add(file)
         }
     }
 }

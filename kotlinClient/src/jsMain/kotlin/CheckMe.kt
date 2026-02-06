@@ -63,6 +63,9 @@ external val cssTable: dynamic
 @JsModule("./js/task-permutations.js")
 external val jsTasks: dynamic
 
+@JsModule("./css/AutomaticRegistrationForm.css")
+external val cssAutomaticRegistration: dynamic
+
 class CheckMe : Application() {
     init {
         useModule(cssAuthorization)
@@ -81,6 +84,7 @@ class CheckMe : Application() {
         useModule(cssResult)
         useModule(cssLoading)
         useModule(cssTable)
+        useModule(cssAutomaticRegistration)
         useModule(jsTasks)
     }
     override fun start() {

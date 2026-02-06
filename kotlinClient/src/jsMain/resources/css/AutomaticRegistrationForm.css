@@ -1,0 +1,20 @@
+.AddUserAutomatically .base-form .separate-form-label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    margin: 20px 0px;
+    font-size: 30px;
+}
+
+.AddUserAutomatically input {
+    flex: 4;
+    border: 1px solid #ccc;
+}
+
+.AddUserAutomatically input[type="file"] {
+    display: none;
+}
+
+.AddUserAutomatically .base-form .files-viewer {
+    margin: 20px 0px;
+}

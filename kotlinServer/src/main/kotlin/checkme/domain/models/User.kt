@@ -36,7 +36,7 @@ data class User(
             when {
                 email.isBlank() -> ValidateUserEmailResult.EMAIL_IS_BLANK_OR_EMPTY
                 email.length > MAX_EMAIL_LENGTH -> ValidateUserEmailResult.EMAIL_IS_TOO_LONG
-                emailPattern.matches(email) -> ValidateUserEmailResult.EMAIL_PATTERN_MISMATCH
+                !emailPattern.matches(email) -> ValidateUserEmailResult.EMAIL_PATTERN_MISMATCH
                 else -> ValidateUserEmailResult.ALL_OK
             }
 
