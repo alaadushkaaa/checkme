@@ -32,10 +32,20 @@ data class User(
                 else -> ValidateUserResult.ALL_OK
             }
 
+        fun validateUserDataEmail(email: String): ValidateUserEmailResult =
+            when {
+                email.isBlank() -> ValidateUserEmailResult.EMAIL_IS_BLANK_OR_EMPTY
+                email.length > MAX_EMAIL_LENGTH -> ValidateUserEmailResult.EMAIL_IS_TOO_LONG
+                !emailPattern.matches(email) -> ValidateUserEmailResult.EMAIL_PATTERN_MISMATCH
+                else -> ValidateUserEmailResult.ALL_OK
+            }
+
         const val MAX_LENGTH = 30
+        const val MAX_EMAIL_LENGTH = 100
 
         val namePattern = Regex("^[А-Яа-я -]+\$")
         val loginPattern = Regex("^[\\w-.]+\$")
+        val emailPattern = Regex("""^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$""")
     }
 
     fun isStudent() = role == Role.STUDENT
@@ -54,5 +64,12 @@ enum class ValidateUserResult {
     SURNAME_IS_TOO_LONG,
     SURNAME_PATTERN_MISMATCH,
     PASSWORD_IS_BLANK_OR_EMPTY,
+    ALL_OK,
+}
+
+enum class ValidateUserEmailResult {
+    EMAIL_IS_BLANK_OR_EMPTY,
+    EMAIL_IS_TOO_LONG,
+    EMAIL_PATTERN_MISMATCH,
     ALL_OK,
 }
