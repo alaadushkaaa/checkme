@@ -46,6 +46,8 @@ private fun createMainRouter(
         contextTools = contextTools
     ),
     ADMIN_SEGMENT bind adminRoutes(
+        config = config,
+        operations = operations,
         contextTools = contextTools
     )
 )
