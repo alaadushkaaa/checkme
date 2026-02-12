@@ -1,3 +1,7 @@
 .UserList .task-link {
     font-size: 16px;
 }
+
+.actionPanel {
+    margin-right: 20px;
+}
