@@ -11,7 +11,8 @@ data class TaskFormat(
     val criterions: Map<String, Criterion>,
     val answerFormat: List<AnswerFormat>,
     val description: String,
-    val isActual: Boolean
+    val isActual: Boolean,
+    val bestScore: Int? = null
 )
 
 @Serializable
@@ -21,7 +22,8 @@ data class TaskFormatForList(
     val criterions: Map<String, Criterion>,
     val answerFormat: Map<String, String>,
     val description: String,
-    val isActual: Boolean
+    val isActual: Boolean,
+    val bestScore: Int? = null
 )
 
 @Serializable

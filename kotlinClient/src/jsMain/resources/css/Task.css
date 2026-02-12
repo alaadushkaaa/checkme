@@ -2,23 +2,42 @@
     margin-bottom: 40px;
 }
 
-.answers-box {
-    display: flex;
-    margin: 0px;
+.Task h2 {
+    margin-bottom: 0px;
 }
 
-.Task .block.answers-box .form-group.kv-mb-3 {
+.Task .task-link {
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+
+.Task .best-solution {
+    margin-top: 20px;
+}
+
+.Task input[type="file"] {
+    display: none;
+}
+
+.Task .file-upload {
+    border: 1px solid #ccc;
     display: inline-block;
+    padding: 6px 12px;
+    margin-top: 19px;
+    margin-bottom: 19px;
+    cursor: pointer;
+    border-radius: 10px;
 }
 
-.Task .block.answers-box .form-group.kv-mb-3 .form-label.required-label {
-    flex: 3;
+.Task .file-upload:hover {
+    background-color: rgba(118, 153, 212, 0.5);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.Task .solution-label {
     font-weight: bold;
-    margin-right: 200px;
-}
-
-.Task .block.answers-box .form-group.kv-mb-3 .form-control {
-    flex: 5;
+    font-size: 17px;
+    margin-top: 20px;
 }
 
 .task-description {

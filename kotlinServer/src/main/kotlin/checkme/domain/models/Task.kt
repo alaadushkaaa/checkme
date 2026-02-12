@@ -10,6 +10,7 @@ data class Task(
     val answerFormat: Map<String, AnswerType>,
     val description: String,
     val isActual: Boolean,
+    val bestScore: Int? = null,
 )
 
 enum class AnswerType(val code: String) {

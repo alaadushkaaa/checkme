@@ -10,6 +10,11 @@ import java.util.UUID
 interface TasksDatabase {
     fun selectTaskById(taskId: UUID): Task?
 
+    fun selectTaskByIdWithBestScore(
+        taskId: UUID,
+        userId: UUID,
+    ): Task?
+
     fun selectAllTask(): List<Task>
 
     fun selectHiddenTasks(): List<Task>

@@ -4,6 +4,7 @@
 package checkme.db.generated.routines.references
 
 
+import checkme.db.generated.routines.BestSolution
 import checkme.db.generated.routines.TotalScore
 
 import java.util.UUID
@@ -12,6 +13,50 @@ import org.jooq.Configuration
 import org.jooq.Field
 
 
+
+/**
+ * Call <code>public.best_solution</code>
+ */
+fun bestSolution(
+      configuration: Configuration
+    , idTask: UUID?
+    , idUser: UUID?
+): Int? {
+    val f = BestSolution()
+    f.setIdTask(idTask)
+    f.setIdUser(idUser)
+
+    f.execute(configuration)
+    return f.returnValue
+}
+
+/**
+ * Get <code>public.best_solution</code> as a field.
+ */
+fun bestSolution(
+      idTask: UUID?
+    , idUser: UUID?
+): Field<Int?> {
+    val f = BestSolution()
+    f.setIdTask(idTask)
+    f.setIdUser(idUser)
+
+    return f.asField()
+}
+
+/**
+ * Get <code>public.best_solution</code> as a field.
+ */
+fun bestSolution(
+      idTask: Field<UUID?>
+    , idUser: Field<UUID?>
+): Field<Int?> {
+    val f = BestSolution()
+    f.setIdTask(idTask)
+    f.setIdUser(idUser)
+
+    return f.asField()
+}
 
 /**
  * Call <code>public.total_score</code>

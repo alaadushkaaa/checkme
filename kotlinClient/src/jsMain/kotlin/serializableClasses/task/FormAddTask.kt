@@ -8,7 +8,7 @@ data class FormAddTask(
     val name: String,
     val description: String,
     val criterion: String,
-    val answer: String,
+    val answer: String? = null,
     val format: String,
     val script: List<KFile>? = null,
     val files: List<KFile>? = null
