@@ -11,6 +11,7 @@ data class Task(
     val description: String,
     val isActual: Boolean,
     val bestScore: Int? = null,
+    val highestScore: Int? = null,
 )
 
 enum class AnswerType(val code: String) {

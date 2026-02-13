@@ -12,7 +12,23 @@
 }
 
 .Task .best-solution {
+    font-weight: bold;
     margin-top: 20px;
+}
+
+.Task .excellent-result {
+    color: #3E8D00;
+    margin-left: 5px;
+}
+
+.Task .medium-result {
+    color: #FCCA12;
+    margin-left: 5px;
+}
+
+.Task .bad-result {
+    color: #CE2727;
+    margin-left: 5px;
 }
 
 .Task input[type="file"] {
@@ -38,6 +54,10 @@
     font-weight: bold;
     font-size: 17px;
     margin-top: 20px;
+}
+
+.Task textarea {
+    font-family: 'Courier New', Courier, monospace;
 }
 
 .task-description {

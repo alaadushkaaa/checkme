@@ -13,6 +13,7 @@ data class TaskClientResponse (
     val description: String,
     val isActual: Boolean,
     val bestScore: Int? = null,
+    val highestScore: Int? = null,
 ) {
     companion object {
         fun Map<String, AnswerType>.toClientEntryAnswerFormat(): List<FormatOfAnswer> {

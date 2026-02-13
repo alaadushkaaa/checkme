@@ -5,6 +5,7 @@ package checkme.db.generated.routines.references
 
 
 import checkme.db.generated.routines.BestSolution
+import checkme.db.generated.routines.HighestScore
 import checkme.db.generated.routines.TotalScore
 
 import java.util.UUID
@@ -54,6 +55,44 @@ fun bestSolution(
     val f = BestSolution()
     f.setIdTask(idTask)
     f.setIdUser(idUser)
+
+    return f.asField()
+}
+
+/**
+ * Call <code>public.highest_score</code>
+ */
+fun highestScore(
+      configuration: Configuration
+    , idTask: UUID?
+): Int? {
+    val f = HighestScore()
+    f.setIdTask(idTask)
+
+    f.execute(configuration)
+    return f.returnValue
+}
+
+/**
+ * Get <code>public.highest_score</code> as a field.
+ */
+fun highestScore(
+      idTask: UUID?
+): Field<Int?> {
+    val f = HighestScore()
+    f.setIdTask(idTask)
+
+    return f.asField()
+}
+
+/**
+ * Get <code>public.highest_score</code> as a field.
+ */
+fun highestScore(
+      idTask: Field<UUID?>
+): Field<Int?> {
+    val f = HighestScore()
+    f.setIdTask(idTask)
 
     return f.asField()
 }

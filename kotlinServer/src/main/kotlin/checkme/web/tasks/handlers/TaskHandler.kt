@@ -59,7 +59,8 @@ private fun tryFetchTask(
                             task.value.answerFormat.toClientEntryAnswerFormat(),
                             task.value.description,
                             task.value.isActual,
-                            task.value.bestScore
+                            task.value.bestScore,
+                            task.value.highestScore
                         )
                     )
                 } else {

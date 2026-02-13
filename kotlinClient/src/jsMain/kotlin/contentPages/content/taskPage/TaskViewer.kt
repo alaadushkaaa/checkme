@@ -6,7 +6,7 @@ import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
 import io.kvision.form.FormPanel
 import io.kvision.form.formPanel
-import io.kvision.form.getDataWithFileContent
+import io.kvision.form.text.TextArea
 import io.kvision.form.upload.Upload
 import io.kvision.form.upload.getFileWithContent
 import io.kvision.html.Button
@@ -16,8 +16,8 @@ import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.html.h2
 import io.kvision.html.h3
-import io.kvision.html.h4
 import io.kvision.panel.VPanel
+import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import io.kvision.toast.Toast
@@ -38,7 +38,6 @@ import ru.yarsu.contentPages.content.hiddenTask.TaskHiddenButton
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.CheckId
 import ru.yarsu.serializableClasses.ResponseError
-import ru.yarsu.serializableClasses.task.FormAddTask
 import ru.yarsu.serializableClasses.task.SolutionFileList
 import ru.yarsu.serializableClasses.task.TaskFormat
 import kotlin.io.encoding.Base64
@@ -63,10 +62,16 @@ class TaskViewer(
         } else {
             task.bestScore.toString()
         }
-        div("Ваш лучший результат: $bestResult", className = "best-solution")
+        hPanel(className = "best-solution"){
+            div("Ваш лучший результат: ")
+            div(bestResult, className = getClassNameForColor(task.bestScore, task.highestScore))
+        }
         h3("Описание")
         div(task.description, className = "task-description", rich = true)
         div("Предоставьте ответ в виде файла с расширением .sql", className = "solution-label")
+        val solutionTextArea = TextArea {
+            readonly = true
+        }
         val formPanelSendSolution = formPanel<SolutionFileList>(className = "answer") {
             val addedFileViewer = Div("Файл не выбран", className = "file-viewer")
             add(
@@ -78,7 +83,16 @@ class TaskViewer(
                     this.input.id = "input-solution-file"
                     onChangeLaunch {
                         solutionFile = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) }[0]
-                        updateFileViewer(addedFileViewer, solutionFile, this@formPanel)
+                        val file = solutionFile
+                        if (file != null) {
+                            val encodedContent = file.base64Encoded
+                            solutionTextArea.value = if (encodedContent != null) {
+                                Base64.Default.decode(encodedContent).decodeToString()
+                            } else {
+                                ""
+                            }
+                        }
+                        updateFileViewer(addedFileViewer, solutionFile, this@formPanel, solutionTextArea)
                         this@Upload.clearInput()
                         this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
                         this@formPanel.validate()
@@ -197,7 +211,7 @@ class TaskViewer(
         }
     }
 
-    fun updateFileViewer(fileViewer: Div, file: KFile?, form: FormPanel<SolutionFileList>) {
+    fun updateFileViewer(fileViewer: Div, file: KFile?, form: FormPanel<SolutionFileList>, text: TextArea) {
         fileViewer.removeAll()
         if (file == null) {
             fileViewer.content = "Файл не выбран"
@@ -208,10 +222,13 @@ class TaskViewer(
         } else {
             fileViewer.content = ""
             val file = Div().apply {
+                add(text)
                 add(Div(file.name))
                 add(Button("Удалить файл", className = "delete-file-button") {
                     onClick {
-                        updateFileViewer(fileViewer, null, form)
+                        text.value = ""
+                        remove(text)
+                        updateFileViewer(fileViewer, null, form, text)
                         solutionFile = null
                         form.getElement()?.dispatchEvent(InputEvent("input"))
                         form.validate()
@@ -219,6 +236,26 @@ class TaskViewer(
                 })
             }
             fileViewer.add(file)
+        }
+    }
+
+    fun getClassNameForColor(result: Int?, score: Int?) : String {
+        return if (result != null && score != null) {
+            when (result) {
+                -1 -> {
+                    "bad-result"
+                }
+
+                score -> {
+                    "excellent-result"
+                }
+
+                else -> {
+                    "medium-result"
+                }
+            }
+        } else {
+            "bad-result"
         }
     }
 }

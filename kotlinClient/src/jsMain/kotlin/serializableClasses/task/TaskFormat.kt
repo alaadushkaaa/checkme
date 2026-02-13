@@ -12,7 +12,8 @@ data class TaskFormat(
     val answerFormat: List<AnswerFormat>,
     val description: String,
     val isActual: Boolean,
-    val bestScore: Int? = null
+    val bestScore: Int? = null,
+    val highestScore: Int? = null
 )
 
 @Serializable
@@ -23,7 +24,8 @@ data class TaskFormatForList(
     val answerFormat: Map<String, String>,
     val description: String,
     val isActual: Boolean,
-    val bestScore: Int? = null
+    val bestScore: Int? = null,
+    val highestScore: Int? = null
 )
 
 @Serializable

@@ -4,6 +4,7 @@ package checkme.db.tasks
 
 import checkme.db.checks.CHECKS_LIMIT
 import checkme.db.generated.routines.references.bestSolution
+import checkme.db.generated.routines.references.highestScore
 import checkme.db.generated.tables.references.CHECKS
 import checkme.db.generated.tables.references.TASKS
 import checkme.db.utils.safeLet
@@ -46,7 +47,8 @@ class TasksOperations(
                 TASKS.ANSWERFORMAT,
                 TASKS.DESCRIPTION,
                 TASKS.IS_ACTUAL,
-                bestSolution(TASKS.ID, DSL.`val`(userId))
+                bestSolution(TASKS.ID, DSL.`val`(userId)),
+                highestScore(TASKS.ID)
             )
             .from(TASKS)
             .where(TASKS.ID.eq(taskId))
@@ -191,6 +193,7 @@ internal fun Record.toTaskWithBestScore(): Task? =
         this[TASKS.DESCRIPTION],
         this[TASKS.IS_ACTUAL],
         this["best_solution"] as? Int ?: -1,
+        this["highest_score"] as Int
     ) {
             id,
             name,
@@ -199,6 +202,7 @@ internal fun Record.toTaskWithBestScore(): Task? =
             description,
             isActual,
             bestScore,
+            highestScore,
         ->
         Task(
             id = id,
@@ -207,7 +211,8 @@ internal fun Record.toTaskWithBestScore(): Task? =
             answerFormat = jacksonObjectMapper().readValue<Map<String, AnswerType>>(answerFormat.data()),
             description = description,
             isActual = isActual,
-            bestScore = bestScore
+            bestScore = bestScore,
+            highestScore = highestScore
         )
     }
 
