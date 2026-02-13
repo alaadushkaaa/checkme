@@ -3,6 +3,8 @@
 package checkme.db.tasks
 
 import checkme.db.checks.CHECKS_LIMIT
+import checkme.db.generated.routines.references.bestSolution
+import checkme.db.generated.routines.references.highestScore
 import checkme.db.generated.tables.references.CHECKS
 import checkme.db.generated.tables.references.TASKS
 import checkme.db.utils.safeLet
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.jooq.DSLContext
 import org.jooq.JSONB.jsonb
 import org.jooq.Record
+import org.jooq.impl.DSL
 import org.jooq.impl.DSL.commit
 import org.jooq.impl.DSL.rollback
 import java.util.UUID
@@ -31,6 +34,26 @@ class TasksOperations(
             .where(TASKS.ID.eq(taskId))
             .fetchOne()
             ?.toTask()
+
+    override fun selectTaskByIdWithBestScore(
+        taskId: UUID,
+        userId: UUID,
+    ): Task? =
+        jooqContext
+            .select(
+                TASKS.ID,
+                TASKS.NAME,
+                TASKS.CRITERIONS,
+                TASKS.ANSWERFORMAT,
+                TASKS.DESCRIPTION,
+                TASKS.IS_ACTUAL,
+                bestSolution(TASKS.ID, DSL.`val`(userId)),
+                highestScore(TASKS.ID)
+            )
+            .from(TASKS)
+            .where(TASKS.ID.eq(taskId))
+            .fetchOne()
+            ?.toTaskWithBestScore()
 
     override fun selectAllTask(): List<Task> =
         selectFromTasks()
@@ -158,6 +181,38 @@ internal fun Record.toTask(): Task? =
             answerFormat = jacksonObjectMapper().readValue<Map<String, AnswerType>>(answerFormat.data()),
             description = description,
             isActual = isActual
+        )
+    }
+
+internal fun Record.toTaskWithBestScore(): Task? =
+    safeLet(
+        this[TASKS.ID],
+        this[TASKS.NAME],
+        this[TASKS.CRITERIONS],
+        this[TASKS.ANSWERFORMAT],
+        this[TASKS.DESCRIPTION],
+        this[TASKS.IS_ACTUAL],
+        this["best_solution"] as? Int ?: -1,
+        this["highest_score"] as Int
+    ) {
+            id,
+            name,
+            criterions,
+            answerFormat,
+            description,
+            isActual,
+            bestScore,
+            highestScore,
+        ->
+        Task(
+            id = id,
+            name = name,
+            criterions = jacksonObjectMapper().readValue<Map<String, Criterion>>(criterions.data()),
+            answerFormat = jacksonObjectMapper().readValue<Map<String, AnswerType>>(answerFormat.data()),
+            description = description,
+            isActual = isActual,
+            bestScore = bestScore,
+            highestScore = highestScore
         )
     }
 

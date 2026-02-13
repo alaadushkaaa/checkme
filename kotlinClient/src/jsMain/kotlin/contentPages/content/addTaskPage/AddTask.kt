@@ -1,5 +1,6 @@
 package ru.yarsu.contentPages.content.addTaskPage
 
+import io.kvision.core.Display
 import io.kvision.core.onChange
 import io.kvision.core.onChangeLaunch
 import io.kvision.core.onClickLaunch
@@ -112,13 +113,10 @@ class AddTask(
                     }
                 criterion != null
             }
-            add(Label("Вопрос", className = "separate-form-label"))
-            add(
-                FormAddTask::answer,
-                TextArea(),
-                required = true,
-                requiredMessage = "",
-            )
+            val answerLabel = Label("Вопрос", className = "separate-form-label") {
+                display = Display.NONE
+            }
+            val answerTextArea = TextArea { display = Display.NONE }
             add(Label("Формат ответа", className = "separate-form-label"))
             add(
                 FormAddTask::format,
@@ -127,12 +125,28 @@ class AddTask(
 //                        "text" to "Текст", //если будет нужен функционал с текстовым ответом,
 //                        далее в клиенте пока не реализовано
                         "file" to "Файл")
-                ),
+                ) {
+                    onChangeLaunch {
+                        if (this.value == "text") {
+                            answerLabel.display = Display.BLOCK
+                            answerTextArea.display = Display.BLOCK
+                        } else {
+                            answerLabel.display = Display.NONE
+                            answerTextArea.display = Display.NONE
+                        }
+                    }
+                },
                 required = true,
                 requiredMessage = ""
             )
+            add(answerLabel)
+            add(
+                FormAddTask::answer,
+                answerTextArea,
+                requiredMessage = "",
+            )
             add(Label("Скрипт", className = "separate-form-label"))
-            val addedScriptsFileViewer = Div("Файлы не выбран", className = "files-viewer")
+            val addedScriptsFileViewer = Div("Файлы не выбраны", className = "files-viewer")
             add(
                 Label("Выберите файлы", forId = "input-file-1", className = "file-upload")
             )
@@ -179,10 +193,10 @@ class AddTask(
             ) {
                 fileList.isNotEmpty()
             }
+            this.validate()
             add(
                 addedFilesViewer
             )
-            this.validate()
         }
         val formPanelFileSelection = formPanel<FormAddTaskFileSelection>(className = "criterion-select")
         val formFileSelection: FormPanel<Map<String, Any?>> = form(className = "criterion-select")
@@ -251,7 +265,7 @@ class AddTask(
             }
             val answerFormat = listOf(
                 AnswerFormat(
-                    formPanelAddTask.getData().answer,
+                    formPanelAddTask.getData().answer ?: "",
                     formPanelAddTask.getData().format
                 )
             )
@@ -358,27 +372,6 @@ class AddTask(
                 }
             }
         })
-    }
-
-    fun updateFileViewer(fileViewer: Div, fileList: MutableList<KFile>, form: FormPanel<FormAddTask>) {
-        fileViewer.removeAll()
-        if (fileList.isEmpty()) {
-            fileViewer.content = "Файл не выбран"
-        } else {
-            fileViewer.content = ""
-            val file = Div().apply {
-                add(Div(fileList[0].name))
-                add(Button("Удалить файл", className = "delete-file-button") {
-                    onClick {
-                        fileList.clear()
-                        updateFileViewer(fileViewer, fileList, form)
-                        form.getElement()?.dispatchEvent(InputEvent("input"))
-                        form.validate()
-                    }
-                })
-            }
-            fileViewer.add(file)
-        }
     }
 
     fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormAddTask>) {

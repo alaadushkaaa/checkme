@@ -19,6 +19,14 @@ class TaskOperationsHolder (
             tasksDatabase.selectTaskById(taskId)
         }
 
+    val fetchTaskByIdWithBestScore: (UUID, UUID) -> Result<Task, TaskFetchingError> =
+        FetchTaskByIdWithBestScore {
+                taskId: UUID,
+                userId: UUID,
+            ->
+            tasksDatabase.selectTaskByIdWithBestScore(taskId, userId)
+        }
+
     val fetchAllTasks: () -> Result<List<Task>, TaskFetchingError> =
         FetchAllTasks {
             tasksDatabase.selectAllTask()

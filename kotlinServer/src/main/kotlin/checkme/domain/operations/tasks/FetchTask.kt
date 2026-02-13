@@ -24,6 +24,24 @@ class FetchTaskById(
         }
 }
 
+class FetchTaskByIdWithBestScore(
+    private val fetchTaskByIdWithBestScore: (UUID, UUID) -> Task?,
+) : (UUID, UUID) -> Result4k<Task, TaskFetchingError> {
+
+    override fun invoke(
+        taskId: UUID,
+        userId: UUID,
+    ): Result4k<Task, TaskFetchingError> =
+        try {
+            when (val task = fetchTaskByIdWithBestScore(taskId, userId)) {
+                is Task -> Success(task)
+                else -> Failure(TaskFetchingError.NO_SUCH_TASK)
+            }
+        } catch (_: DataAccessException) {
+            Failure(TaskFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
 class FetchAllTasks(
     private val fetchAllTasks: () -> List<Task>?,
 ) : () -> Result4k<List<Task>, TaskFetchingError> {

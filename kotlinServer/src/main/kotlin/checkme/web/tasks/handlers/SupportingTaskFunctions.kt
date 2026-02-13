@@ -58,6 +58,22 @@ internal fun fetchTask(
     }
 }
 
+internal fun fetchTaskWithBestScore(
+    taskId: UUID,
+    userId: UUID,
+    taskOperations: TaskOperationsHolder,
+): Result<Task, FetchingTaskError> {
+    return when (
+        val fetchedTask = taskOperations.fetchTaskByIdWithBestScore(taskId, userId)
+    ) {
+        is Success -> Success(fetchedTask.value)
+        is Failure -> when (fetchedTask.reason) {
+            TaskFetchingError.NO_SUCH_TASK -> Failure(FetchingTaskError.NO_SUCH_TASK)
+            TaskFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingTaskError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
 internal fun deleteTask(
     task: Task,
     taskOperations: TaskOperationsHolder,
