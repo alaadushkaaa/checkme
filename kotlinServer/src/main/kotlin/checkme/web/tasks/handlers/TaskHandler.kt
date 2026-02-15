@@ -42,7 +42,7 @@ private fun tryFetchTask(
     user: User,
     taskOperations: TaskOperationsHolder,
 ): Response {
-    return when (val task = fetchTask(taskId, taskOperations)) {
+    return when (val task = fetchTaskWithBestScore(taskId, user.id, taskOperations)) {
         is Failure -> return objectMapper.sendBadRequestError(task.reason.errorText)
 
         is Success -> {
@@ -58,7 +58,9 @@ private fun tryFetchTask(
                             task.value.criterions,
                             task.value.answerFormat.toClientEntryAnswerFormat(),
                             task.value.description,
-                            task.value.isActual
+                            task.value.isActual,
+                            task.value.bestScore,
+                            task.value.highestScore
                         )
                     )
                 } else {
