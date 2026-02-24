@@ -8,10 +8,11 @@ import checkme.web.auth.handlers.FetchingUserError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import java.util.UUID
 
 internal fun selectUser(
-    userId: Int,
-    userOperations: UserOperationHolder
+    userId: UUID,
+    userOperations: UserOperationHolder,
 ): Result<User, FetchingUserError> {
     return when (
         val user = userOperations.fetchUserById(userId)
@@ -26,7 +27,7 @@ internal fun selectUser(
 
 internal fun changeUserPassword(
     user: User,
-    userOperations: UserOperationHolder
+    userOperations: UserOperationHolder,
 ): Result<User, UserChangingError> {
     return when (
         val updatedUser = userOperations.modifyUserPassword(user)
@@ -36,7 +37,6 @@ internal fun changeUserPassword(
             ModifyUserError.UNKNOWN_DATABASE_ERROR -> Failure(UserChangingError.UNKNOWN_DATABASE_ERROR)
         }
     }
-
 }
 
 enum class UserChangingError(val errorText: String) {

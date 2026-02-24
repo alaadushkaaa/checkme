@@ -39,9 +39,10 @@ class UserOperationHolder(
         )
 
     val modifyUserPassword: (user: User) -> Result4k<User, ModifyUserError> =
-        ModifyUserPassword {
-                user: User,
-            ->
-            usersDatabase.updateUserPassword(user)
-        }
+        ModifyUserPassword(
+            updateUserPassword = { user: User ->
+                usersDatabase.updateUserPassword(user = user)
+            },
+            config = config
+        )
 }

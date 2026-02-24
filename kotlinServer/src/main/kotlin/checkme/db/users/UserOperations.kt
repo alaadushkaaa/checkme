@@ -91,9 +91,7 @@ class UserOperations(
                 it
             }
 
-    private fun updateUserPassword(
-        user: User
-    ): User? {
+    override fun updateUserPassword(user: User): User? {
         return jooqContext.update(USERS)
             .set(USERS.PASSWORD, user.password)
             .where(USERS.ID.eq(user.id))

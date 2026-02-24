@@ -1,6 +1,6 @@
 package checkme.web.admin.suppirtingFiles
 
 data class DataAndPreviousDataSize(
-    val emailAndLogins: List<Pair<String, String>>,
+    val logins: List<String>,
     val previousSize: Int,
 )

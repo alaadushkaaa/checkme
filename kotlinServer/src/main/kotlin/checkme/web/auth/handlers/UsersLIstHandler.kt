@@ -63,5 +63,5 @@ enum class FetchingUserError(val errorText: String) {
 }
 
 enum class ViewUsersLIstError(val errorText: String) {
-    USER_HAS_NOT_RIGHTS("Not allowed to delete task"),
+    USER_HAS_NOT_RIGHTS("Not allowed to delete view users"),
 }

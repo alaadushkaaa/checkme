@@ -50,6 +50,9 @@ class Header(
                         "Пользователи",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/user-list") }
+                    button("Информация о пользователях",
+                        className = "navigation-button"
+                    ).onClick { routingMainPage.navigate("/user-info") }
                     button(
                         "Журнал",
                         className = "navigation-button"

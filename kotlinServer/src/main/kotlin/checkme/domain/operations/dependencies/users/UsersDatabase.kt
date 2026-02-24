@@ -28,7 +28,5 @@ interface UsersDatabase {
         role: Role,
     ): User?
 
-    fun updateUserPassword(
-        user: User
-    ): User?
+    fun updateUserPassword(user: User): User?
 }
