@@ -43,14 +43,16 @@ class Header(
                         "Все решения",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/solution-list/1") }
-                    button("Решения по задачам",
+                    button(
+                        "Решения по задачам",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/task-solutions-list/1") }
                     button(
                         "Пользователи",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/user-list") }
-                    button("Информация о пользователях",
+                    button(
+                        "Информация о пользователях",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/user-info") }
                     button(
@@ -64,6 +66,13 @@ class Header(
                 routing.navigate("/authorization/sign_in")
             } else {
                 div(userName.username, className = "username")
+            }
+            if (!UserInformationStorage.isAdmin()) {
+                button("Сменить пароль", className = "usually-button") {
+                    onClick {
+                        routing.navigate("/user/change-password")
+                    }
+                }
             }
             button("Выйти", className = "usually-button signout") {
                 onClick {
