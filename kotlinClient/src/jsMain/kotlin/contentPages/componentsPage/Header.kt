@@ -70,7 +70,7 @@ class Header(
             if (!UserInformationStorage.isAdmin()) {
                 button("Сменить пароль", className = "usually-button") {
                     onClick {
-                        routing.navigate("/user/change-password")
+                        routingMainPage.navigate("/user/change-password")
                     }
                 }
             }
