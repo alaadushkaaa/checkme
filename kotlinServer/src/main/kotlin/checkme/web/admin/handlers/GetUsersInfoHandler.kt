@@ -51,7 +51,8 @@ class GetUsersInfoHandler(
             is Success -> {
                 val usersInfo = users.value.map { user ->
                     var isSystemPass = true
-                    if (user.password != hasher.hash(passwordGenerator.generateStudentPass(user.login))) {
+                    val systemPass = passwordGenerator.generateStudentPass(user.login)
+                    if (user.password != hasher.hash(systemPass)) {
                         isSystemPass = false
                     }
                     UserInfo(
@@ -59,6 +60,7 @@ class GetUsersInfoHandler(
                         name = user.name,
                         surname = user.surname,
                         login = user.login,
+                        systemPass = systemPass,
                         isSystemPass = isSystemPass
                     )
                 }

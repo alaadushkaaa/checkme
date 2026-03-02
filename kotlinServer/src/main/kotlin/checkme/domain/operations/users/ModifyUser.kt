@@ -15,13 +15,12 @@ class ModifyUserPassword(
 ) : (User) -> Result<User, ModifyUserError> {
     private val hasher = PasswordHasher(config.authConfig)
 
-    override fun invoke(user: User): Result<User, ModifyUserError> =
-        when (
-            val editedUser = updateUserPassword(user.copy(password = hasher.hash(password = user.password)))
-        ) {
-            is User -> Success(editedUser)
-            else -> Failure(ModifyUserError.UNKNOWN_DATABASE_ERROR)
-        }
+    override fun invoke(user: User): Result<User, ModifyUserError> {
+        val userWithHashedPassword = user.copy(password = hasher.hash(user.password))
+        return updateUserPassword(userWithHashedPassword)
+            ?.let { Success(it) }
+            ?: Failure(ModifyUserError.UNKNOWN_DATABASE_ERROR)
+    }
 }
 
 enum class ModifyUserError {

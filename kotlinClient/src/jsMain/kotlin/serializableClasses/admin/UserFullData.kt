@@ -9,5 +9,6 @@ data class UserFullData(
     val login: String,
     val name: String,
     val surname: String,
+    val systemPass: String,
     val isSystemPass: Boolean
 )

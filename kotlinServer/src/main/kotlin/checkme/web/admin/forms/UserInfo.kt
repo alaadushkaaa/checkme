@@ -7,5 +7,6 @@ data class UserInfo(
     val login: String,
     val name: String,
     val surname: String,
+    val systemPass: String,
     val isSystemPass: Boolean,
 )

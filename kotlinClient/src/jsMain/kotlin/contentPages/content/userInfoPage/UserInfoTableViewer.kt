@@ -21,6 +21,7 @@ import ru.yarsu.serializableClasses.ResponseError
 import kotlin.uuid.Uuid
 import org.w3c.dom.HTMLElement
 import kotlinx.browser.document
+import ru.yarsu.contentPages.content.createRequestHeaders
 
 class UserInfoTableViewer(
     private val serverUrl: String,
@@ -43,9 +44,17 @@ class UserInfoTableViewer(
             headerFilter = Editor.INPUT
         ),
         ColumnDefinition(
+            "Системный пароль",
+            field = "system-pass"
+        ),
+        ColumnDefinition(
             "Пароль",
+            width = "200",
             field = "password",
-            headerFilter = Editor.INPUT
+            headerFilter = Editor.LIST,
+            headerFilterParams = { cell: dynamic ->
+                js("{ values: ['', 'Пользовательский', 'Системный'] }")
+            }
         )
     )
 
@@ -54,18 +63,18 @@ class UserInfoTableViewer(
             data = getData(),
             options = TabulatorOptions(
                 columns = columns +
-                    ColumnDefinition(
-                        "Действия",
-                        field = "action",
-                        formatter = Formatter.HTML,
-                        cellClick = { event, _ ->
-                            val button = event.asDynamic().target
-                            if (button && !button.disabled) {
-                                val userId = button.getAttribute("user-id")
-                                if (userId) changePassword(Uuid.parse(userId))
+                        ColumnDefinition(
+                            "Действия",
+                            field = "action",
+                            formatter = Formatter.HTML,
+                            cellClick = { event, _ ->
+                                val button = event.asDynamic().target
+                                if (button && !button.disabled) {
+                                    val userId = button.getAttribute("user-id")
+                                    if (userId) changePassword(Uuid.parse(userId))
+                                }
                             }
-                        }
-                    )
+                        )
             ),
             types = setOf(TableType.BORDERED)
         )
@@ -79,6 +88,7 @@ class UserInfoTableViewer(
                 "surname" to user.surname,
                 "name" to user.name,
                 "password" to if (user.isSystemPass) "Системный" else "Пользовательский",
+                "system-pass" to user.systemPass,
                 "action" to if (user.isSystemPass) "<button class='table-button-inactive' user-id='${user.id}' " +
                         "disabled>Установить системный пароль</button>" else
                     "<button class='table-button' user-id='${user.id}'>Установить системный пароль</button>"
@@ -87,20 +97,24 @@ class UserInfoTableViewer(
     }
 
     private fun changePassword(userId: Uuid) {
-        val requestInit = RequestInit()
-        requestInit.method = HttpMethod.POST.name
-        requestInit.headers = js("{}")
-        requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+        val requestInit = createRequestHeaders(HttpMethod.POST)
         window.fetch(serverUrl + "admin/set-system-password/$userId", requestInit).then { response ->
-            if (response.status.toInt() == 200) js("window.location.reload()")
-            else if (response.status.toInt() == 400) {
-                response.json().then {
-                    val jsonString = JSON.stringify(it)
-                    val responseError = Json.Default.decodeFromString<ResponseError>(jsonString)
-                    this.add(Div(responseError.error, className = "error-message"))
+            when (response.status.toInt()) {
+                200 -> js("window.location.reload()")
+                400 -> {
+                    response.json().then {
+                        val jsonString = JSON.stringify(it)
+                        val responseError = Json.Default.decodeFromString<ResponseError>(jsonString)
+                        this.add(Div(responseError.error, className = "error-message"))
+                    }
                 }
-            } else {
-                this.add(Div("Код ошибки ${response.status}: ${response.statusText}", className = "error-message"))
+
+                else -> this.add(
+                    Div(
+                        "Код ошибки ${response.status}: ${response.statusText}",
+                        className = "error-message"
+                    )
+                )
             }
         }
     }
