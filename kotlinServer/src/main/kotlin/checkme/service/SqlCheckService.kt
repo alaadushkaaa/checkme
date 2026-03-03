@@ -171,6 +171,7 @@ class SqlCheckService(
         user: String,
         pass: String,
     ): String {
+        val cleanedQuery = cleanQuery(query)
         val connection = createDatabaseConnection(
             name = databaseName,
             user = user,
@@ -180,7 +181,7 @@ class SqlCheckService(
         connection.use {
             val statement = it.createStatement()
             statement.queryTimeout = QUERY_TIMEOUT
-            val isResultSet = statement.execute(query)
+            val isResultSet = statement.execute(cleanedQuery)
 
             return when {
                 isResultSet -> {
@@ -222,9 +223,9 @@ class SqlCheckService(
         for (table in allTablesList) {
             val autoIncrementColumns = statement.executeQuery(
                 "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
-                    "WHERE TABLE_SCHEMA = DATABASE() " +
-                    "AND TABLE_NAME = '$table'" +
-                    "AND EXTRA LIKE '%auto_increment%';"
+                        "WHERE TABLE_SCHEMA = DATABASE() " +
+                        "AND TABLE_NAME = '$table'" +
+                        "AND EXTRA LIKE '%auto_increment%';"
             )
             while (autoIncrementColumns.next()) {
                 val autoIncrementColumn = autoIncrementColumns.getString("COLUMN_NAME")
@@ -281,5 +282,11 @@ class SqlCheckService(
             it.createStatement().execute("DROP DATABASE IF EXISTS `$name`;")
             it.createStatement().execute("DROP USER IF EXISTS '$user'@'%';")
         }
+    }
+
+    private fun cleanQuery(query: String): String {
+        return query.lines().filterNot { line ->
+            line.trim().startsWith("USE", ignoreCase = true)
+        }.joinToString("\n")
     }
 }
