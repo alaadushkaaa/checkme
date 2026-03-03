@@ -1,10 +1,13 @@
 package checkme.web.admin
 
 import checkme.config.AppConfig
+import checkme.domain.accounts.PasswordHasher
 import checkme.domain.operations.OperationHolder
+import checkme.web.admin.handlers.GetUsersInfoHandler
 import checkme.web.admin.handlers.JournalHandler
 import checkme.web.admin.handlers.LoadSystemPasswordsHandler
 import checkme.web.admin.handlers.LogFileHandler
+import checkme.web.admin.handlers.SetSystemStudentPasswordHandler
 import checkme.web.auth.supportingFiles.PasswordGenerator
 import checkme.web.context.ContextTools
 import org.http4k.core.Method
@@ -24,9 +27,22 @@ fun adminRoutes(
             userLens = contextTools.userLens,
             userOperations = operations.userOperations,
             passwordGenerator = PasswordGenerator(config.authConfig.seed)
+        ),
+        "$SET_SYSTEM_PASSWORD/{id}" bind Method.POST to SetSystemStudentPasswordHandler(
+            userLens = contextTools.userLens,
+            userOperations = operations.userOperations,
+            passwordsGenerator = PasswordGenerator(config.authConfig.seed)
+        ),
+        GET_USERS_INFO bind Method.GET to GetUsersInfoHandler(
+            userOperations = operations.userOperations,
+            userLens = contextTools.userLens,
+            passwordGenerator = PasswordGenerator(config.authConfig.seed),
+            hasher = PasswordHasher(config.authConfig)
         )
     )
 
 const val ADMIN_SEGMENT = "/admin"
 const val JOURNAL = "/journal"
-const val GET_PASSWORDS = "get-system-passwords"
+const val GET_PASSWORDS = "/get-system-passwords"
+const val GET_USERS_INFO = "/get-users-info"
+const val SET_SYSTEM_PASSWORD = "/set-system-password"

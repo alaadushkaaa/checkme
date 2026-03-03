@@ -91,6 +91,15 @@ class UserOperations(
                 it
             }
 
+    override fun updateUserPassword(user: User): User? {
+        return jooqContext.update(USERS)
+            .set(USERS.PASSWORD, user.password)
+            .where(USERS.ID.eq(user.id))
+            .returningResult()
+            .fetchOne()
+            ?.toUser()
+    }
+
     private fun selectFromUsers(jooqContext: DSLContext) =
         jooqContext
             .select(

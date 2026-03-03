@@ -37,4 +37,12 @@ class UserOperationHolder(
             fetchUserByLogin = usersDatabase::selectUserByLogin,
             config = config
         )
+
+    val modifyUserPassword: (user: User) -> Result4k<User, ModifyUserError> =
+        ModifyUserPassword(
+            updateUserPassword = { user: User ->
+                usersDatabase.updateUserPassword(user = user)
+            },
+            config = config
+        )
 }

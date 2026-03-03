@@ -153,7 +153,7 @@ class LoadStudentsHandler(
                             username = email.substringBefore("@"),
                             name = firstName,
                             surname = lastName,
-                            password = passwordGenerator.generateStudentPass(email)
+                            password = passwordGenerator.generateStudentPass(email.substringBefore("@"))
                         )
                     )
                 }

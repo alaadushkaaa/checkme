@@ -1,7 +1,6 @@
 package checkme.web.admin.handlers
 
 import checkme.domain.models.User
-import checkme.domain.models.ValidateUserEmailResult
 import checkme.domain.operations.users.UserOperationHolder
 import checkme.logging.LoggerType
 import checkme.logging.ServerLogger
@@ -60,7 +59,7 @@ class LoadSystemPasswordsHandler(
                     user = user
                 )
                 val studentsWithSystemPasswords = fetchUsersAndGetSystemPasswords(
-                    emailsAndLogins = studentData.emailAndLogins,
+                    logins = studentData.logins,
                     user = user
                 )
                 if (studentData.previousSize != studentsWithSystemPasswords.size) {
@@ -92,7 +91,7 @@ class LoadSystemPasswordsHandler(
         user: User,
         fileStream: InputStream,
     ): DataAndPreviousDataSize {
-        val emailsAndLogins = mutableListOf<Pair<String, String>>()
+        val logins = mutableListOf<String>()
         val errors = mutableMapOf<String, String>()
         var countLines = 0
         return InputStreamReader(fileStream, Charsets.UTF_8).use { reader ->
@@ -105,7 +104,7 @@ class LoadSystemPasswordsHandler(
                         line.size() == DATA_FOR_PASSWORDS_SIZE -> validateLine(
                             line = line,
                             errors = errors,
-                            logins = emailsAndLogins
+                            logins = logins
                         )
 
                         else -> errors.put(
@@ -131,7 +130,7 @@ class LoadSystemPasswordsHandler(
                 type = LoggerType.WARN
             )
             DataAndPreviousDataSize(
-                emailAndLogins = emailsAndLogins,
+                logins = logins,
                 previousSize = countLines
             )
         }
@@ -140,47 +139,37 @@ class LoadSystemPasswordsHandler(
     private fun validateLine(
         line: CSVRecord,
         errors: MutableMap<String, String>,
-        logins: MutableList<Pair<String, String>>,
+        logins: MutableList<String>,
     ) {
-        val email = line.get(0).trim()
-
-        when {
-            User.validateUserDataEmail(email) != ValidateUserEmailResult.ALL_OK ->
-                errors.put(email, LoadingPasswordsError.INCORRECT_USER_EMAIL.errorText)
-
-            else -> {
-                val login = email.substringBefore("@")
-                if (logins.contains(Pair(email, login))) {
-                    errors.put(
-                        email,
-                        LoadingPasswordsError.DUPLICATE_EMAILS.errorText
-                    )
-                } else {
-                    logins.add(Pair(email, login))
-                }
-            }
+        val login = line.get(0).trim()
+        if (logins.contains(login)) {
+            errors.put(
+                login,
+                LoadingPasswordsError.DUPLICATE_LOGINS.errorText
+            )
+        } else {
+            logins.add(login)
         }
     }
 
     private fun fetchUsersAndGetSystemPasswords(
-        emailsAndLogins: List<Pair<String, String>>,
+        logins: List<String>,
         user: User,
-    ): Map<String, Pair<String, String>> {
-        val dataWithPasswords = mutableMapOf<String, Pair<String, String>>()
-        for (data in emailsAndLogins) {
-            if (fetchUserByLogin(data.second)) {
-                dataWithPasswords.put(
-                    data.first,
+    ): List<Pair<String, String>> {
+        val dataWithPasswords = mutableListOf<Pair<String, String>>()
+        for (login in logins) {
+            if (fetchUserByLogin(login)) {
+                dataWithPasswords.add(
                     Pair(
-                        data.second,
-                        passwordGenerator.generateStudentPass(data.first)
+                        login,
+                        passwordGenerator.generateStudentPass(login)
                     )
                 )
             } else {
                 ServerLogger.log(
                     user = user,
                     action = "Load users passwords errors",
-                    message = "User with email ${data.first} does not exist in the system",
+                    message = "User with login $login does not exist in the system",
                     type = LoggerType.WARN
                 )
             }
@@ -195,16 +184,15 @@ class LoadSystemPasswordsHandler(
         }
     }
 
-    private fun createCsvFile(studentsWithPasswords: Map<String, Pair<String, String>>): String {
+    private fun createCsvFile(studentsWithPasswords: List<Pair<String, String>>): String {
         val writer = StringWriter()
         val csvPrinter = CSVPrinter(writer, CSVFormat.DEFAULT)
-        csvPrinter.printRecord("Email", "Login", "System password")
+        csvPrinter.printRecord("Login", "System password")
 
         studentsWithPasswords.forEach { data ->
-            val email = data.key
-            val login = data.value.first
-            val pass = data.value.second
-            csvPrinter.printRecord(email, login, pass)
+            val login = data.first
+            val pass = data.second
+            csvPrinter.printRecord(login, pass)
         }
         csvPrinter.flush()
         csvPrinter.close()
@@ -217,8 +205,7 @@ enum class LoadingPasswordsError(val errorText: String) {
     USER_HAS_NOT_RIGHTS("Not allowed to load students passwords"),
     NOT_SUPPORTED_FILE_CONTENT_TYPE("File with this content type is not supported for load students passwords"),
     INCORRECT_FILE_DATA("Incorrect data in file"),
-    INCORRECT_USER_EMAIL("User email is incorrect"),
-    DUPLICATE_EMAILS("File contains duplicated emails"),
+    DUPLICATE_LOGINS("File contains duplicated logins"),
     FILE_CONTAINS_MISTAKES(
         "File for get students system passwords contains mistakes. Please, see log file and correct it"
     ),

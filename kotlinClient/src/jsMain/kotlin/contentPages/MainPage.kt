@@ -24,6 +24,7 @@ import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsGroupByTask
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsTable
 import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
+import ru.yarsu.contentPages.content.userInfoPage.UserInfoTable
 import ru.yarsu.contentPages.content.userListPage.UserList
 import ru.yarsu.enumClasses.ListType
 import kotlin.uuid.Uuid
@@ -59,6 +60,9 @@ class MainPage(
         }).on("/hidden-bundle-list", {
             content.removeAll()
             content.add(BundlesList(serverUrl, routingMainPage, ListType.HIDDEN))
+        }).on("/user-info", {
+            content.removeAll()
+            content.add(UserInfoTable(serverUrl))
         }).on("/add-task", {
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()

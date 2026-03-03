@@ -27,4 +27,6 @@ interface UsersDatabase {
         password: String,
         role: Role,
     ): User?
+
+    fun updateUserPassword(user: User): User?
 }
