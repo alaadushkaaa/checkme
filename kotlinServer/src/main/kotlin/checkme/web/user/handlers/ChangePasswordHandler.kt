@@ -26,12 +26,12 @@ class ChangePasswordHandler(
     private val passwordHasher: PasswordHasher,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
-        println("Я тут")
         val user = userLens(request)
         val objectMapper = jacksonObjectMapper()
         val form: MultipartForm = ChangePasswordLenses.multiPartFormFieldsAll(request)
         return when {
-            user == null -> objectMapper.sendBadRequestError(ChangeOwnPasswordError.USER_HAS_NOT_RIGHTS.errorText)
+            user == null || user.isAdmin() ->
+                objectMapper.sendBadRequestError(ChangeOwnPasswordError.USER_HAS_NOT_RIGHTS.errorText)
 
             else -> {
                 val changePasswordData = ChangePasswordData(
