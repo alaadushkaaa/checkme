@@ -16,7 +16,7 @@ import io.kvision.toast.ToastPosition
 import ru.yarsu.contentPages.content.hiddenBundle.BundleHiddenButton
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.BundleFormat
@@ -59,7 +59,6 @@ class BundleViewer(
                     serverUrl,
                     bundle.isActual,
                     bundle.id,
-                    routing
                 )
                 this.add(hiddenButton)
             }
@@ -91,15 +90,11 @@ class BundleViewer(
     }
 
     private fun tryDeleteBundle() {
-        val requestInit = RequestInit()
-        requestInit.method = HttpMethod.DELETE.name
-        requestInit.headers = js("{}")
-        requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+        val requestInit = createRequestHeaders(HttpMethod.DELETE)
         window.fetch(serverUrl + "bundle/delete/${bundle.id}", requestInit).then { response ->
-            if (response.status.toInt() == 200) {
-                routing.navigate("/")
-            } else if (response.status.toInt() == 400) {
-                response.json().then {
+            when (response.status.toInt()) {
+                200 -> routing.navigate("/")
+                400 -> response.json().then {
                     val jsonString = JSON.stringify(it)
                     val responseError =
                         Json.Default.decodeFromString<ResponseError>(jsonString)
@@ -111,8 +106,8 @@ class BundleViewer(
                         )
                     )
                 }
-            } else {
-                Toast.danger(
+
+                else -> Toast.danger(
                     "Код ошибки ${response.status}: ${response.statusText}",
                     ToastOptions(
                         duration = 5000,

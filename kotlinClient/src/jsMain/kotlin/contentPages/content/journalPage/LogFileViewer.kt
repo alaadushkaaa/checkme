@@ -11,7 +11,6 @@ import kotlinx.datetime.format.char
 import ru.yarsu.serializableClasses.logger.LogFormat
 
 class LogFileViewer(
-    private val routing: Routing,
     logs: List<LogFormat>
 ) : VPanel() {
     init {
