@@ -10,6 +10,7 @@ import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import kotlin.uuid.Uuid
@@ -18,27 +19,25 @@ class BundleHiddenButton(
     private val serverUrl: String,
     private var isActual: Boolean,
     private val bundleId: Uuid,
-    private val routing: Routing,
     private val hPanel: HPanel? = null,
 ) : Button("", className = "usually-button") {
     init {
         text = if (isActual) "Скрыть набор" else "Показать набор"
         this.onClick {
-            val requestInit = RequestInit()
-            requestInit.method = HttpMethod.POST.name
-            requestInit.headers = js("{}")
-            requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+            val requestInit = createRequestHeaders(HttpMethod.POST)
             window.fetch(serverUrl + "bundle/change-actuality/$bundleId", requestInit).then { response ->
-                if (response.status.toInt() == 200) {
-                    if (hPanel != null)
-                        hPanel.visible = false
-                    else {
-                        isActual = !isActual
-                        text = if (isActual) "Скрыть набор" else "Показать набор"
+                when (response.status.toInt()) {
+                    200 -> {
+                        if (hPanel != null)
+                            hPanel.visible = false
+                        else {
+                            isActual = !isActual
+                            text = if (isActual) "Скрыть набор" else "Показать набор"
+                        }
+                        js("window.location.reload()")
                     }
-                    js("window.location.reload()")
-                } else if (response.status.toInt() == 400) {
-                    response.json().then {
+
+                    400 -> response.json().then {
                         val jsonString = JSON.stringify(it)
                         val responseUnauthorized =
                             Json.Default.decodeFromString<ResponseError>(jsonString)
@@ -50,8 +49,8 @@ class BundleHiddenButton(
                             )
                         )
                     }
-                } else {
-                    Toast.danger(
+
+                    else -> Toast.danger(
                         "Код ошибки ${response.status}: ${response.statusText}",
                         ToastOptions(
                             duration = 5000,

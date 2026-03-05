@@ -3,17 +3,12 @@ package ru.yarsu.contentPages.content.userInfoPage
 import io.kvision.html.Div
 import io.kvision.html.h2
 import io.kvision.panel.SimplePanel
-import io.kvision.rest.HTTP_BAD_REQUEST
 import io.kvision.rest.HttpMethod
-import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.admin.UserFullData
-import ru.yarsu.serializableClasses.user.UserInList
 
 class UserInfoTable(
     serverUrl: String,
