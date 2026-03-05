@@ -10,17 +10,10 @@ import io.kvision.tabulator.TabulatorOptions
 import io.kvision.tabulator.tabulator
 import ru.yarsu.serializableClasses.admin.UserFullData
 import io.kvision.rest.HttpMethod
-import io.kvision.toast.Toast
-import io.kvision.toast.ToastOptions
-import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import kotlin.uuid.Uuid
-import org.w3c.dom.HTMLElement
-import kotlinx.browser.document
 import ru.yarsu.contentPages.content.createRequestHeaders
 
 class UserInfoTableViewer(

@@ -41,6 +41,7 @@ import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.AnswerFormat
 import ru.yarsu.serializableClasses.task.Criterion
@@ -53,7 +54,7 @@ import kotlin.io.encoding.Base64
 class AddTask(
     private val serverUrl: String,
     private val routing: Routing
-) : VPanel(className = "TaskAdd"){
+) : VPanel(className = "TaskAdd") {
     init {
         h2("Создание задачи")
         val fileList = mutableListOf<KFile>()
@@ -83,7 +84,7 @@ class AddTask(
                     this.input.id = "input-file-0"
                     onChangeLaunch {
                         val file = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) }
-                        if (file != null){
+                        if (file != null) {
                             val encodedContent = file[0].base64Encoded
                             textArea.value = if (encodedContent != null) {
                                 Base64.Default.decode(encodedContent).decodeToString()
@@ -124,7 +125,8 @@ class AddTask(
                     listOf(
 //                        "text" to "Текст", //если будет нужен функционал с текстовым ответом,
 //                        далее в клиенте пока не реализовано
-                        "file" to "Файл")
+                        "file" to "Файл"
+                    )
                 ) {
                     onChangeLaunch {
                         if (this.value == "text") {
@@ -155,7 +157,8 @@ class AddTask(
                 Upload(accept = listOf(".sql"), multiple = true) {
                     this.input.id = "input-file-1"
                     onChangeLaunch {
-                        val scriptListFile = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
+                        val scriptListFile =
+                            this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
                         scriptFile.addAll(scriptListFile)
                         updateFilesViewer(addedScriptsFileViewer, scriptFile, this@formPanel)
                         this@Upload.clearInput()
@@ -164,9 +167,7 @@ class AddTask(
                     }
                 },
                 validatorMessage = { "" }
-            ) {
-                scriptFile.isNotEmpty()
-            }
+            )
             this.validate()
             add(
                 addedScriptsFileViewer
@@ -181,7 +182,8 @@ class AddTask(
                 Upload(multiple = true) {
                     this.input.id = "input-file-2"
                     onChangeLaunch {
-                        val files = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
+                        val files =
+                            this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
                         fileList.addAll(files)
                         updateFilesViewer(addedFilesViewer, fileList, this@formPanel)
                         this@Upload.clearInput()
@@ -214,7 +216,7 @@ class AddTask(
                 fileSelectionData["beforeEach"] = Select(
                     options = nameFiles,
                     label = "Выполнять перед каждым тестом:"
-                ).apply { formPanelFileSelection.add(FormAddTaskFileSelection::beforeEach,this) }
+                ).apply { formPanelFileSelection.add(FormAddTaskFileSelection::beforeEach, this) }
                 fileSelectionData["afterEach"] = Select(
                     options = nameFiles,
                     label = "Выполнять после каждого теста:"
@@ -250,7 +252,7 @@ class AddTask(
             buttonSend.disabled = true
             val criterionString = formPanelAddTask.getData().criterion
             val criterion = Json.Default.decodeFromString<Map<String, Criterion>>(criterionString)
-            val newCriterion : Map<String, Criterion> = criterion.mapValues { (key, value) ->
+            val newCriterion: Map<String, Criterion> = criterion.mapValues { (key, value) ->
                 val testFile = fileSelectionData[key]?.value
                 if (testFile != null) {
                     Criterion(
@@ -280,16 +282,16 @@ class AddTask(
                 append("description", formPanelAddTask.getData().description)
                 append("criterions", Json.Default.encodeToString(newCriterion))
                 append("answerFormat", Json.Default.encodeToString(answerFormat))
-                if (beforeEach != null){
+                if (beforeEach != null) {
                     append("beforeEach", beforeEach)
                 }
-                if (afterEach != null){
+                if (afterEach != null) {
                     append("afterEach", afterEach)
                 }
-                if (beforeAll != null){
+                if (beforeAll != null) {
                     append("beforeAll", beforeAll)
                 }
-                if (afterAll != null){
+                if (afterAll != null) {
                     append("afterAll", afterAll)
                 }
                 if (scriptFilesWithContent != null) {
@@ -331,41 +333,9 @@ class AddTask(
                     )
                 }
             }
-            val requestInit = RequestInit()
-            requestInit.method = HttpMethod.POST.name
-            requestInit.headers = js("{}")
-            requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-            requestInit.body = formData
-            window.fetch(serverUrl + "task/new", requestInit).then { response ->
-                if (response.status.toInt() == 200) {
-                    response.json().then {
-                        val jsonString = JSON.stringify(it)
-                        val taskId = Json.Default.decodeFromString<TaskId>(jsonString)
-                        routing.navigate("/task/${taskId.taskId}")
-                    }
-                } else if (response.status.toInt() == 400) {
-                    response.json().then {
-                        val jsonString = JSON.stringify(it)
-                        val responseError =
-                            Json.Default.decodeFromString<ResponseError>(jsonString)
-                        Toast.danger(responseError.error,
-                            ToastOptions(
-                                duration = 3000,
-                                position = ToastPosition.TOPRIGHT,
-                            )
-                        )
-                    }
-                } else {
-                    Toast.danger("Код ошибки ${response.status}: ${response.statusText}",
-                        ToastOptions(
-                            duration = 5000,
-                            position = ToastPosition.TOPRIGHT,
-                        )
-                    )
-                }
-            }
+            addTask(formData)
         }
-        document.addEventListener("keydown", {event ->
+        document.addEventListener("keydown", { event ->
             if (event is KeyboardEvent && event.keyCode == 13) {
                 if (document.activeElement == document.body) {
                     buttonSend.getElement()?.click()
@@ -383,7 +353,7 @@ class AddTask(
                 filesViewer.content = ""
                 val fileViewer = Div().apply {
                     add(Div(kFile.name))
-                    add(Button("Удалить файл", className = "delete-file-button"){
+                    add(Button("Удалить файл", className = "delete-file-button") {
                         onClick {
                             files.remove(kFile)
                             updateFilesViewer(filesViewer, files, form)
@@ -393,6 +363,43 @@ class AddTask(
                     })
                 }
                 filesViewer.add(fileViewer)
+            }
+        }
+    }
+
+    private fun addTask(
+        formData: FormData
+    ) {
+        val requestInit = createRequestHeaders(HttpMethod.POST)
+        requestInit.body = formData
+        window.fetch(serverUrl + "task/new", requestInit).then { response ->
+            when (response.status.toInt()) {
+                200 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val taskId = Json.Default.decodeFromString<TaskId>(jsonString)
+                    routing.navigate("/task/${taskId.taskId}")
+                }
+
+                400 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val responseError =
+                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                    Toast.danger(
+                        responseError.error,
+                        ToastOptions(
+                            duration = 3000,
+                            position = ToastPosition.TOPRIGHT,
+                        )
+                    )
+                }
+
+                else -> Toast.danger(
+                    "Код ошибки ${response.status}: ${response.statusText}",
+                    ToastOptions(
+                        duration = 5000,
+                        position = ToastPosition.TOPRIGHT,
+                    )
+                )
             }
         }
     }

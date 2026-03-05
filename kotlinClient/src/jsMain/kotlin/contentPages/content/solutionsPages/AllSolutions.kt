@@ -11,6 +11,7 @@ import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.mySolutionListPage.MySolutionListViewer
 import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
@@ -21,13 +22,13 @@ class AllSolutions(
     private val page: Int?,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel(){
+) : SimplePanel() {
     init {
         h2("Все решения")
         button("Таблица", className = "usually-button").onClick {
             routing.navigate("/solutions-table")
         }
-        if ((page == null) || (page < 1)){
+        if ((page == null) || (page < 1)) {
             routing.navigate("/solution-list/1")
         } else {
             hPanel(className = "pagination") {
@@ -39,38 +40,41 @@ class AllSolutions(
                     routing.navigate("/solution-list/${page + 1}")
                 }
             }
-            val requestInit = RequestInit()
-            requestInit.method = HttpMethod.GET.name
-            requestInit.headers = js("{}")
-            requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+            val requestInit = createRequestHeaders(HttpMethod.GET)
             window.fetch(serverUrl + "solution/all/$page", requestInit).then { response ->
-                if (response.status.toInt() == 200) {
-                    response.json().then {
+                when (response.status.toInt()) {
+                    200 -> response.json().then {
                         val jsonString = JSON.stringify(it)
                         if (UserInformationStorage.isAdmin()) {
-                            val solutionList = Json.Default.decodeFromString<List<SolutionInAdminListsFormat>>(jsonString)
-                            if (solutionList.isEmpty()){
+                            val solutionList =
+                                Json.Default.decodeFromString<List<SolutionInAdminListsFormat>>(jsonString)
+                            if (solutionList.isEmpty()) {
                                 this.add(Div("Решения не найдены"))
                             } else {
                                 this.add(AllSolutionsViewer(solutionList, routing))
                             }
                         } else {
                             val solutionList = Json.Default.decodeFromString<List<SolutionInListFormat>>(jsonString)
-                            if (solutionList.isEmpty()){
+                            if (solutionList.isEmpty()) {
                                 this.add(Div("Решения не найдены"))
                             } else {
                                 this.add(MySolutionListViewer(solutionList, routing))
                             }
                         }
                     }
-                } else if (response.status.toInt() == 400) {
-                    response.json().then {
+
+                    400 -> response.json().then {
                         val jsonString = JSON.stringify(it)
                         val responseError = Json.Default.decodeFromString<ResponseError>(jsonString)
                         this.add(Div(responseError.error, className = "error-message"))
                     }
-                } else {
-                    this.add(Div("Код ошибки ${response.status}: ${response.statusText}", className = "error-message"))
+
+                    else -> this.add(
+                        Div(
+                            "Код ошибки ${response.status}: ${response.statusText}",
+                            className = "error-message"
+                        )
+                    )
                 }
             }
         }

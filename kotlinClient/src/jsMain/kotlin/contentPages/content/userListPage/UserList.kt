@@ -26,17 +26,16 @@ import io.kvision.types.contentType
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.events.InputEvent
 import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.admin.GetSystemPasswords
 import ru.yarsu.serializableClasses.signUp.FormLoadStudents
-import ru.yarsu.serializableClasses.task.FormAddTask
 import ru.yarsu.serializableClasses.user.UserInList
 import kotlin.io.encoding.Base64
 
@@ -112,41 +111,12 @@ class UserList(
                             )
                         }
                     }
-                    val requestInit = RequestInit()
-                    requestInit.method = HttpMethod.POST.name
-                    requestInit.headers = js("{}")
-                    requestInit.headers["Authentication"] =
-                        "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-                    requestInit.body = formData
-                    window.fetch(serverUrl + "user/automatic-registration", requestInit).then { response ->
-                        if (response.status.toInt() == 200) {
-                            studentsDataFile.clear()
-                            formAutomaticRegistration.clearData()
-                            js("window.location.reload()")
-                        } else if (response.status.toInt() == 400) {
-                            response.json().then {
-                                val jsonString = JSON.stringify(it)
-                                val responseError =
-                                    Json.Default.decodeFromString<ResponseError>(jsonString)
-                                Toast.danger(
-                                    responseError.error,
-                                    ToastOptions(
-                                        duration = 3000,
-                                        position = ToastPosition.TOPRIGHT,
-                                    )
-                                )
-                            }
-                        } else {
-                            Toast.danger(
-                                "Код ошибки ${response.status}: ${response.statusText}",
-                                ToastOptions(
-                                    duration = 5000,
-                                    position = ToastPosition.TOPRIGHT,
-                                )
-                            )
-                        }
-                    }
-
+                    registrateStudents(
+                        formData = formData,
+                        serverUrl = serverUrl,
+                        studentsDataFile = studentsDataFile,
+                        formAutomaticRegistration = formAutomaticRegistration
+                    )
                 }
             }
 
@@ -267,28 +237,10 @@ class UserList(
                 }
             }
         }
-        val requestInit = RequestInit()
-        requestInit.method = HttpMethod.GET.name
-        requestInit.headers = js("{}")
-        requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-        window.fetch(serverUrl + "user/all", requestInit).then { response ->
-            if (response.status.toInt() == 200) {
-                response.json().then {
-                    val jsonString = JSON.stringify(it)
-                    val userList = Json.decodeFromString<List<UserInList>>(jsonString)
-                    this.add(UserListViewer(userList, routing))
-                }
-            } else if (response.status.toInt() == 400) {
-                response.json().then {
-                    val jsonString = JSON.stringify(it)
-                    val responseError =
-                        Json.Default.decodeFromString<ResponseError>(jsonString)
-                    this.add(Div(responseError.error, className = "error-message"))
-                }
-            } else {
-                this.add(Div("Код ошибки ${response.status}: ${response.statusText}", className = "error-message"))
-            }
-        }
+        fetchAllStudents(
+            serverUrl = serverUrl,
+            routing = routing
+        )
     }
 
     fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormLoadStudents>) {
@@ -337,6 +289,76 @@ class UserList(
                     })
                 }
                 filesViewer.add(fileViewer)
+            }
+        }
+    }
+
+    private fun registrateStudents(
+        formData: FormData,
+        serverUrl: String,
+        studentsDataFile: MutableList<KFile>,
+        formAutomaticRegistration: FormPanel<FormLoadStudents>
+    ) {
+        val requestInit = createRequestHeaders(HttpMethod.POST)
+        requestInit.body = formData
+        window.fetch(serverUrl + "user/automatic-registration", requestInit).then { response ->
+            when (response.status.toInt()) {
+                200 -> {
+                    studentsDataFile.clear()
+                    formAutomaticRegistration.clearData()
+                    js("window.location.reload()")
+                }
+
+                400 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val responseError =
+                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                    Toast.danger(
+                        responseError.error,
+                        ToastOptions(
+                            duration = 3000,
+                            position = ToastPosition.TOPRIGHT,
+                        )
+                    )
+                }
+
+                else -> Toast.danger(
+                    "Код ошибки ${response.status}: ${response.statusText}",
+                    ToastOptions(
+                        duration = 5000,
+                        position = ToastPosition.TOPRIGHT,
+                    )
+                )
+            }
+        }
+    }
+
+    private fun fetchAllStudents(
+        serverUrl: String,
+        routing: Routing
+    ) {
+        val requestInit = createRequestHeaders(HttpMethod.GET)
+        window.fetch(serverUrl + "user/all", requestInit).then { response ->
+            when (response.status.toInt()) {
+                200 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val userList = Json.decodeFromString<List<UserInList>>(jsonString)
+                    this.add(UserListViewer(userList, routing))
+                }
+
+                400 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val responseError =
+                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                    this.add(Div(responseError.error, className = "error-message"))
+                }
+
+                else -> this.add(
+                    Div(
+                        "Код ошибки ${response.status}: ${response.statusText}",
+                        className = "error-message"
+                    )
+                )
             }
         }
     }
