@@ -15,6 +15,8 @@ import checkme.web.solution.SOLUTION_SEGMENT
 import checkme.web.solution.solutionRouter
 import checkme.web.tasks.TASK_SEGMENT
 import checkme.web.tasks.taskRouter
+import checkme.web.user.USER_SEGMENT
+import checkme.web.user.userRouter
 import org.http4k.core.*
 import org.http4k.routing.*
 
@@ -46,6 +48,11 @@ private fun createMainRouter(
         contextTools = contextTools
     ),
     ADMIN_SEGMENT bind adminRoutes(
+        config = config,
+        operations = operations,
+        contextTools = contextTools
+    ),
+    USER_SEGMENT bind userRouter(
         config = config,
         operations = operations,
         contextTools = contextTools
