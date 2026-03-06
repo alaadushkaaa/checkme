@@ -265,7 +265,11 @@ data class Check(
                         "not found",
                     type = LoggerType.WARN
                 )
-                return null
+                return CheckResult(
+                    score = 0,
+                    message = "Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} " +
+                        "not found"
+                )
             } else {
                 val jsonWithCheck = objectMapper.readTree(jsonString)
                 val type = jsonWithCheck.get("type")?.asText()
@@ -307,7 +311,10 @@ data class Check(
                             message = "Unknown check type ${task.id}-${task.name} criterion ${criterion.value.test}",
                             type = LoggerType.WARN
                         )
-                        null
+                        CheckResult(
+                            score = 0,
+                            message = "Unknown check type ${task.id}-${task.name} criterion ${criterion.value.test}"
+                        )
                     }
                 }
             }

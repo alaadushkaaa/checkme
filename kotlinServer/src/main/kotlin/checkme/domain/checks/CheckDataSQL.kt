@@ -98,7 +98,8 @@ data class CheckDataSQL(
                     )
                     CheckResult(
                         0,
-                        "Check failed: Setup SQL script ${checkDataSQL.dbScript} not found."
+                        "Check failed: Setup SQL script ${checkDataSQL.dbScript} for \" +\n" +
+                            "\"task ${task.id}-${task.name} not found"
                     )
                 }
 
@@ -148,7 +149,12 @@ data class CheckDataSQL(
                                 "script: ${script.name}",
                             type = LoggerType.WARN
                         )
-                        return CheckResult(0, "Something was wrong with check. Ask for help")
+                        return CheckResult(
+                            0,
+                            "An error occurred while running check ${criterion.test} for task +\\n\" +\n" +
+                                "\"${task.name}-${task.id}: ${queriesResults.reason.trim()}+\\n\" +\n" +
+                                "\"script: ${script.name}"
+                        )
                     }
 
                     is Success -> {
