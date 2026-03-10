@@ -31,9 +31,9 @@ data class CheckDataSQL(
             config: CheckDatabaseConfig,
         ): CheckResult {
             val directoryPath = "..$SOLUTIONS_DIR" +
-                "/${user.name}-${user.surname}-${user.login}" +
-                "/${task.name}" +
-                "/$checkId"
+                    "/${user.name}-${user.surname}-${user.login}" +
+                    "/${task.name}" +
+                    "/$checkId"
             if (!File(directoryPath).exists()) {
                 ServerLogger.log(
                     user = user,
@@ -172,6 +172,8 @@ data class CheckDataSQL(
                         val referenceResult = queriesResults.value.second
                         if (studentResult == referenceResult) {
                             scriptsResult.add(CheckResult(criterion.score, criterion.description))
+                        } else if (studentResult.contains(referenceResult)) {
+                            scriptsResult.add(CheckResult(0, criterion.message + "Result contains excess data. Try change your answer"))
                         } else {
                             scriptsResult.add(CheckResult(0, criterion.message))
                         }
