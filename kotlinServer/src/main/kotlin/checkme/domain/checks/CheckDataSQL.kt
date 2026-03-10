@@ -31,9 +31,9 @@ data class CheckDataSQL(
             config: CheckDatabaseConfig,
         ): CheckResult {
             val directoryPath = "..$SOLUTIONS_DIR" +
-                "/${user.name}-${user.surname}-${user.login}" +
-                "/${task.name}" +
-                "/$checkId"
+                    "/${user.name}-${user.surname}-${user.login}" +
+                    "/${task.name}" +
+                    "/$checkId"
             if (!File(directoryPath).exists()) {
                 ServerLogger.log(
                     user = user,
@@ -93,7 +93,7 @@ data class CheckDataSQL(
                         user = user,
                         action = "Check task warnings",
                         message = "Check failed: Setup SQL script ${checkDataSQL.dbScript} for " +
-                            "task ${task.id}-${task.name} not found",
+                                "task ${task.id}-${task.name} not found",
                         type = LoggerType.WARN
                     )
                     CheckResult(
@@ -144,8 +144,8 @@ data class CheckDataSQL(
                             user = user,
                             action = "Check task warnings",
                             message = "An error occurred while running check ${criterion.test} for task +\n" +
-                                "${task.name}-${task.id}: ${queriesResults.reason.trim()}+\n" +
-                                "script: ${script.name}",
+                                    "${task.name}-${task.id}: ${queriesResults.reason.trim()}+\n" +
+                                    "script: ${script.name}",
                             type = LoggerType.WARN
                         )
                         return CheckResult(0, "Something was wrong with check. Ask for help")
@@ -156,6 +156,8 @@ data class CheckDataSQL(
                         val referenceResult = queriesResults.value.second
                         if (studentResult == referenceResult) {
                             scriptsResult.add(CheckResult(criterion.score, criterion.description))
+                        } else if (studentResult.contains(referenceResult)) {
+                            scriptsResult.add(CheckResult(0, criterion.message + "Result contains excess data. Try change your answer"))
                         } else {
                             scriptsResult.add(CheckResult(0, criterion.message))
                         }
