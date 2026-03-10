@@ -34,6 +34,7 @@ import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
 import ru.yarsu.contentPages.Loading
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.contentPages.content.hiddenTask.TaskHiddenButton
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.CheckId
@@ -48,7 +49,7 @@ class TaskViewer(
     private val routing: Routing
 ) : VPanel(className = "Task") {
 
-    private var solutionFile : KFile? = null
+    private var solutionFile: KFile? = null
 
     init {
         h2(task.name)
@@ -62,7 +63,7 @@ class TaskViewer(
         } else {
             task.bestScore.toString()
         }
-        hPanel(className = "best-solution"){
+        hPanel(className = "best-solution") {
             div("Ваш лучший результат: ")
             div(bestResult, className = getClassNameForColor(task.bestScore, task.highestScore))
         }
@@ -110,7 +111,7 @@ class TaskViewer(
         val buttonSend = button("Отправить", disabled = true, className = "usually-button")
         formPanelSendSolution.onInput {
             buttonSend.disabled = true
-            if (formPanelSendSolution.validate()){
+            if (formPanelSendSolution.validate()) {
                 buttonSend.disabled = false
             }
         }
@@ -127,47 +128,17 @@ class TaskViewer(
             val expansion = name.split(".").last()
             val contentType = if (expansion == "sql") "application/sql" else file.contentType
             val formData = FormData().apply {
-                append("ans", value = File(
-                    arrayOf(decodedFile),
-                    name,
-                    FilePropertyBag(type = contentType))
+                append(
+                    "ans", value = File(
+                        arrayOf(decodedFile),
+                        name,
+                        FilePropertyBag(type = contentType)
+                    )
                 )
             }
             this@TaskViewer.removeAll()
             this@TaskViewer.add(Loading("Решение отправлено. Идёт проверка..."))
-            val requestInit = RequestInit()
-            requestInit.method = HttpMethod.POST.name
-            requestInit.headers = js("{}")
-            requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-            requestInit.body = formData
-            window.fetch(serverUrl + "solution/new/${task.id}", requestInit).then { response ->
-                if (response.status.toInt() == 200) {
-                    response.json().then {
-                        val jsonString = JSON.stringify(it)
-                        val checkId = Json.Default.decodeFromString<CheckId>(jsonString)
-                        routing.navigate("/solution/${checkId.checkId}")
-                    }
-                } else if (response.status.toInt() == 400) {
-                    response.json().then {
-                        val jsonString = JSON.stringify(it)
-                        val responseError =
-                            Json.Default.decodeFromString<ResponseError>(jsonString)
-                        Toast.danger(responseError.error,
-                            ToastOptions(
-                                duration = 3000,
-                                position = ToastPosition.TOPRIGHT,
-                            )
-                        )
-                    }
-                } else {
-                    Toast.danger("Код ошибки ${response.status}: ${response.statusText}",
-                        ToastOptions(
-                            duration = 5000,
-                            position = ToastPosition.TOPRIGHT,
-                        )
-                    )
-                }
-            }
+            createSolution(formData)
         }
         if (UserInformationStorage.isAdmin()) {
             val hiddenButton = TaskHiddenButton(
@@ -177,36 +148,7 @@ class TaskViewer(
             )
             this.add(hiddenButton)
             button("Удалить задачу", className = "usually-button warning-button").onClick {
-                val requestInit = RequestInit()
-                requestInit.method = HttpMethod.DELETE.name
-                requestInit.headers = js("{}")
-                requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
-                window.fetch(serverUrl + "task/delete/${task.id}", requestInit).then { response ->
-                    if (response.status.toInt() == 200) {
-                        routing.navigate("/")
-                    } else if (response.status.toInt() == 400) {
-                        response.json().then {
-                            val jsonString = JSON.stringify(it)
-                            val responseError =
-                                Json.Default.decodeFromString<ResponseError>(jsonString)
-                            Toast.danger(
-                                responseError.error,
-                                ToastOptions(
-                                    duration = 3000,
-                                    position = ToastPosition.TOPRIGHT,
-                                )
-                            )
-                        }
-                    } else {
-                        Toast.danger(
-                            "Код ошибки ${response.status}: ${response.statusText}",
-                            ToastOptions(
-                                duration = 5000,
-                                position = ToastPosition.TOPRIGHT,
-                            )
-                        )
-                    }
-                }
+                deleteTask()
             }
         }
     }
@@ -239,7 +181,7 @@ class TaskViewer(
         }
     }
 
-    fun getClassNameForColor(result: Int?, score: Int?) : String {
+    fun getClassNameForColor(result: Int?, score: Int?): String {
         return if (result != null && score != null) {
             when (result) {
                 -1 -> {
@@ -256,6 +198,73 @@ class TaskViewer(
             }
         } else {
             "bad-result"
+        }
+    }
+
+    private fun createSolution(
+        formData: FormData
+    ) {
+        val requestInit = createRequestHeaders(HttpMethod.POST)
+        requestInit.body = formData
+        window.fetch(serverUrl + "solution/new/${task.id}", requestInit).then { response ->
+            when (response.status.toInt()) {
+                200 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val checkId = Json.Default.decodeFromString<CheckId>(jsonString)
+                    routing.navigate("/solution/${checkId.checkId}")
+                }
+
+                400 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val responseError =
+                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                    Toast.danger(
+                        responseError.error,
+                        ToastOptions(
+                            duration = 3000,
+                            position = ToastPosition.TOPRIGHT,
+                        )
+                    )
+                }
+
+                else -> Toast.danger(
+                    "Код ошибки ${response.status}: ${response.statusText}",
+                    ToastOptions(
+                        duration = 5000,
+                        position = ToastPosition.TOPRIGHT,
+                    )
+                )
+            }
+        }
+    }
+
+    private fun deleteTask() {
+        val requestInit = createRequestHeaders(HttpMethod.DELETE)
+        window.fetch(serverUrl + "task/delete/${task.id}", requestInit).then { response ->
+            when (response.status.toInt()) {
+                200 -> routing.navigate("/")
+
+                400 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val responseError =
+                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                    Toast.danger(
+                        responseError.error,
+                        ToastOptions(
+                            duration = 3000,
+                            position = ToastPosition.TOPRIGHT,
+                        )
+                    )
+                }
+
+                else -> Toast.danger(
+                    "Код ошибки ${response.status}: ${response.statusText}",
+                    ToastOptions(
+                        duration = 5000,
+                        position = ToastPosition.TOPRIGHT,
+                    )
+                )
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.TaskFormatWithOrder
@@ -26,10 +27,7 @@ class ChangeBundleTasksOrder(
 ) : SimplePanel() {
     init {
         h2("Укажите порядок заданий в наборе")
-        val requestInit = RequestInit()
-        requestInit.method = HttpMethod.GET.name
-        requestInit.headers = js("{}")
-        requestInit.headers["Authentication"] = "Bearer ${UserInformationStorage.getUserInformation()?.token}"
+        val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "bundle/tasks/$bundleId", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.text().then { jsonString ->
@@ -55,23 +53,19 @@ class ChangeBundleTasksOrder(
                                             )
                                         }
                                     }
-                                    val requestInit = RequestInit()
-                                    requestInit.method = HttpMethod.POST.name
-                                    requestInit.headers = js("{}")
+                                    val requestInit = createRequestHeaders(HttpMethod.POST)
                                     requestInit.headers["Content-Type"] = "application/json"
-                                    requestInit.headers["Authentication"] =
-                                        "Bearer ${UserInformationStorage.getUserInformation()?.token}"
                                     requestInit.body = Json.Default.encodeToString(
                                         orderedTasks
                                     )
                                     window.fetch(serverUrl + "bundle/select-order/$bundleId", requestInit)
                                         .then { response ->
-                                            if (response.status.toInt() == 200) {
-                                                response.json().then {
+                                            when (response.status.toInt()) {
+                                                200 -> response.json().then {
                                                     routing.navigate("bundle/$bundleId")
                                                 }
-                                            } else if (response.status.toInt() == 401) {
-                                                response.json().then {
+
+                                                401 -> response.json().then {
                                                     val jsonString = JSON.stringify(it)
                                                     val responseUnauthorized =
                                                         Json.Default.decodeFromString<ResponseError>(jsonString)
@@ -83,8 +77,8 @@ class ChangeBundleTasksOrder(
                                                         )
                                                     )
                                                 }
-                                            } else {
-                                                Toast.danger(
+
+                                                else -> Toast.danger(
                                                     "Код ошибки ${response.status}: ${response.statusText}",
                                                     ToastOptions(
                                                         duration = 5000,

@@ -19,6 +19,7 @@ import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.fetch.RequestInit
 import org.w3c.xhr.FormData
+import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.BundleId
@@ -58,24 +59,20 @@ class ChangeBundleName(
         formPanelAddBundle: FormPanel<FormAddBundle>,
         bundleId: String
     ) {
-        val requestInit = RequestInit()
+        val requestInit = createRequestHeaders(HttpMethod.POST)
         val formData = FormData().apply {
             append("name", formPanelAddBundle.getData().name)
         }
-        requestInit.method = HttpMethod.POST.name
-        requestInit.headers = js("{}")
-        requestInit.headers["Authentication"] =
-            "Bearer ${UserInformationStorage.getUserInformation()?.token}"
         requestInit.body = formData
         window.fetch(serverUrl + "bundle/change-name/$bundleId", requestInit).then { response ->
-            if (response.status.toInt() == 200) {
-                response.json().then {
+            when (response.status.toInt()) {
+                200 -> response.json().then {
                     val jsonString = JSON.stringify(it)
                     val bundleId = Json.decodeFromString<BundleId>(jsonString)
                     routing.navigate("/bundle/${bundleId.bundleId}")
                 }
-            } else if (response.status.toInt() == 400) {
-                response.json().then {
+
+                400 -> response.json().then {
                     val jsonString = JSON.stringify(it)
                     val responseError =
                         Json.Default.decodeFromString<ResponseError>(jsonString)
@@ -87,8 +84,8 @@ class ChangeBundleName(
                         )
                     )
                 }
-            } else {
-                Toast.danger(
+
+                else -> Toast.danger(
                     "Код ошибки ${response.status}: ${response.statusText}",
                     ToastOptions(
                         duration = 5000,
