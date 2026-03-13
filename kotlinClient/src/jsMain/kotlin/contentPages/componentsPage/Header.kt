@@ -20,15 +20,18 @@ class Header(
                 button(
                     "Наборы задач",
                     className = "navigation-button"
-                ).onClick { routingMainPage.navigate("/bundle-list") }
+                ).onClick { routingMainPage.navigate("/") }
                 if (UserInformationStorage.isAdmin()) {
                     button(
                         "Список скрытых наборов",
                         className = "navigation-button"
                     ).onClick { routingMainPage.navigate("/hidden-bundle-list") }
                 }
-                button("Список задач", className = "navigation-button").onClick { routingMainPage.navigate("/") }
                 if (UserInformationStorage.isAdmin()) {
+                    button(
+                        "Список задач",
+                        className = "navigation-button"
+                    ).onClick { routingMainPage.navigate("/tasks/all") }
                     button(
                         "Список скрытых задач",
                         className = "navigation-button"
