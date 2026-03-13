@@ -26,7 +26,6 @@ private fun createMainRouter(
     jwtTools: JWTTools,
     contextTools: ContextTools,
 ) = routes(
-    "/" bind Method.GET to { _ -> ok("pong") },
     AUTH_SEGMENT bind authRouter(
         config = config,
         operations = operations,
