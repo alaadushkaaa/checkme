@@ -54,10 +54,14 @@ class MainPage(
         }
         routingMainPage.on("/", {
             content.removeAll()
-            content.add(TaskList(serverUrl, routingMainPage, ListType.ALL))
-        }).on("/bundle-list", {
-            content.removeAll()
             content.add(BundlesList(serverUrl, routingMainPage, ListType.ALL))
+        }).on("/tasks/all", {
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                content.add(TaskList(serverUrl, routingMainPage, ListType.ALL))
+            } else {
+                routingMainPage.navigate("/")
+            }
         }).on("/hidden-bundle-list", {
             content.removeAll()
             content.add(BundlesList(serverUrl, routingMainPage, ListType.HIDDEN))

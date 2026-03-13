@@ -20,7 +20,8 @@ class TasksListHandler(
         val objectMapper = jacksonObjectMapper()
         val user = userLens(request)
         return when {
-            user == null -> objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
+            user == null || !user.isAdmin() ->
+                objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
 
             else -> {
                 tryFetchTasks(
