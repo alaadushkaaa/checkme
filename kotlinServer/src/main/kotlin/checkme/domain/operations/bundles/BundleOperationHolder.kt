@@ -33,6 +33,13 @@ class BundleOperationHolder(
             bundleDatabase.selectBundleTasksById(bundleId)
         }
 
+    val fetchBundlesByTaskId: (taskId: UUID) -> Result<List<Bundle>, BundleFetchingError> =
+        FetchAllBundlesByTaskId {
+                taskId,
+            ->
+            bundleDatabase.selectAllBundlesByTaskId(taskId)
+        }
+
     val createBundle: (
         name: String,
     ) -> Result<Bundle, CreateBundleError> =
@@ -52,7 +59,7 @@ class BundleOperationHolder(
         )
 
     val removeBundle: (bundle: Bundle) -> Result<Boolean, BundleRemovingError> =
-        RemoveBundle (
+        RemoveBundle(
             bundleDatabase::selectBundleById,
             bundleDatabase::deleteBundle
         )
