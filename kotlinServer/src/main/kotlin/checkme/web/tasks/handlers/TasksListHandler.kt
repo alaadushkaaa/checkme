@@ -1,5 +1,7 @@
 package checkme.web.tasks.handlers
 
+import checkme.domain.models.Bundle
+import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
@@ -11,6 +13,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.core.*
 import org.http4k.lens.RequestContextLens
+import java.util.UUID
 
 class TasksListHandler(
     private val taskOperations: TaskOperationsHolder,
@@ -23,7 +26,7 @@ class TasksListHandler(
             user == null -> objectMapper.sendBadRequestError(ViewCheckResultError.USER_HAS_NOT_RIGHTS)
 
             else -> {
-                tryFetchTasks(
+                tryFetchTasksAndGroups(
                     taskOperations = taskOperations,
                     objectMapper = objectMapper
                 )
@@ -32,7 +35,7 @@ class TasksListHandler(
     }
 }
 
-private fun tryFetchTasks(
+private fun tryFetchTasksAndGroups(
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
 ): Response {
@@ -40,6 +43,14 @@ private fun tryFetchTasks(
         val tasks = fetchAllTasks(taskOperations)
     ) {
         is Failure -> objectMapper.sendBadRequestError(tasks.reason)
-        is Success -> objectMapper.sendOKResponse(tasks.value)
+        is Success -> {
+            val tasksAndGroups = mutableMapOf<Task, List<Bundle>>()
+            for (task in tasks) {
+                val bundleTasks = select
+            }
+            objectMapper.sendOKResponse(tasks.value)
+        }
     }
 }
+
+private fun selectBundlesWithTasks(taskId: UUID)

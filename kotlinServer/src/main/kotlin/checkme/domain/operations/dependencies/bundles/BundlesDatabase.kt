@@ -12,6 +12,8 @@ interface BundlesDatabase {
 
     fun selectBundleTasksById(id: UUID): List<TaskAndOrder>
 
+    fun selectAllBundlesByTaskId(taskId: UUID): List<Bundle>
+
     fun insertBundle(name: String): Bundle?
 
     fun insertBundleTasks(
@@ -31,6 +33,7 @@ interface BundlesDatabase {
     ): List<TaskAndOrder>?
 
     fun deleteBundle(bundle: Bundle): Result4k<Boolean, BundleDatabaseError>
+
 }
 
 enum class BundleDatabaseError {
