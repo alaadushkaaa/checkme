@@ -74,7 +74,8 @@ data class CheckDataConsole(
                     )
                     CheckResult(
                         0,
-                        criterion.message
+                        criterion.message + "An error occurred while running check ${criterion.test} for task \" +\n" +
+                            "\"${task.name}-${task.id}: ${output.reason.trim()}"
                     )
                 }
             }
