@@ -14,6 +14,11 @@ data class Task(
     val highestScore: Int? = null,
 )
 
+data class TaskWithBundles(
+    val task: Task,
+    val bundles: List<Bundle>,
+)
+
 enum class AnswerType(val code: String) {
     FILE("file"),
     TEXT("text"),

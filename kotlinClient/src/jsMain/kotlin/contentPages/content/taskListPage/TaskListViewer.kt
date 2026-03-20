@@ -2,25 +2,33 @@ package ru.yarsu.contentPages.content.taskListPage
 
 import io.kvision.core.onClick
 import io.kvision.html.div
+import io.kvision.html.span
 import io.kvision.panel.VPanel
 import io.kvision.panel.hPanel
 import io.kvision.routing.Routing
 import ru.yarsu.contentPages.content.hiddenTask.TaskHiddenButton
 import ru.yarsu.localStorage.UserInformationStorage
+import ru.yarsu.serializableClasses.bundle.BundleFormat
 import ru.yarsu.serializableClasses.task.TaskFormatForList
+import ru.yarsu.serializableClasses.task.TaskWithBundlesForList
 
 class TaskListViewer(
     private val serverUrl: String,
     private val routing: Routing,
-    taskList: List<TaskFormatForList>
+    taskList: List<TaskWithBundlesForList>
 ) : VPanel() {
     init {
-        for (task in taskList){
-            if (task.isActual || UserInformationStorage.isAdmin()) {
+        for (taskWithBundles in taskList) {
+            if (taskWithBundles.task.isActual|| UserInformationStorage.isAdmin()) {
                 hPanel(className = "task-in-list") {
                     val taskItem = VPanel(className = "task-item") {
-                        div(task.name, className = "name")
-                        val description = task.description
+                        div(className = "task-groups") {
+                            taskWithBundles.bundles.forEach { bundle ->
+                                div(className = "group-element", content = bundle.name)
+                            }
+                        }
+                        div(taskWithBundles.task.name, className = "name")
+                        val description = taskWithBundles.task.description
                             .replace("(<([^>]+)>)".toRegex(), "")
                         div(
                             if (description.length > 50)
@@ -29,15 +37,15 @@ class TaskListViewer(
                         )
                     }.apply {
                         this.onClick {
-                            routing.navigate("task/${task.id}")
+                            routing.navigate("task/${taskWithBundles.task.id}")
                         }
                     }
                     this.add(taskItem)
                     if (UserInformationStorage.isAdmin()) {
                         val hiddenButton = TaskHiddenButton(
                             serverUrl,
-                            task.isActual,
-                            task.id,
+                            taskWithBundles.task.isActual,
+                            taskWithBundles.task.id,
                             this
                         )
                         this.add(hiddenButton)
