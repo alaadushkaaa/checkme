@@ -201,8 +201,9 @@ internal fun Record.toTaskAndOrder(taskOperations: TasksOperations): TaskAndOrde
         this[BUNDLE_TASKS.TASK_ORDER],
     ) { taskID, order ->
         taskOperations.selectTaskById(taskID)?.let {
-            if (it.isActual)
-                TaskAndOrder(it, order)
-            else null
+            when {
+                it.isActual -> TaskAndOrder(it, order)
+                else -> null
+            }
         }
     }

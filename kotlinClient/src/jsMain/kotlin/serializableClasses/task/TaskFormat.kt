@@ -2,6 +2,7 @@ package ru.yarsu.serializableClasses.task
 
 import io.kvision.types.KFile
 import kotlinx.serialization.Serializable
+import ru.yarsu.serializableClasses.bundle.BundleFormat
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -26,6 +27,12 @@ data class TaskFormatForList(
     val isActual: Boolean,
     val bestScore: Int? = null,
     val highestScore: Int? = null
+)
+
+@Serializable
+data class TaskWithBundlesForList(
+    val task: TaskFormatForList,
+    val bundles: List<BundleFormat>
 )
 
 @Serializable

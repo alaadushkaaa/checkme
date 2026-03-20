@@ -15,6 +15,13 @@
     cursor: pointer;
 }
 
+.task-in-list .group-element {
+    text-align: left;
+    border-radius: 10px;
+    background-color: #7699D4;
+    padding: 2px 8px;
+}
+
 .task-in-list .task-item:hover {
     outline: 1px solid black;
 }
@@ -23,7 +30,7 @@
     font-weight: bold;
 }
 
-.task-in-list .hidden-button {
+.hidden-button {
     flex-shrink: 0;
     height: 66px;
     padding: 15px;

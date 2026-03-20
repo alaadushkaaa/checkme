@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package checkme.web.bundles.handlers
 
 import checkme.domain.models.Bundle
@@ -64,6 +66,21 @@ internal fun selectBundles(bundleOperations: BundleOperationHolder): Result<List
         is Failure -> when (bundles.reason) {
             BundleFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingBundleError.UNKNOWN_DATABASE_ERROR)
             BundleFetchingError.NO_SUCH_BUNDLE -> Failure(FetchingBundleError.NO_SUCH_BUNDLE)
+        }
+    }
+}
+
+internal fun selectTaskBundles(
+    taskId: UUID,
+    bundleOperations: BundleOperationHolder,
+): Result<List<Bundle>, FetchingBundleError> {
+    return when (
+        val fetchedBundles = bundleOperations.fetchBundlesByTaskId(taskId)
+    ) {
+        is Success -> Success(fetchedBundles.value)
+        is Failure -> when (fetchedBundles.reason) {
+            BundleFetchingError.NO_SUCH_BUNDLE -> Failure(FetchingBundleError.NO_SUCH_BUNDLE)
+            BundleFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingBundleError.UNKNOWN_DATABASE_ERROR)
         }
     }
 }

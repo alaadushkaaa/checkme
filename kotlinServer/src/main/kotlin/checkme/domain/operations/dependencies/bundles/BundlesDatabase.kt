@@ -5,6 +5,7 @@ import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Result4k
 import java.util.UUID
 
+@Suppress("TooManyFunctions")
 interface BundlesDatabase {
     fun selectBundleById(bundleId: UUID): Bundle?
 
@@ -33,7 +34,6 @@ interface BundlesDatabase {
     ): List<TaskAndOrder>?
 
     fun deleteBundle(bundle: Bundle): Result4k<Boolean, BundleDatabaseError>
-
 }
 
 enum class BundleDatabaseError {
