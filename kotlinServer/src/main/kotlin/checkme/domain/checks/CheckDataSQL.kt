@@ -31,9 +31,9 @@ data class CheckDataSQL(
             config: CheckDatabaseConfig,
         ): CheckResult {
             val directoryPath = "..$SOLUTIONS_DIR" +
-                "/${user.name}-${user.surname}-${user.login}" +
-                "/${task.name}" +
-                "/$checkId"
+                    "/${user.name}-${user.surname}-${user.login}" +
+                    "/${task.name}" +
+                    "/$checkId"
             if (!File(directoryPath).exists()) {
                 ServerLogger.log(
                     user = user,
@@ -92,14 +92,18 @@ data class CheckDataSQL(
                     ServerLogger.log(
                         user = user,
                         action = "Check task warnings",
-                        message = "Check failed: Setup SQL script ${checkDataSQL.dbScript} for " +
-                            "task ${task.id}-${task.name} not found",
+                        message = """
+                            Check failed: Setup SQL script ${checkDataSQL.dbScript} for 
+                            task ${task.id}-${task.name} not found
+                        """.trimIndent(),
                         type = LoggerType.WARN
                     )
                     CheckResult(
                         0,
-                        "Check failed: Setup SQL script ${checkDataSQL.dbScript} for \" +\n" +
-                            "\"task ${task.id}-${task.name} not found"
+                        """
+                            Check failed: Setup SQL script ${checkDataSQL.dbScript} for
+                            task ${task.id}-${task.name} not found
+                        """.trimIndent()
                     )
                 }
 
@@ -144,16 +148,20 @@ data class CheckDataSQL(
                         ServerLogger.log(
                             user = user,
                             action = "Check task warnings",
-                            message = "An error occurred while running check ${criterion.test} for task +\n" +
-                                "${task.name}-${task.id}: ${queriesResults.reason.trim()}+\n" +
-                                "script: ${script.name}",
+                            message = """
+                                An error occurred while running check ${criterion.test} for task
+                                ${task.name}-${task.id}: ${queriesResults.reason.trim()}
+                                script: ${script.name}"
+                            """.trimIndent(),
                             type = LoggerType.WARN
                         )
                         return CheckResult(
                             0,
-                            "An error occurred while running check ${criterion.test} for task +\\n\" +\n" +
-                                "\"${task.name}-${task.id}: ${queriesResults.reason.trim()}+\\n\" +\n" +
-                                "\"script: ${script.name}"
+                            """
+                            An error occurred while running check ${criterion.test} for task
+                            ${task.name}-${task.id}: ${queriesResults.reason.trim()}
+                            script: ${script.name}
+                            """.trimIndent()
                         )
                     }
 
