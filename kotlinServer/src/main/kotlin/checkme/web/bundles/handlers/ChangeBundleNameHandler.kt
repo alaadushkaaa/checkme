@@ -44,8 +44,11 @@ class ChangeBundleNameHandler(
                         ServerLogger.log(
                             user = user,
                             action = "Select bundle error",
-                            message = "Error: ${BundleChangingError.NO_SUCH_BUNDLE.errorText} while " +
-                                "try to select bundle with id = $bundleId",
+                            message =
+                                """
+                                Error: ${BundleChangingError.NO_SUCH_BUNDLE.errorText} while
+                                try to select bundle with id = $bundleId
+                                """.trimIndent(),
                             type = LoggerType.INFO
                         )
                         objectMapper.sendBadRequestError(BundleChangingError.NO_SUCH_BUNDLE)
@@ -79,9 +82,12 @@ private fun tryUpdateBundleName(
             ServerLogger.log(
                 user = user,
                 action = "Bundle correction error",
-                message = "Error while try to change bundle name for bundle ${bundleToUpdateName.id} - " +
-                    "${bundleToUpdateName.name}. " +
-                    "Error: ${BundleChangingError.UNKNOWN_DATABASE_ERROR.errorText}",
+                message =
+                    """
+                    Error while try to change bundle name for bundle ${bundleToUpdateName.id} - 
+                    ${bundleToUpdateName.name}.
+                    Error: ${BundleChangingError.UNKNOWN_DATABASE_ERROR.errorText}
+                    """.trimIndent(),
                 type = LoggerType.INFO
             )
             objectMapper.sendBadRequestError(
@@ -93,8 +99,11 @@ private fun tryUpdateBundleName(
             ServerLogger.log(
                 user = user,
                 action = "Bundle correction",
-                message = "Admin change bundle name for ${bundleToUpdateName.id}-" +
-                    "${bundleToUpdateName.name}. Now bundle name is ${bundleToUpdateName.name}",
+                message =
+                    """
+                    Admin change bundle name for ${bundleToUpdateName.id}-
+                    ${bundleToUpdateName.name}. Now bundle name is ${bundleToUpdateName.name}
+                    """.trimIndent(),
                 type = LoggerType.INFO
             )
             objectMapper.sendOKResponse(mapOf("bundleId" to bundleToUpdateName.id))

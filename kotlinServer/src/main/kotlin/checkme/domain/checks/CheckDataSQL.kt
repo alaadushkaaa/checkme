@@ -92,13 +92,19 @@ data class CheckDataSQL(
                     ServerLogger.log(
                         user = user,
                         action = "Check task warnings",
-                        message = "Check failed: Setup SQL script ${checkDataSQL.dbScript} for " +
-                            "task ${task.id}-${task.name} not found",
+                        message =
+                            """
+                            Check failed: Setup SQL script ${checkDataSQL.dbScript} for 
+                            task ${task.id}-${task.name} not found
+                            """.trimIndent(),
                         type = LoggerType.WARN
                     )
                     CheckResult(
                         0,
-                        "Check failed: Setup SQL script ${checkDataSQL.dbScript} not found."
+                        """
+                        Check failed: Setup SQL script ${checkDataSQL.dbScript} for
+                        task ${task.id}-${task.name} not found
+                        """.trimIndent()
                     )
                 }
 
@@ -143,12 +149,22 @@ data class CheckDataSQL(
                         ServerLogger.log(
                             user = user,
                             action = "Check task warnings",
-                            message = "An error occurred while running check ${criterion.test} for task +\n" +
-                                "${task.name}-${task.id}: ${queriesResults.reason.trim()}+\n" +
-                                "script: ${script.name}",
+                            message =
+                                """
+                                An error occurred while running check ${criterion.test} for task
+                                ${task.name}-${task.id}: ${queriesResults.reason.trim()}
+                                script: ${script.name}"
+                                """.trimIndent(),
                             type = LoggerType.WARN
                         )
-                        return CheckResult(0, "Something was wrong with check. Ask for help")
+                        return CheckResult(
+                            0,
+                            """
+                            An error occurred while running check ${criterion.test} for task
+                            ${task.name}-${task.id}: ${queriesResults.reason.trim()}
+                            script: ${script.name}
+                            """.trimIndent()
+                        )
                     }
 
                     is Success -> {

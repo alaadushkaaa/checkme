@@ -68,13 +68,20 @@ data class CheckDataConsole(
                     ServerLogger.log(
                         user = user,
                         action = "Check task warnings",
-                        message = "An error occurred while running check ${criterion.test} for task \" +\n" +
-                            "\"${task.name}-${task.id}: ${output.reason.trim()}",
+                        message =
+                            """
+                            An error occurred while running check ${criterion.test} for task
+                            ${task.name}-${task.id}: ${output.reason.trim()}
+                            """.trimIndent(),
                         type = LoggerType.WARN
                     )
                     CheckResult(
                         0,
-                        criterion.message
+                        criterion.message +
+                            """
+                            An error occurred while running check ${criterion.test} for task
+                            ${task.name}-${task.id}: ${output.reason.trim()}
+                            """.trimIndent()
                     )
                 }
             }
