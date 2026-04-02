@@ -243,7 +243,7 @@ data class Check(
             return Pair(specialCriterion.key, allResult)
         }
 
-        @Suppress("UnusedParameter")
+        @Suppress("UnusedParameter", "LongMethod")
         private fun criterionCheck(
             criterion: Map.Entry<String, Criterion>,
             task: Task,
@@ -261,14 +261,18 @@ data class Check(
                 ServerLogger.log(
                     user = user,
                     action = "Check task warnings",
-                    message = "Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} " +
-                        "not found",
+                    message =
+                        """
+                        Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} not found
+                        """.trimIndent(),
                     type = LoggerType.WARN
                 )
                 return CheckResult(
                     score = 0,
-                    message = "Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} " +
-                        "not found"
+                    message =
+                        """
+                        Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} not found
+                        """.trimIndent(),
                 )
             } else {
                 val jsonWithCheck = objectMapper.readTree(jsonString)
