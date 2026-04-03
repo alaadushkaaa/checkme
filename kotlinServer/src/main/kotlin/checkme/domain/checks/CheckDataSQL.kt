@@ -124,6 +124,7 @@ data class CheckDataSQL(
             }
         }
 
+        @Suppress("LongMethod")
         private fun getCheckResults(
             task: Task,
             checkDataSQL: CheckDataSQL,
