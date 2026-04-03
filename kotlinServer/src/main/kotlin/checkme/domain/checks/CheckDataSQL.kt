@@ -124,6 +124,7 @@ data class CheckDataSQL(
             }
         }
 
+        @Suppress("LongMethod")
         private fun getCheckResults(
             task: Task,
             checkDataSQL: CheckDataSQL,
@@ -172,6 +173,13 @@ data class CheckDataSQL(
                         val referenceResult = queriesResults.value.second
                         if (studentResult == referenceResult) {
                             scriptsResult.add(CheckResult(criterion.score, criterion.description))
+                        } else if (studentResult.lines().toList().containsAll(referenceResult.lines().toList())) {
+                            scriptsResult.add(
+                                CheckResult(
+                                    0,
+                                    "${criterion.message}. Result contains excess data. Try change your answer"
+                                )
+                            )
                         } else {
                             scriptsResult.add(CheckResult(0, criterion.message))
                         }
@@ -181,12 +189,16 @@ data class CheckDataSQL(
             val correctResults = scriptsResult.filter { it.score != 0 }
             return when {
                 correctResults.size == scriptsResult.size -> CheckResult(criterion.score, criterion.description)
-                correctResults.isEmpty() -> CheckResult(0, criterion.message)
+                correctResults.isEmpty() -> CheckResult(0, scriptsResult.toUserMessage())
                 else -> CheckResult(
                     criterion.score / scriptsResult.size * correctResults.size,
                     "Some checks were not successful: ${criterion.message}"
                 )
             }
         }
+
+        private fun MutableList<CheckResult>.toUserMessage() =
+            this.distinctBy { it.message }
+                .joinToString("\n") { it.message }
     }
 }
