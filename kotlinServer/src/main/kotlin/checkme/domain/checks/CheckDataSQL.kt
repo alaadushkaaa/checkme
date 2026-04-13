@@ -171,17 +171,40 @@ data class CheckDataSQL(
                     is Success -> {
                         val studentResult = queriesResults.value.first
                         val referenceResult = queriesResults.value.second
-                        if (studentResult == referenceResult) {
-                            scriptsResult.add(CheckResult(criterion.score, criterion.description))
-                        } else if (studentResult.lines().toList().containsAll(referenceResult.lines().toList())) {
-                            scriptsResult.add(
+                        val studentLines = studentResult.lines().toList()
+                        val referenceLines = referenceResult.lines().toList()
+                        val studentColumnsCount = studentLines.first().split("|").size
+                        val referenceColumnsCount = referenceLines.first().split("|").size
+                        when {
+                            studentResult == referenceResult -> scriptsResult.add(
                                 CheckResult(
-                                    0,
-                                    "${criterion.message}. Result contains excess data. Try change your answer"
+                                    criterion.score,
+                                    criterion.description
                                 )
                             )
-                        } else {
-                            scriptsResult.add(CheckResult(0, criterion.message))
+
+                            studentColumnsCount > referenceColumnsCount -> scriptsResult.add(
+                                CheckResult(
+                                    0,
+                                    "${criterion.message}. Result contains excess columns. Try change your answer"
+                                )
+                            )
+
+                            studentColumnsCount < referenceColumnsCount -> scriptsResult.add(
+                                CheckResult(
+                                    0,
+                                    "${criterion.message}. Result contains missing columns. Try change your answer"
+                                )
+                            )
+
+                            studentLines.containsAll(referenceLines) -> scriptsResult.add(
+                                CheckResult(
+                                    0,
+                                    "${criterion.message}. Result contains excess rows. Try change your answer"
+                                )
+                            )
+
+                            else -> scriptsResult.add(CheckResult(0, criterion.message))
                         }
                     }
                 }
