@@ -38,6 +38,7 @@ fun taskRouter(
         ),
         "/hidden" bind Method.GET to TasksHiddenListHandler(
             taskOperations = operations.taskOperations,
+            bundleOperations = operations.bundleOperations,
             userLens = contextTools.userLens
         ),
         "/{id}" bind Method.GET to TaskHandler(

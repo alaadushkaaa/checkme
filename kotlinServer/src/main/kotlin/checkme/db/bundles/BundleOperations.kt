@@ -149,7 +149,7 @@ class BundleOperations(
         ).from(BUNDLE_TASKS)
             .where(BUNDLE_TASKS.BUNDLE_ID.eq(id))
             .fetch()
-            .map {
+            .mapNotNull {
                 it.toTaskAndOrder(taskOperations)
             }
 

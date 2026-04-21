@@ -39,7 +39,7 @@ class TaskList(
             when (response.status.toInt()) {
                 200 -> response.json().then {
                     val jsonString = JSON.stringify(it)
-                    val taskList = Json.decodeFromString<List< TaskWithBundlesForList>>(jsonString)
+                    val taskList = Json.decodeFromString<List<TaskWithBundlesForList>>(jsonString)
                     if (taskList.isEmpty()){
                         this.add(Div("Задачи не найдены"))
                     } else {
