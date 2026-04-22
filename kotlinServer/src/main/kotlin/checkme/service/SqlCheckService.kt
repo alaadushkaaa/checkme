@@ -285,7 +285,7 @@ class SqlCheckService(
     }
 
     private fun cleanQuery(query: String): String {
-        return query.lines().filterNot { line ->
+        return query.split(";").filterNot { line ->
             line.trim().startsWith("USE", ignoreCase = true)
         }.joinToString("\n")
     }
