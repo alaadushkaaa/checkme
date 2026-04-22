@@ -5,6 +5,7 @@ package checkme.db.tasks
 import checkme.db.checks.CHECKS_LIMIT
 import checkme.db.generated.routines.references.bestSolution
 import checkme.db.generated.routines.references.highestScore
+import checkme.db.generated.tables.references.BUNDLE_TASKS
 import checkme.db.generated.tables.references.CHECKS
 import checkme.db.generated.tables.references.TASKS
 import checkme.db.utils.safeLet
@@ -120,6 +121,7 @@ class TasksOperations(
         var deleteTaskFlag = 0
         jooqContext.transaction { _ ->
             deleteSolutions(taskId)
+            deleteBundleTasks(taskId)
             deleteTaskFlag = jooqContext.delete(TASKS)
                 .where(TASKS.ID.eq(taskId))
                 .execute()
@@ -143,6 +145,11 @@ class TasksOperations(
     private fun deleteSolutions(taskId: UUID): Int =
         jooqContext.delete(CHECKS)
             .where(CHECKS.TASK_ID.eq(taskId))
+            .execute()
+
+    private fun deleteBundleTasks(taskId: UUID): Int =
+        jooqContext.delete(BUNDLE_TASKS)
+            .where(BUNDLE_TASKS.TASK_ID.eq(taskId))
             .execute()
 
     private fun selectFromTasks() =

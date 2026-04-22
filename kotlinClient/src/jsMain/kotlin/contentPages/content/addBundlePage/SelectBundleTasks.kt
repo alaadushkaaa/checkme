@@ -17,6 +17,7 @@ import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskFormatForList
+import ru.yarsu.serializableClasses.task.TaskWithBundlesForList
 
 const val DESCRIPTION_SIZE = 150
 
@@ -85,15 +86,15 @@ class SelectBundleTasks(
             if (response.status.toInt() == 200) {
                 response.json().then {
                     val jsonString = JSON.stringify(it)
-                    val taskList = Json.decodeFromString<List<TaskFormatForList>>(jsonString)
-                    if (taskList.isEmpty()) {
+                    val taskListWithBundles = Json.decodeFromString<List<TaskWithBundlesForList>>(jsonString)
+                    if (taskListWithBundles.isEmpty()) {
                         this.add(Div("Задачи не найдены"))
                     } else {
                         val tasksContainer = Div(className = "task-selection-container")
                         add(tasksContainer)
 
-                        taskList.forEach { task ->
-                            createTaskElement(task, tasksContainer, saveButton)
+                        taskListWithBundles.forEach { taskAndBundle ->
+                            createTaskElement(taskAndBundle.task, tasksContainer, saveButton)
                         }
                     }
                 }

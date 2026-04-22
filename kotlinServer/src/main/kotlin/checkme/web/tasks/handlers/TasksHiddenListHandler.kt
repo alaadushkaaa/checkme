@@ -1,7 +1,10 @@
 package checkme.web.tasks.handlers
 
+import checkme.domain.models.TaskWithBundles
 import checkme.domain.models.User
+import checkme.domain.operations.bundles.BundleOperationHolder
 import checkme.domain.operations.tasks.TaskOperationsHolder
+import checkme.web.bundles.handlers.selectTaskBundles
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
 import checkme.web.solution.handlers.ViewCheckResultError
@@ -14,6 +17,7 @@ import org.http4k.lens.RequestContextLens
 
 class TasksHiddenListHandler(
     private val taskOperations: TaskOperationsHolder,
+    private val bundleOperations: BundleOperationHolder,
     private val userLens: RequestContextLens<User?>,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
@@ -27,7 +31,8 @@ class TasksHiddenListHandler(
             else -> {
                 tryFetchTasks(
                     taskOperations = taskOperations,
-                    objectMapper = objectMapper
+                    objectMapper = objectMapper,
+                    bundleOperations = bundleOperations
                 )
             }
         }
@@ -37,11 +42,23 @@ class TasksHiddenListHandler(
 private fun tryFetchTasks(
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
+    bundleOperations: BundleOperationHolder,
 ): Response {
     return when (
         val tasks = fetchHiddenTasks(taskOperations)
     ) {
-        is Failure -> objectMapper.sendBadRequestError(tasks.reason)
-        is Success -> objectMapper.sendOKResponse(tasks.value)
+        is Failure -> objectMapper.sendBadRequestError(tasks.reason.errorText)
+        is Success -> {
+            val tasksAndGroups = mutableListOf<TaskWithBundles>()
+            for (task in tasks.value) {
+                when (
+                    val taskBundles = selectTaskBundles(task.id, bundleOperations)
+                ) {
+                    is Failure -> objectMapper.sendBadRequestError(taskBundles.reason.errorText)
+                    is Success -> tasksAndGroups.add(TaskWithBundles(task, taskBundles.value))
+                }
+            }
+            objectMapper.sendOKResponse(tasksAndGroups)
+        }
     }
 }

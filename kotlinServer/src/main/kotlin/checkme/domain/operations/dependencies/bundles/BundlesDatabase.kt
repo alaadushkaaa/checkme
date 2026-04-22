@@ -5,12 +5,15 @@ import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Result4k
 import java.util.UUID
 
+@Suppress("TooManyFunctions")
 interface BundlesDatabase {
     fun selectBundleById(bundleId: UUID): Bundle?
 
     fun selectAllBundles(): List<Bundle>
 
     fun selectBundleTasksById(id: UUID): List<TaskAndOrder>
+
+    fun selectAllBundlesByTaskId(taskId: UUID): List<Bundle>
 
     fun insertBundle(name: String): Bundle?
 

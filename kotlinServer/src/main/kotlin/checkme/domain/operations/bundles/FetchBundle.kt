@@ -38,6 +38,20 @@ class FetchAllBundles(
         }
 }
 
+class FetchAllBundlesByTaskId(
+    private val fetchAllBundlesByTaskId: (UUID) -> List<Bundle>?,
+) : (UUID) -> Result4k<List<Bundle>, BundleFetchingError> {
+    override fun invoke(taskId: UUID): Result4k<List<Bundle>, BundleFetchingError> =
+        try {
+            when (val bundles = fetchAllBundlesByTaskId(taskId)) {
+                is List<Bundle> -> Success(bundles)
+                else -> Failure(BundleFetchingError.NO_SUCH_BUNDLE)
+            }
+        } catch (_: DataAccessException) {
+            Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
 class FetchHiddenBundles(
     private val fetchHiddenBundles: () -> List<Bundle>?,
 ) : () -> Result4k<List<Bundle>, BundleFetchingError> {

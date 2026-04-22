@@ -39,6 +39,17 @@ class BundleOperations(
                 record.toBundle()
             }
 
+    override fun selectAllBundlesByTaskId(taskId: UUID): List<Bundle> =
+        selectFromBundles()
+            .join(BUNDLE_TASKS)
+            .on(BUNDLES.ID.eq(BUNDLE_TASKS.BUNDLE_ID))
+            .where(BUNDLE_TASKS.TASK_ID.eq(taskId))
+            .and(BUNDLES.ISACTUAL.eq(true))
+            .fetch()
+            .mapNotNull { record: Record ->
+                record.toBundle()
+            }
+
     override fun selectHiddenBundles(): List<Bundle> =
         selectFromBundles()
             .where(BUNDLES.ISACTUAL.eq(false))
@@ -138,7 +149,7 @@ class BundleOperations(
         ).from(BUNDLE_TASKS)
             .where(BUNDLE_TASKS.BUNDLE_ID.eq(id))
             .fetch()
-            .map {
+            .mapNotNull {
                 it.toTaskAndOrder(taskOperations)
             }
 
@@ -189,5 +200,10 @@ internal fun Record.toTaskAndOrder(taskOperations: TasksOperations): TaskAndOrde
         this[BUNDLE_TASKS.TASK_ID],
         this[BUNDLE_TASKS.TASK_ORDER],
     ) { taskID, order ->
-        taskOperations.selectTaskById(taskID)?.let { TaskAndOrder(it, order) }
+        taskOperations.selectTaskById(taskID)?.let {
+            when {
+                it.isActual -> TaskAndOrder(it, order)
+                else -> null
+            }
+        }
     }

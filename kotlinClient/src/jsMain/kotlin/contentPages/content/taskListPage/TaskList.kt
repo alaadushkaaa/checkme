@@ -13,7 +13,9 @@ import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.enumClasses.ListType
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
+import ru.yarsu.serializableClasses.bundle.BundleFormat
 import ru.yarsu.serializableClasses.task.TaskFormatForList
+import ru.yarsu.serializableClasses.task.TaskWithBundlesForList
 
 class TaskList(
     serverUrl: String,
@@ -37,8 +39,8 @@ class TaskList(
             when (response.status.toInt()) {
                 200 -> response.json().then {
                     val jsonString = JSON.stringify(it)
-                    val taskList = Json.decodeFromString<List<TaskFormatForList>>(jsonString)
-                    if (taskList.isEmpty()) {
+                    val taskList = Json.decodeFromString<List<TaskWithBundlesForList>>(jsonString)
+                    if (taskList.isEmpty()){
                         this.add(Div("Задачи не найдены"))
                     } else {
                         this.add(TaskListViewer(serverUrl, routing, taskList))
