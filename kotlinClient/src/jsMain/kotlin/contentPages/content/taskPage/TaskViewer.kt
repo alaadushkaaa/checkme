@@ -70,7 +70,7 @@ class TaskViewer(
                     task.id
                 )
                 this.add(hiddenButton)
-                button("Изменить задачу", style = ButtonStyle.LINK).onClick {
+                button("Изменить задачу", style = ButtonStyle.LINK) { id = "task-edit-button" }.onClick {
                     routing.navigate("/change-task/${task.id}")
                 }
                 button("Удалить задачу", style = ButtonStyle.DANGER) { id = "task-delete-button" } .onClick {

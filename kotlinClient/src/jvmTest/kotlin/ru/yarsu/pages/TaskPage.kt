@@ -24,6 +24,20 @@ class TaskPage(private val driver: WebDriver) {
         Thread.sleep(2000)
     }
 
+    fun navigateToEditPage() {
+        waitForElement(driver, By.id("task-action-dropdown")).click()
+        waitForElement(driver, By.id("task-edit-button")).click()
+        Thread.sleep(1000)
+    }
+
+    fun getTaskDescription(): String {
+        return try {
+            driver.findElement(By.id("task-description-div")).text
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
     fun isTaskPageClosed(): Boolean {
         return try {
             !driver.findElement(By.id("task-name-h2")).isDisplayed

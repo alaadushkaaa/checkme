@@ -48,22 +48,22 @@ class EditTaskViewer(
     private var editScripts = false
     init {
         val taskType = task.answerFormat.first().type
-        h2("Редактирование задачи")
+        h2("Редактирование задачи") { id = "h2-edit-task" }
         val formPanelEditTask = formPanel<FormAddTask>(className = "base-form") {
             add(Label("Название", className = "separate-form-label"))
             add(
                 FormAddTask::name,
-                Text(value = task.name),
+                Text(value = task.name) { this.input.id = "add-task-name" },
             )
             add(Label("Описание", className = "separate-form-label"))
             add(
                 FormAddTask::description,
-                RichText(value = task.description),
+                RichText(value = task.description) { this.input.id = "add-task-description" },
             )
             add(Label("JSON с критериями задачи", className = "separate-form-label"))
             val textArea = TextArea(value = Json.encodeToString(task.criterions))
             add(
-                Label("Выберите JSON файл", forId = "input-file-0", className = "btn btn-secondary")
+                Label("Выберите JSON файл", forId = "input-file-0", className = "btn btn-secondary") { id = "add-task-criterions" }
             )
             add(
                 criterionsUpload(this@formPanel, textArea)
@@ -73,6 +73,7 @@ class EditTaskViewer(
                 textArea,
             )
             val buttonEditScripts = Button("Изменить скрипты задачи", style = ButtonStyle.SECONDARY) {
+                id = "edit-task-scripts"
                 if (taskType == "text") {
                     display = Display.NONE
                 }
@@ -81,9 +82,11 @@ class EditTaskViewer(
                 display = Display.NONE
             }
             val inputFileLabel = Label("Выберите файлы", forId = "input-file-1", className = "btn btn-secondary") {
+                id = "add-task-script-file"
                 display = Display.NONE
             }
             val addedScriptsFileViewer = Div("Файлы не выбраны", className = "files-viewer") {
+                id = "add-task-script-no-file-div"
                 display = Display.NONE
             }
             val buttonDownloadFiles = Button("Скачать скрипты задачи", style = ButtonStyle.PRIMARY) {
@@ -154,7 +157,7 @@ class EditTaskViewer(
             add(addedScriptsFileViewer)
             add(buttonDownloadFiles)
         }
-        val buttonSend = button("Изменить", className = "usually-button")
+        val buttonSend = button("Изменить", className = "usually-button") { id = "add-task-send" }
         buttonSend.onClickLaunch {
             val isValid = validateForm(formPanelEditTask, scriptFiles, editScripts)
             buttonSend.disabled = isValid
